@@ -1,0 +1,197 @@
+{
+  "no_gate": [
+    {
+      "confidence": 0.4,
+      "n_trades": 1317,
+      "total_return": -0.5944529033294802,
+      "win_rate": 0.3591495823842065,
+      "profit_factor": 0.6068452304538858,
+      "avg_return": -0.000679472921796535,
+      "max_drawdown": -0.6016598712016419,
+      "longs": 920,
+      "shorts": 397,
+      "exit_reasons": {
+        "stop": 833,
+        "target": 466,
+        "timeout": 15,
+        "stop_same_bar": 3
+      }
+    },
+    {
+      "confidence": 0.45,
+      "n_trades": 224,
+      "total_return": -0.18524784637766567,
+      "win_rate": 0.32589285714285715,
+      "profit_factor": 0.47507425659664265,
+      "avg_return": -0.0009090518886672777,
+      "max_drawdown": -0.1844971775032955,
+      "longs": 170,
+      "shorts": 54,
+      "exit_reasons": {
+        "stop": 147,
+        "target": 73,
+        "timeout": 3,
+        "stop_same_bar": 1
+      }
+    },
+    {
+      "confidence": 0.5,
+      "n_trades": 43,
+      "total_return": -0.04992084649536144,
+      "win_rate": 0.2558139534883721,
+      "profit_factor": 0.36085515842834615,
+      "avg_return": -0.0011854938377076202,
+      "max_drawdown": -0.04693312801909918,
+      "longs": 35,
+      "shorts": 8,
+      "exit_reasons": {
+        "stop": 30,
+        "target": 11,
+        "timeout": 2
+      }
+    },
+    {
+      "confidence": 0.55,
+      "n_trades": 7,
+      "total_return": -0.004400552194073204,
+      "win_rate": 0.2857142857142857,
+      "profit_factor": 0.3150839972421339,
+      "avg_return": -0.0006292347118191159,
+      "max_drawdown": -0.004811356160319346,
+      "longs": 7,
+      "shorts": 0,
+      "exit_reasons": {
+        "stop": 5,
+        "target": 1,
+        "timeout": 1
+      }
+    },
+    {
+      "confidence": 0.6,
+      "n_trades": 1,
+      "total_return": -0.0012175174405548717,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_return": -0.0012175174405548693,
+      "max_drawdown": 0.0,
+      "longs": 1,
+      "shorts": 0,
+      "exit_reasons": {
+        "stop": 1
+      }
+    }
+  ],
+  "gated": [
+    {
+      "confidence": 0.4,
+      "n_trades": 360,
+      "total_return": -0.16936041391957712,
+      "win_rate": 0.35833333333333334,
+      "profit_factor": 0.7332752694090555,
+      "avg_return": -0.0005078745183874932,
+      "max_drawdown": -0.1815941059911491,
+      "longs": 0,
+      "shorts": 360,
+      "blocked_signals": 3098,
+      "exit_reasons": {
+        "stop": 226,
+        "target": 125,
+        "timeout": 7,
+        "stop_same_bar": 2
+      },
+      "regime_counts": {
+        "Bear": 360
+      }
+    },
+    {
+      "confidence": 0.45,
+      "n_trades": 51,
+      "total_return": -0.051549361584921516,
+      "win_rate": 0.2549019607843137,
+      "profit_factor": 0.5231557688180478,
+      "avg_return": -0.0010300098250273896,
+      "max_drawdown": -0.04956906261045358,
+      "longs": 0,
+      "shorts": 51,
+      "blocked_signals": 476,
+      "exit_reasons": {
+        "stop": 37,
+        "target": 13,
+        "timeout": 1
+      },
+      "regime_counts": {
+        "Bear": 51
+      }
+    },
+    {
+      "confidence": 0.5,
+      "n_trades": 7,
+      "total_return": -0.021229540543811987,
+      "win_rate": 0.14285714285714285,
+      "profit_factor": 0.021776353978789693,
+      "avg_return": -0.0030582564457657577,
+      "max_drawdown": -0.018619284642082852,
+      "longs": 0,
+      "shorts": 7,
+      "blocked_signals": 88,
+      "exit_reasons": {
+        "stop": 5,
+        "timeout": 1,
+        "target": 1
+      },
+      "regime_counts": {
+        "Bear": 7
+      }
+    },
+    {
+      "confidence": 0.55,
+      "n_trades": 0,
+      "total_return": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_return": 0.0,
+      "max_drawdown": 0.0,
+      "longs": 0,
+      "shorts": 0,
+      "blocked_signals": 15,
+      "exit_reasons": {},
+      "regime_counts": {}
+    },
+    {
+      "confidence": 0.6,
+      "n_trades": 0,
+      "total_return": 0.0,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_return": 0.0,
+      "max_drawdown": 0.0,
+      "longs": 0,
+      "shorts": 0,
+      "blocked_signals": 1,
+      "exit_reasons": {},
+      "regime_counts": {}
+    }
+  ],
+  "best_gated": {
+    "confidence": 0.45,
+    "n_trades": 51,
+    "total_return": -0.051549361584921516,
+    "win_rate": 0.2549019607843137,
+    "profit_factor": 0.5231557688180478,
+    "avg_return": -0.0010300098250273896,
+    "max_drawdown": -0.04956906261045358,
+    "longs": 0,
+    "shorts": 51,
+    "blocked_signals": 476,
+    "exit_reasons": {
+      "stop": 37,
+      "target": 13,
+      "timeout": 1
+    },
+    "regime_counts": {
+      "Bear": 51
+    }
+  },
+  "has_edge": false,
+  "next_step": "longer_horizon_retrain"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "stateless_no_trade_pattern_memory",
+  "version": "1.0",
+  "stateless": true,
+  "trade_pattern_memory": false,
+  "last_n_retrieval": false,
+  "user_profile_patterns": false,
+  "patterns": "blank",
+  "note": "Each signal uses only current market/regime features. Closed trades are not fed back into any model. No pattern store."
+}

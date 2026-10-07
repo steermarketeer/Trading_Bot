@@ -1,0 +1,17 @@
+{
+  "strategy": "both_align_no_stop",
+  "mode": "SHADOW_PAPER_ONLY",
+  "places_orders": false,
+  "model_policy": "stateless_no_trade_pattern_memory",
+  "side": "long",
+  "entry_price": 2709.65,
+  "entry_time": "2026-10-05",
+  "equity": 0.8793793701401948,
+  "peak": 1.0,
+  "halted": false,
+  "cooldown_left": 0,
+  "last_processed_day": "2026-10-06",
+  "n_signals": 99,
+  "n_trades_closed": 2,
+  "updated_at": "2026-10-07T12:10:50.190699+00:00"
+}

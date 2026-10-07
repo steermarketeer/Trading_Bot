@@ -1,0 +1,29 @@
+{
+  "status": "TRAINED",
+  "model_path": "models\\lgbm_5m_h48_v2.txt",
+  "horizon_note": "4h labels (48 x 5m bars)",
+  "holdout_accuracy": 0.353349665322814,
+  "holdout_logloss": 1.0893993747302944,
+  "top_features": {
+    "eth_btc_ratio": 5648,
+    "funding_rate": 4855,
+    "realized_vol_96": 4795,
+    "eth_btc_corr_96": 4633,
+    "funding_z": 3986,
+    "sma_100_slope": 3363,
+    "realized_vol_24": 3056,
+    "atr_pct": 2508,
+    "sma_100_dist": 2470,
+    "sma_50_slope": 2162,
+    "bb_width": 2054,
+    "hour_cos": 1926,
+    "hour_sin": 1914,
+    "obv_slope": 1884,
+    "sma_50_dist": 1622
+  },
+  "label_map": {
+    "0": "timeout",
+    "1": "up",
+    "2": "down"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "n_cells": 32,
+  "n_edge_cells": 0,
+  "best_cell": {
+    "horizon_bars": 96.0,
+    "horizon_hours": 8.0,
+    "pt_atr": 2.0,
+    "sl_atr": 1.5,
+    "rr": 1.3333333333333333,
+    "n_trades": 428.0,
+    "total_return": -0.17505277221024584,
+    "win_rate": 0.45093457943925236,
+    "profit_factor": 0.7821381276827214,
+    "avg_return": -0.0004410460708832656,
+    "max_drawdown": -0.19165134234815567,
+    "longs": 0.0,
+    "shorts": 428.0
+  },
+  "daily_eod": {
+    "name": "daily_eod_hold",
+    "n_trades": 158,
+    "total_return": -0.3244554744968805,
+    "win_rate": 0.46835443037974683,
+    "profit_factor": 0.8074693130519479,
+    "avg_return": -0.002050377164658538,
+    "max_drawdown": -0.4626283925992708,
+    "longs": 0,
+    "shorts": 158,
+    "exit_reasons": {
+      "eod": 158
+    }
+  },
+  "daily_has_edge": false,
+  "has_any_edge": false,
+  "verdict": "No barrier/horizon cell and no daily EOD rule shows edge on this Bear holdout. Do not train more ML yet. Next: test on Bull-inclusive history or change market hypothesis.",
+  "grid_csv": "models\\barrier_grid_results.csv"
+}

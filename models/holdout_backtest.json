@@ -1,0 +1,103 @@
+{
+  "selected": {
+    "confidence": 0.55,
+    "n_trades": 27,
+    "total_return": -0.04192952791464,
+    "win_rate": 0.2222222222222222,
+    "profit_factor": 0.02578627118189568,
+    "avg_return": -0.0015838860264481144,
+    "max_drawdown": -0.040678585771955406,
+    "longs": 27,
+    "shorts": 0,
+    "exit_reasons": {
+      "stop": 20,
+      "target": 6,
+      "timeout": 1
+    }
+  },
+  "sweep": [
+    {
+      "confidence": 0.4,
+      "n_trades": 4076,
+      "total_return": -0.944138669680312,
+      "win_rate": 0.3478900883218842,
+      "profit_factor": 0.5404666225946791,
+      "avg_return": -0.0007041444875289391,
+      "max_drawdown": -0.9460542839056231,
+      "longs": 2521,
+      "shorts": 1555,
+      "exit_reasons": {
+        "stop": 2502,
+        "target": 1315,
+        "timeout": 249,
+        "stop_same_bar": 10
+      }
+    },
+    {
+      "confidence": 0.45,
+      "n_trades": 741,
+      "total_return": -0.341457957214487,
+      "win_rate": 0.38461538461538464,
+      "profit_factor": 0.5905768673007061,
+      "avg_return": -0.0005601670602159367,
+      "max_drawdown": -0.356064665487273,
+      "longs": 528,
+      "shorts": 213,
+      "exit_reasons": {
+        "stop": 433,
+        "target": 269,
+        "timeout": 37,
+        "stop_same_bar": 2
+      }
+    },
+    {
+      "confidence": 0.5,
+      "n_trades": 98,
+      "total_return": -0.04786582123490912,
+      "win_rate": 0.35714285714285715,
+      "profit_factor": 0.6636885452387156,
+      "avg_return": -0.000494405566597968,
+      "max_drawdown": -0.06500133983300141,
+      "longs": 89,
+      "shorts": 9,
+      "exit_reasons": {
+        "stop": 59,
+        "target": 34,
+        "timeout": 4,
+        "stop_same_bar": 1
+      }
+    },
+    {
+      "confidence": 0.55,
+      "n_trades": 27,
+      "total_return": -0.04192952791464,
+      "win_rate": 0.2222222222222222,
+      "profit_factor": 0.02578627118189568,
+      "avg_return": -0.0015838860264481144,
+      "max_drawdown": -0.040678585771955406,
+      "longs": 27,
+      "shorts": 0,
+      "exit_reasons": {
+        "stop": 20,
+        "target": 6,
+        "timeout": 1
+      }
+    },
+    {
+      "confidence": 0.6,
+      "n_trades": 8,
+      "total_return": -0.010689023787474605,
+      "win_rate": 0.25,
+      "profit_factor": 0.03796217838811371,
+      "avg_return": -0.0013413539962665634,
+      "max_drawdown": -0.01096396576195735,
+      "longs": 8,
+      "shorts": 0,
+      "exit_reasons": {
+        "stop": 6,
+        "target": 2
+      }
+    }
+  ],
+  "note": "Compounded notional returns, one position at a time, taker fees both sides, stop-first same-bar rule."
+}

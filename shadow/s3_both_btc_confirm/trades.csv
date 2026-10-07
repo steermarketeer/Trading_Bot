@@ -1,0 +1,3 @@
+entry_time,exit_time,side,entry_price,exit_price,net_return,exit_reason,strategy,mode
+2026-06-30,2026-07-03,short,1571.47,1757.41,-0.11912233513843729,rule,both_btc_confirm,SHADOW_PAPER
+2026-07-08,2026-07-09,short,1742.68,1744.25,-0.0017009112401587994,rule,both_btc_confirm,SHADOW_PAPER

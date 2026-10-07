@@ -1,0 +1,21 @@
+{
+  "id": "s3",
+  "label": "strategy_3",
+  "strategy": "both_btc_confirm",
+  "btc_confirm": true,
+  "status": "UPDATED",
+  "last_processed_day": "2026-10-06",
+  "side": "long",
+  "entry_price": 2709.65,
+  "entry_time": "2026-10-05",
+  "equity": 0.8793793701401948,
+  "peak": 1.0,
+  "halted": false,
+  "cooldown_left": 0,
+  "n_trades_closed": 2,
+  "unrealized": -0.004871477866145175,
+  "processed_days": 1,
+  "events_count": 1,
+  "regime": "Bull",
+  "dir": "D:\\Trading Bot\\shadow\\s3_both_btc_confirm"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "s2",
+  "label": "strategy_2",
+  "strategy": "both_cool7_stable7",
+  "btc_confirm": false,
+  "status": "UPDATED",
+  "last_processed_day": "2026-10-06",
+  "side": null,
+  "entry_price": null,
+  "entry_time": null,
+  "equity": 0.8847489378599098,
+  "peak": 1.0,
+  "halted": false,
+  "cooldown_left": 0,
+  "n_trades_closed": 2,
+  "unrealized": null,
+  "processed_days": 1,
+  "events_count": 1,
+  "regime": "Bull",
+  "dir": "D:\\Trading Bot\\shadow\\s2_both_cool7_stable7"
+}

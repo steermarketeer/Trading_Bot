@@ -1,0 +1,143 @@
+{
+  "settings": {
+    "horizon_bars": 96,
+    "pt_atr": 2.0,
+    "sl_atr": 1.5,
+    "fee": 0.0004
+  },
+  "periods": [
+    {
+      "period": "2019-2020",
+      "start": "2019-11-27",
+      "end": "2020-12-31",
+      "n_bars": 115188,
+      "n_trades": 721,
+      "total_return": -0.4684894439594228,
+      "win_rate": 0.42579750346740636,
+      "profit_factor": 0.7776449638476564,
+      "max_drawdown": -0.5179345422416801,
+      "longs": 338,
+      "shorts": 383,
+      "has_edge": false,
+      "regime_mix": {
+        "Bear": 40320,
+        "Neutral": 39156,
+        "Bull": 35712
+      }
+    },
+    {
+      "period": "2021",
+      "start": "2021-01-01",
+      "end": "2021-12-31",
+      "n_bars": 105109,
+      "n_trades": 910,
+      "total_return": -0.5621553043502374,
+      "win_rate": 0.4197802197802198,
+      "profit_factor": 0.812141886109414,
+      "max_drawdown": -0.6059509943205647,
+      "longs": 910,
+      "shorts": 0,
+      "has_edge": false,
+      "regime_mix": {
+        "Bull": 95029,
+        "Neutral": 10080
+      }
+    },
+    {
+      "period": "2022",
+      "start": "2022-01-01",
+      "end": "2022-12-31",
+      "n_bars": 105108,
+      "n_trades": 974,
+      "total_return": -0.7090619586757316,
+      "win_rate": 0.4209445585215606,
+      "profit_factor": 0.661663695430502,
+      "max_drawdown": -0.7157478844204828,
+      "longs": 120,
+      "shorts": 854,
+      "has_edge": false,
+      "regime_mix": {
+        "Bear": 90420,
+        "Bull": 12384,
+        "Neutral": 2304
+      }
+    },
+    {
+      "period": "2023",
+      "start": "2023-01-01",
+      "end": "2023-12-31",
+      "n_bars": 105117,
+      "n_trades": 696,
+      "total_return": -0.46216128619341224,
+      "win_rate": 0.40229885057471265,
+      "profit_factor": 0.5493342863400987,
+      "max_drawdown": -0.472218903044101,
+      "longs": 578,
+      "shorts": 118,
+      "has_edge": false,
+      "regime_mix": {
+        "Bull": 61053,
+        "Neutral": 31680,
+        "Bear": 12384
+      }
+    },
+    {
+      "period": "2024",
+      "start": "2024-01-01",
+      "end": "2024-12-31",
+      "n_bars": 105406,
+      "n_trades": 903,
+      "total_return": -0.5714265113999725,
+      "win_rate": 0.4274640088593577,
+      "profit_factor": 0.6521960343231125,
+      "max_drawdown": -0.5998584772286899,
+      "longs": 715,
+      "shorts": 188,
+      "has_edge": false,
+      "regime_mix": {
+        "Bull": 75168,
+        "Bear": 19582,
+        "Neutral": 10656
+      }
+    },
+    {
+      "period": "2025",
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "n_bars": 105117,
+      "n_trades": 920,
+      "total_return": -0.6080580381792144,
+      "win_rate": 0.40869565217391307,
+      "profit_factor": 0.6703899487692226,
+      "max_drawdown": -0.6208343851324242,
+      "longs": 431,
+      "shorts": 489,
+      "has_edge": false,
+      "regime_mix": {
+        "Bear": 51840,
+        "Bull": 45501,
+        "Neutral": 7776
+      }
+    },
+    {
+      "period": "holdout_2026",
+      "start": "2026-03-26",
+      "end": "2026-09-22",
+      "n_bars": 51964,
+      "n_trades": 429,
+      "total_return": -0.16605493056291043,
+      "win_rate": 0.45454545454545453,
+      "profit_factor": 0.7936179324127868,
+      "max_drawdown": -0.19165134234815662,
+      "longs": 0,
+      "shorts": 429,
+      "has_edge": false,
+      "regime_mix": {
+        "Bear": 45504,
+        "Neutral": 6460
+      }
+    }
+  ],
+  "n_edge_periods": 0,
+  "verdict": "No calendar year shows edge with this baseline setup. Current regime+ATR barrier hypothesis is weak for ETH 5m \u2014 rethink strategy before more ML."
+}

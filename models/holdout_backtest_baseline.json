@@ -1,0 +1,116 @@
+{
+  "variants": {
+    "immediate_reentry": {
+      "n_trades": 6304,
+      "total_return": -0.992226696364386,
+      "win_rate": 0.33534263959390864,
+      "profit_factor": 0.5901143182245429,
+      "avg_return": -0.0007646099810857442,
+      "max_drawdown": -0.992456291474453,
+      "longs": 0,
+      "shorts": 6304,
+      "exit_reasons": {
+        "stop": 4140,
+        "target": 2121,
+        "timeout": 32,
+        "stop_same_bar": 11
+      },
+      "regime_counts": {
+        "Bear": 6304
+      }
+    },
+    "wait_1_horizon": {
+      "n_trades": 828,
+      "total_return": -0.37761691999719993,
+      "win_rate": 0.35990338164251207,
+      "profit_factor": 0.6731327025066155,
+      "avg_return": -0.0005670070890731448,
+      "max_drawdown": -0.3881700884888614,
+      "longs": 0,
+      "shorts": 828,
+      "exit_reasons": {
+        "stop": 519,
+        "target": 291,
+        "timeout": 15,
+        "stop_same_bar": 3
+      },
+      "regime_counts": {
+        "Bear": 828
+      }
+    },
+    "wait_1_day": {
+      "n_trades": 155,
+      "total_return": -0.09603908081264656,
+      "win_rate": 0.3225806451612903,
+      "profit_factor": 0.6627535075967329,
+      "avg_return": -0.0006443480856463538,
+      "max_drawdown": -0.1266169218166205,
+      "longs": 0,
+      "shorts": 155,
+      "exit_reasons": {
+        "stop": 105,
+        "target": 50
+      },
+      "regime_counts": {
+        "Bear": 155
+      }
+    }
+  },
+  "best_variant": "wait_1_day",
+  "best": {
+    "n_trades": 155,
+    "total_return": -0.09603908081264656,
+    "win_rate": 0.3225806451612903,
+    "profit_factor": 0.6627535075967329,
+    "avg_return": -0.0006443480856463538,
+    "max_drawdown": -0.1266169218166205,
+    "longs": 0,
+    "shorts": 155,
+    "exit_reasons": {
+      "stop": 105,
+      "target": 50
+    },
+    "regime_counts": {
+      "Bear": 155
+    }
+  },
+  "has_edge": false,
+  "verdict": "Both baseline and ML lose on this holdout. Problem is the trade setup (barriers/horizon/period), not which model.",
+  "ml_comparison": {
+    "ML v1 gated": {
+      "confidence": 0.45,
+      "n_trades": 51,
+      "total_return": -0.051549361584921516,
+      "win_rate": 0.2549019607843137,
+      "profit_factor": 0.5231557688180478,
+      "avg_return": -0.0010300098250273896,
+      "max_drawdown": -0.04956906261045358,
+      "longs": 0,
+      "shorts": 51,
+      "blocked_signals": 476,
+      "exit_reasons": {
+        "stop": 37,
+        "target": 13,
+        "timeout": 1
+      },
+      "regime_counts": {
+        "Bear": 51
+      }
+    },
+    "ML dual Bull/Bear": {
+      "confidence": 0.55,
+      "n_trades": 16,
+      "total_return": -0.02477122555520428,
+      "win_rate": 0.375,
+      "profit_factor": 0.4156281342446386,
+      "avg_return": -0.0015572628897406952,
+      "max_drawdown": -0.0333333962894795,
+      "longs": 0,
+      "shorts": 16,
+      "exit_reasons": {
+        "stop": 10,
+        "target": 6
+      }
+    }
+  }
+}

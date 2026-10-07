@@ -1,0 +1,160 @@
+{
+  "strategy": "htf_v6_strategy3_search",
+  "excluded": [
+    "both_align_no_stop",
+    "both_cool7_stable7"
+  ],
+  "gate": "PASS",
+  "verdict": "Strategy #3 PASS: 'both_btc_confirm' edged=5/8 OOS=+76.0% medPF=1.93. Not added to shadow yet.",
+  "winner": {
+    "cfg": "both_btc_confirm",
+    "params": {
+      "name": "both_btc_confirm",
+      "mode": "both",
+      "entry_sma": 50,
+      "exit_sma": 30,
+      "align": true,
+      "regime_stable": 5,
+      "stop_pct": null,
+      "dd_halt": 0.25,
+      "cooldown": 5,
+      "atr_max": 0.08,
+      "atr_min": 0.01,
+      "btc_confirm": true
+    },
+    "n_folds": 8,
+    "n_edge": 5,
+    "edge_frac": 0.625,
+    "median_pf": 1.9267117752619476,
+    "compounded_oos_ret": 0.7596260771131711,
+    "worst_dd": -0.2164830331798836,
+    "pass": true
+  },
+  "all_passes": [
+    "both_btc_confirm",
+    "align_both_sma30_nostop",
+    "both_btc_cool7"
+  ],
+  "leaderboard": [
+    {
+      "cfg": "both_btc_confirm",
+      "n_folds": 8,
+      "n_edge": 5,
+      "edge_frac": 0.625,
+      "median_pf": 1.9267117752619476,
+      "compounded_oos_ret": 0.7596260771131711,
+      "worst_dd": -0.2164830331798836,
+      "pass": true
+    },
+    {
+      "cfg": "long_only_sma20_nostop",
+      "n_folds": 8,
+      "n_edge": 3,
+      "edge_frac": 0.375,
+      "median_pf": 1.1837088197105197,
+      "compounded_oos_ret": 0.3380575377714574,
+      "worst_dd": -0.1838819671432946,
+      "pass": false
+    },
+    {
+      "cfg": "long_btc_sma20",
+      "n_folds": 8,
+      "n_edge": 3,
+      "edge_frac": 0.375,
+      "median_pf": 0.9820046066748898,
+      "compounded_oos_ret": 0.2636620182054905,
+      "worst_dd": -0.1838819671432946,
+      "pass": false
+    },
+    {
+      "cfg": "long_only_stable7",
+      "n_folds": 8,
+      "n_edge": 3,
+      "edge_frac": 0.375,
+      "median_pf": 0.9019954838695904,
+      "compounded_oos_ret": 0.24614606506997938,
+      "worst_dd": -0.08797539908030355,
+      "pass": false
+    },
+    {
+      "cfg": "align_both_sma30_nostop",
+      "n_folds": 8,
+      "n_edge": 5,
+      "edge_frac": 0.625,
+      "median_pf": 1.1990413178008617,
+      "compounded_oos_ret": 0.18182601869317483,
+      "worst_dd": -0.2164830331798836,
+      "pass": true
+    },
+    {
+      "cfg": "long_only_cool7_stable7",
+      "n_folds": 8,
+      "n_edge": 3,
+      "edge_frac": 0.375,
+      "median_pf": 1.9224905157134236,
+      "compounded_oos_ret": 0.3497060513687813,
+      "worst_dd": -0.1447400593449146,
+      "pass": false
+    },
+    {
+      "cfg": "both_btc_cool7",
+      "n_folds": 8,
+      "n_edge": 4,
+      "edge_frac": 0.5,
+      "median_pf": 1.747398118561903,
+      "compounded_oos_ret": 0.7212365497248912,
+      "worst_dd": -0.21380860227408918,
+      "pass": true
+    },
+    {
+      "cfg": "long_btc_cool5",
+      "n_folds": 8,
+      "n_edge": 2,
+      "edge_frac": 0.25,
+      "median_pf": 0.9146978886395842,
+      "compounded_oos_ret": 0.2589963810095064,
+      "worst_dd": -0.08797539908030358,
+      "pass": false
+    },
+    {
+      "cfg": "both_sma30_dd20_cool7",
+      "n_folds": 8,
+      "n_edge": 4,
+      "edge_frac": 0.5,
+      "median_pf": 0.9030109871936477,
+      "compounded_oos_ret": 0.43391123104313634,
+      "worst_dd": -0.21380860227408924,
+      "pass": false
+    },
+    {
+      "cfg": "short_btc_stable7",
+      "n_folds": 8,
+      "n_edge": 1,
+      "edge_frac": 0.125,
+      "median_pf": 0.010665018322431045,
+      "compounded_oos_ret": 0.290257275644789,
+      "worst_dd": -0.21380860227408918,
+      "pass": false
+    },
+    {
+      "cfg": "long_only_entry100_nostop",
+      "n_folds": 8,
+      "n_edge": 1,
+      "edge_frac": 0.125,
+      "median_pf": 0.5076781877792449,
+      "compounded_oos_ret": 0.057765177205717055,
+      "worst_dd": -0.14903436548868507,
+      "pass": false
+    },
+    {
+      "cfg": "both_btc_sma20",
+      "n_folds": 8,
+      "n_edge": 3,
+      "edge_frac": 0.375,
+      "median_pf": 0.4439280171730643,
+      "compounded_oos_ret": 0.3047497009030382,
+      "worst_dd": -0.23773142159889615,
+      "pass": false
+    }
+  ]
+}

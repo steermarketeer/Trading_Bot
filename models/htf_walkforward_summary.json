@@ -1,0 +1,400 @@
+{
+  "strategy": "htf_daily_trend_walkforward",
+  "model_policy": {
+    "name": "stateless_no_trade_pattern_memory",
+    "version": "1.0",
+    "stateless": true,
+    "trade_pattern_memory": false,
+    "last_n_retrieval": false,
+    "user_profile_patterns": false,
+    "forbidden_feature_tokens": [
+      "last_50",
+      "last50",
+      "similar_setup",
+      "retrieval",
+      "knn_",
+      "trade_memory",
+      "trade_history",
+      "closed_trade",
+      "win_streak",
+      "loss_streak",
+      "pattern_store",
+      "user_profile",
+      "profile_memory",
+      "past_pnl",
+      "historical_trade",
+      "mae_history",
+      "mfe_history",
+      "trade_db"
+    ],
+    "note": "Each signal uses only current market/regime features. Closed trades are not fed back into the model. Patterns stay blank."
+  },
+  "geometry": {
+    "train_days": 730,
+    "test_days": 180,
+    "step_days": 180,
+    "embargo_days": 5
+  },
+  "grids": {
+    "exit_sma": [
+      10,
+      20,
+      30
+    ],
+    "stop_pct": [
+      null,
+      0.08,
+      0.12,
+      0.15
+    ],
+    "dd_halt": [
+      null,
+      0.25
+    ]
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "train_start": "2020-01-16",
+      "train_end": "2022-01-15",
+      "test_start": "2022-01-20",
+      "test_end": "2022-07-19",
+      "params": {
+        "exit_sma": 30,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": null,
+        "train_pf": 5.650623476537818,
+        "train_ret": 6.592307478819657,
+        "train_dd": -0.22420518751310306,
+        "train_trades": 31
+      },
+      "oos_n_trades": 17,
+      "oos_return": -0.05430576933284481,
+      "oos_win_rate": 0.47058823529411764,
+      "oos_pf": 1.1699952230512218,
+      "oos_max_dd": -0.3341180964055245,
+      "oos_longs": 4,
+      "oos_shorts": 13,
+      "oos_has_edge": false
+    },
+    {
+      "fold": 1,
+      "train_start": "2020-07-14",
+      "train_end": "2022-07-14",
+      "test_start": "2022-07-19",
+      "test_end": "2023-01-15",
+      "params": {
+        "exit_sma": 30,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 3.8262462613621677,
+        "train_ret": 3.703227835779665,
+        "train_dd": -0.28862377167162706,
+        "train_trades": 32
+      },
+      "oos_n_trades": 6,
+      "oos_return": -0.2782870838733097,
+      "oos_win_rate": 0.3333333333333333,
+      "oos_pf": 0.39534666707399113,
+      "oos_max_dd": -0.2524812370117042,
+      "oos_longs": 0,
+      "oos_shorts": 6,
+      "oos_has_edge": false
+    },
+    {
+      "fold": 2,
+      "train_start": "2021-01-10",
+      "train_end": "2023-01-10",
+      "test_start": "2023-01-15",
+      "test_end": "2023-07-14",
+      "params": {
+        "exit_sma": 20,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 2.021833690693336,
+        "train_ret": 0.9554084134628922,
+        "train_dd": -0.2537606467167298,
+        "train_trades": 29
+      },
+      "oos_n_trades": 16,
+      "oos_return": 0.031220964756277336,
+      "oos_win_rate": 0.3125,
+      "oos_pf": 1.2342342102266066,
+      "oos_max_dd": -0.11737553774894653,
+      "oos_longs": 16,
+      "oos_shorts": 0,
+      "oos_has_edge": true
+    },
+    {
+      "fold": 3,
+      "train_start": "2021-07-09",
+      "train_end": "2023-07-09",
+      "test_start": "2023-07-14",
+      "test_end": "2024-01-10",
+      "params": {
+        "exit_sma": 20,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 1.2459195165368488,
+        "train_ret": 0.07122218604183339,
+        "train_dd": -0.2537606467167299,
+        "train_trades": 17
+      },
+      "oos_n_trades": 22,
+      "oos_return": 0.37791055786269,
+      "oos_win_rate": 0.5454545454545454,
+      "oos_pf": 3.5916131385158385,
+      "oos_max_dd": -0.04703077436982241,
+      "oos_longs": 19,
+      "oos_shorts": 3,
+      "oos_has_edge": true
+    },
+    {
+      "fold": 4,
+      "train_start": "2022-01-05",
+      "train_end": "2024-01-05",
+      "test_start": "2024-01-10",
+      "test_end": "2024-07-08",
+      "params": {
+        "exit_sma": 10,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": null,
+        "train_pf": 1.1086995915173983,
+        "train_ret": 0.005290133077353376,
+        "train_dd": -0.43284705505176735,
+        "train_trades": 103
+      },
+      "oos_n_trades": 23,
+      "oos_return": 0.00879488466722611,
+      "oos_win_rate": 0.34782608695652173,
+      "oos_pf": 1.2726362984213244,
+      "oos_max_dd": -0.3221463155443862,
+      "oos_longs": 23,
+      "oos_shorts": 0,
+      "oos_has_edge": true
+    },
+    {
+      "fold": 5,
+      "train_start": "2022-07-04",
+      "train_end": "2024-07-03",
+      "test_start": "2024-07-08",
+      "test_end": "2025-01-04",
+      "params": {
+        "exit_sma": 10,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": null,
+        "train_pf": 1.076289764054998,
+        "train_ret": -0.08418476319191437,
+        "train_dd": -0.42169646464143523,
+        "train_trades": 104
+      },
+      "oos_n_trades": 16,
+      "oos_return": -0.5263637531015295,
+      "oos_win_rate": 0.1875,
+      "oos_pf": 0.15538718601144352,
+      "oos_max_dd": -0.4857482141841877,
+      "oos_longs": 7,
+      "oos_shorts": 9,
+      "oos_has_edge": false
+    },
+    {
+      "fold": 6,
+      "train_start": "2022-12-31",
+      "train_end": "2024-12-30",
+      "test_start": "2025-01-04",
+      "test_end": "2025-07-03",
+      "params": {
+        "exit_sma": 10,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 1.856893669153772,
+        "train_ret": 0.6048892876376564,
+        "train_dd": -0.2801346481080071,
+        "train_trades": 57
+      },
+      "oos_n_trades": 21,
+      "oos_return": -0.035602647782827956,
+      "oos_win_rate": 0.47619047619047616,
+      "oos_pf": 1.0128141452048158,
+      "oos_max_dd": -0.19207612722418185,
+      "oos_longs": 1,
+      "oos_shorts": 20,
+      "oos_has_edge": false
+    },
+    {
+      "fold": 7,
+      "train_start": "2023-06-29",
+      "train_end": "2025-06-28",
+      "test_start": "2025-07-03",
+      "test_end": "2025-12-30",
+      "params": {
+        "exit_sma": 10,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 1.9873693448980392,
+        "train_ret": 0.579230208029426,
+        "train_dd": -0.2801346481080071,
+        "train_trades": 44
+      },
+      "oos_n_trades": 15,
+      "oos_return": -0.262448487087359,
+      "oos_win_rate": 0.4666666666666667,
+      "oos_pf": 0.3258772456051275,
+      "oos_max_dd": -0.2490002999228074,
+      "oos_longs": 15,
+      "oos_shorts": 0,
+      "oos_has_edge": false
+    },
+    {
+      "fold": 8,
+      "train_start": "2023-12-26",
+      "train_end": "2025-12-25",
+      "test_start": "2025-12-30",
+      "test_end": "2026-06-28",
+      "params": {
+        "exit_sma": 10,
+        "entry_sma": 50,
+        "stop_pct": null,
+        "dd_halt": 0.25,
+        "train_pf": 1.7297859872557089,
+        "train_ret": 0.21959191852686355,
+        "train_dd": -0.28013464810800726,
+        "train_trades": 17
+      },
+      "oos_n_trades": 17,
+      "oos_return": 0.2436225672962371,
+      "oos_win_rate": 0.5294117647058824,
+      "oos_pf": 2.0516854816635073,
+      "oos_max_dd": -0.15285495386139086,
+      "oos_longs": 0,
+      "oos_shorts": 17,
+      "oos_has_edge": true
+    }
+  ],
+  "n_folds": 9,
+  "n_edge_folds": 4,
+  "edge_fraction": 0.4444444444444444,
+  "compounded_oos_return": -0.5901048844901795,
+  "median_oos_pf": 1.1699952230512218,
+  "worst_fold_dd": -0.4857482141841877,
+  "research_gate_passed": false,
+  "most_common_params": {
+    "exit_sma": 10,
+    "entry_sma": 50,
+    "stop_pct": null,
+    "dd_halt": 0.25
+  },
+  "stress_baseline": [
+    {
+      "stress": "covid_2020",
+      "start": "2020-02-15",
+      "end": "2020-04-30",
+      "n_trades": 9,
+      "total_return": -0.12811801427989078,
+      "profit_factor": 0.8911494000277211,
+      "max_drawdown": -0.35224852450520955,
+      "win_rate": 0.2222222222222222
+    },
+    {
+      "stress": "bear_2022_h1",
+      "start": "2022-01-01",
+      "end": "2022-06-30",
+      "n_trades": 18,
+      "total_return": 0.229958907759368,
+      "profit_factor": 1.6304800086280706,
+      "max_drawdown": -0.3217259300793432,
+      "win_rate": 0.5
+    },
+    {
+      "stress": "ftx_2022",
+      "start": "2022-11-01",
+      "end": "2022-12-15",
+      "n_trades": 9,
+      "total_return": -0.2589766790515119,
+      "profit_factor": 0.03197661862127801,
+      "max_drawdown": -0.10868727710538886,
+      "win_rate": 0.1111111111111111
+    },
+    {
+      "stress": "chop_2024",
+      "start": "2024-01-01",
+      "end": "2024-06-30",
+      "n_trades": 24,
+      "total_return": 0.001123723165617374,
+      "profit_factor": 1.22258079842163,
+      "max_drawdown": -0.30608674004326536,
+      "win_rate": 0.3333333333333333
+    },
+    {
+      "stress": "holdout_2026",
+      "start": "2026-03-26",
+      "end": "2026-09-22",
+      "n_trades": 9,
+      "total_return": 0.11975141432901304,
+      "profit_factor": 2.084498886117083,
+      "max_drawdown": -0.0879613639475005,
+      "win_rate": 0.5555555555555556
+    }
+  ],
+  "stress_common_params": [
+    {
+      "stress": "covid_2020",
+      "start": "2020-02-15",
+      "end": "2020-04-30",
+      "n_trades": 11,
+      "total_return": 0.10295260109470328,
+      "profit_factor": 1.606949494778,
+      "max_drawdown": -0.18039816539555995,
+      "win_rate": 0.45454545454545453
+    },
+    {
+      "stress": "bear_2022_h1",
+      "start": "2022-01-01",
+      "end": "2022-06-30",
+      "n_trades": 8,
+      "total_return": -0.2279561104691582,
+      "profit_factor": 0.28980011092865243,
+      "max_drawdown": -0.25628878990167686,
+      "win_rate": 0.375
+    },
+    {
+      "stress": "ftx_2022",
+      "start": "2022-11-01",
+      "end": "2022-12-15",
+      "n_trades": 9,
+      "total_return": -0.2753907080836675,
+      "profit_factor": 0.033512469535367,
+      "max_drawdown": -0.2116191837685675,
+      "win_rate": 0.2222222222222222
+    },
+    {
+      "stress": "chop_2024",
+      "start": "2024-01-01",
+      "end": "2024-06-30",
+      "n_trades": 15,
+      "total_return": 0.17678424068981924,
+      "profit_factor": 1.6878484755705294,
+      "max_drawdown": -0.28013464810800714,
+      "win_rate": 0.4
+    },
+    {
+      "stress": "holdout_2026",
+      "start": "2026-03-26",
+      "end": "2026-09-22",
+      "n_trades": 10,
+      "total_return": 0.14052687441335765,
+      "profit_factor": 2.58164195702091,
+      "max_drawdown": -0.021835080776562293,
+      "win_rate": 0.6
+    }
+  ],
+  "verdict": "WALK-FORWARD FAIL: 4/9 folds edged, median OOS PF=1.17, compounded OOS ret=-59.0%. Do not start shadow/live. Tighten rules or revise hypothesis."
+}

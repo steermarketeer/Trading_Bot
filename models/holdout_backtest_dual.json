@@ -1,0 +1,103 @@
+{
+  "bull_model": "models\\lgbm_bull_h48.txt",
+  "bear_model": "models\\lgbm_bear_h48.txt",
+  "horizon_bars": 48,
+  "sweep": [
+    {
+      "confidence": 0.4,
+      "n_trades": 1722,
+      "total_return": -0.6853899785478552,
+      "win_rate": 0.35714285714285715,
+      "profit_factor": 0.6296917077537295,
+      "avg_return": -0.0006661556461479686,
+      "max_drawdown": -0.6984084258569813,
+      "longs": 0,
+      "shorts": 1722,
+      "exit_reasons": {
+        "stop": 1092,
+        "target": 604,
+        "timeout": 16,
+        "stop_same_bar": 10
+      }
+    },
+    {
+      "confidence": 0.45,
+      "n_trades": 497,
+      "total_return": -0.28862419078074675,
+      "win_rate": 0.3702213279678068,
+      "profit_factor": 0.6158992726368735,
+      "avg_return": -0.0006801257960850258,
+      "max_drawdown": -0.31422238972763233,
+      "longs": 0,
+      "shorts": 497,
+      "exit_reasons": {
+        "stop": 308,
+        "target": 182,
+        "stop_same_bar": 4,
+        "timeout": 3
+      }
+    },
+    {
+      "confidence": 0.5,
+      "n_trades": 123,
+      "total_return": -0.038673920901827086,
+      "win_rate": 0.43089430894308944,
+      "profit_factor": 0.7988671732773641,
+      "avg_return": -0.0003152658166150848,
+      "max_drawdown": -0.04943335726572321,
+      "longs": 0,
+      "shorts": 123,
+      "exit_reasons": {
+        "stop": 69,
+        "target": 53,
+        "stop_same_bar": 1
+      }
+    },
+    {
+      "confidence": 0.55,
+      "n_trades": 16,
+      "total_return": -0.02477122555520428,
+      "win_rate": 0.375,
+      "profit_factor": 0.4156281342446386,
+      "avg_return": -0.0015572628897406952,
+      "max_drawdown": -0.0333333962894795,
+      "longs": 0,
+      "shorts": 16,
+      "exit_reasons": {
+        "stop": 10,
+        "target": 6
+      }
+    },
+    {
+      "confidence": 0.6,
+      "n_trades": 2,
+      "total_return": -0.007334487644806487,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_return": -0.0036734229226919254,
+      "max_drawdown": -0.00473917870694005,
+      "longs": 0,
+      "shorts": 2,
+      "exit_reasons": {
+        "stop": 2
+      }
+    }
+  ],
+  "best": {
+    "confidence": 0.55,
+    "n_trades": 16,
+    "total_return": -0.02477122555520428,
+    "win_rate": 0.375,
+    "profit_factor": 0.4156281342446386,
+    "avg_return": -0.0015572628897406952,
+    "max_drawdown": -0.0333333962894795,
+    "longs": 0,
+    "shorts": 16,
+    "exit_reasons": {
+      "stop": 10,
+      "target": 6
+    }
+  },
+  "has_edge": false,
+  "note": "Holdout period is mostly Bear/Neutral (little/no Bull), so live dual-model test is dominated by the Bear short model."
+}

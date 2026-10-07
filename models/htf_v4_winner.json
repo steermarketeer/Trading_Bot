@@ -1,0 +1,110 @@
+{
+  "status": "WALK_FORWARD_PASS",
+  "winner": {
+    "name": "both_align_no_stop",
+    "mode": "both",
+    "entry_sma": 50,
+    "exit_sma": 30,
+    "align": true,
+    "regime_stable": 5,
+    "stop_pct": null,
+    "dd_halt": 0.25,
+    "cooldown": 5,
+    "atr_max": 0.08,
+    "atr_min": 0.01
+  },
+  "model_policy": {
+    "name": "stateless_no_trade_pattern_memory",
+    "version": "1.0",
+    "stateless": true,
+    "trade_pattern_memory": false,
+    "last_n_retrieval": false,
+    "user_profile_patterns": false,
+    "forbidden_feature_tokens": [
+      "last_50",
+      "last50",
+      "similar_setup",
+      "retrieval",
+      "knn_",
+      "trade_memory",
+      "trade_history",
+      "closed_trade",
+      "win_streak",
+      "loss_streak",
+      "pattern_store",
+      "user_profile",
+      "profile_memory",
+      "past_pnl",
+      "historical_trade",
+      "mae_history",
+      "mfe_history",
+      "trade_db"
+    ],
+    "note": "Each signal uses only current market/regime features. Closed trades are not fed back into the model. Patterns stay blank."
+  },
+  "walkforward": {
+    "edged": "5/8",
+    "compounded_oos_ret": 0.33,
+    "median_pf": 1.2,
+    "worst_dd": -0.216,
+    "source": "htf_v4_pass_summary.json"
+  },
+  "stress": [
+    {
+      "window": "bear_2022_h1",
+      "start": "2022-01-01",
+      "end": "2022-06-30",
+      "n_days": 181,
+      "n_trades": 7,
+      "total_return": 0.2922212721333257,
+      "profit_factor": 2.6827336092522143,
+      "max_drawdown": -0.20888236501553245,
+      "win_rate": 0.42857142857142855
+    },
+    {
+      "window": "ftx_2022",
+      "start": "2022-11-01",
+      "end": "2022-12-15",
+      "n_days": 45,
+      "n_trades": 3,
+      "total_return": 0.01132955873238295,
+      "profit_factor": 1.39205194469336,
+      "max_drawdown": 0.0,
+      "win_rate": 0.6666666666666666
+    },
+    {
+      "window": "chop_2024",
+      "start": "2024-01-01",
+      "end": "2024-06-30",
+      "n_days": 182,
+      "n_trades": 9,
+      "total_return": -0.04998238564227875,
+      "profit_factor": 0.9325855733188209,
+      "max_drawdown": -0.17683012513791257,
+      "win_rate": 0.2222222222222222
+    },
+    {
+      "window": "holdout_2026",
+      "start": "2026-03-26",
+      "end": "2026-09-22",
+      "n_days": 181,
+      "n_trades": 2,
+      "total_return": 0.14619285848546482,
+      "profit_factor": 87.0978737770019,
+      "max_drawdown": -0.0017009112401588878,
+      "win_rate": 0.5
+    },
+    {
+      "window": "full",
+      "start": "2020-01-16",
+      "end": "2026-09-22",
+      "n_days": 2342,
+      "n_trades": 16,
+      "total_return": 2.839709334527553,
+      "profit_factor": 5.61994652399707,
+      "max_drawdown": -0.277411635023144,
+      "win_rate": 0.5
+    }
+  ],
+  "note": "Research gate passed. Next optional step: shadow daily logger. Not live. Stateless policy remains."
+}

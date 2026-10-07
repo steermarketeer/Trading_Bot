@@ -1,0 +1,148 @@
+{
+  "status": "WALK_FORWARD_PASS",
+  "role": "strategy_3",
+  "complements": [
+    "both_align_no_stop",
+    "both_cool7_stable7"
+  ],
+  "winner": {
+    "name": "both_btc_confirm",
+    "mode": "both",
+    "entry_sma": 50,
+    "exit_sma": 30,
+    "align": true,
+    "regime_stable": 5,
+    "stop_pct": null,
+    "dd_halt": 0.25,
+    "cooldown": 5,
+    "atr_max": 0.08,
+    "atr_min": 0.01,
+    "btc_confirm": true
+  },
+  "walkforward": {
+    "edged": "5/8",
+    "compounded_oos_ret": 0.7596260771131711,
+    "median_pf": 1.9267117752619476,
+    "worst_dd": -0.2164830331798836
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "test_start": "2022-04-30",
+      "test_end": "2022-10-27",
+      "n_trades": 5,
+      "ret": 0.369960823601577,
+      "pf": 2.9513764273054965,
+      "dd": -0.2164830331798836,
+      "win": 0.6,
+      "edge": true
+    },
+    {
+      "fold": 1,
+      "test_start": "2022-10-27",
+      "test_end": "2023-04-25",
+      "n_trades": 5,
+      "ret": 0.009083149656070377,
+      "pf": 1.1794296855781417,
+      "dd": -0.02947103542973654,
+      "win": 0.6,
+      "edge": true
+    },
+    {
+      "fold": 2,
+      "test_start": "2023-04-25",
+      "test_end": "2023-10-22",
+      "n_trades": 6,
+      "ret": 0.0066939173086968395,
+      "pf": 1.2962513900768982,
+      "dd": -0.013081358652046151,
+      "win": 0.3333333333333333,
+      "edge": true
+    },
+    {
+      "fold": 3,
+      "test_start": "2023-10-22",
+      "test_end": "2024-04-19",
+      "n_trades": 6,
+      "ret": 0.19216518627725954,
+      "pf": 2.557172160446997,
+      "dd": -0.08797539908030358,
+      "win": 0.5,
+      "edge": true
+    },
+    {
+      "fold": 4,
+      "test_start": "2024-04-19",
+      "test_end": "2024-10-16",
+      "n_trades": 3,
+      "ret": -0.1254292794376597,
+      "pf": 0.0,
+      "dd": -0.05901585864190404,
+      "win": 0.0,
+      "edge": false
+    },
+    {
+      "fold": 5,
+      "test_start": "2024-10-16",
+      "test_end": "2025-04-14",
+      "n_trades": 3,
+      "ret": 0.3747410433761462,
+      "pf": 9.147476432360264,
+      "dd": -0.0473054409392055,
+      "win": 0.6666666666666666,
+      "edge": true
+    },
+    {
+      "fold": 6,
+      "test_start": "2025-04-14",
+      "test_end": "2025-10-11",
+      "n_trades": 2,
+      "ret": 0.13373875142469305,
+      "pf": 3.859485041497327,
+      "dd": -0.050167096668739745,
+      "win": 0.5,
+      "edge": false
+    },
+    {
+      "fold": 7,
+      "test_start": "2025-10-11",
+      "test_end": "2026-04-09",
+      "n_trades": 6,
+      "ret": -0.22192298903760965,
+      "pf": 0.0,
+      "dd": -0.1940910024017746,
+      "win": 0.0,
+      "edge": false
+    }
+  ],
+  "model_policy": {
+    "name": "stateless_no_trade_pattern_memory",
+    "version": "1.0",
+    "stateless": true,
+    "trade_pattern_memory": false,
+    "last_n_retrieval": false,
+    "user_profile_patterns": false,
+    "forbidden_feature_tokens": [
+      "last_50",
+      "last50",
+      "similar_setup",
+      "retrieval",
+      "knn_",
+      "trade_memory",
+      "trade_history",
+      "closed_trade",
+      "win_streak",
+      "loss_streak",
+      "pattern_store",
+      "user_profile",
+      "profile_memory",
+      "past_pnl",
+      "historical_trade",
+      "mae_history",
+      "mfe_history",
+      "trade_db"
+    ],
+    "note": "Each signal uses only current market/regime features. Closed trades are not fed back into the model. Patterns stay blank."
+  },
+  "note": "Third PASS strategy. Stateless. Wired into triple shadow as S3."
+}

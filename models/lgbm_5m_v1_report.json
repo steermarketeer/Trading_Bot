@@ -1,0 +1,28 @@
+{
+  "status": "TRAINED",
+  "model_path": "models\\lgbm_5m_v1.txt",
+  "holdout_accuracy": 0.37308308095908643,
+  "holdout_logloss": 1.0855360522959798,
+  "top_features": {
+    "eth_btc_ratio": 5668,
+    "realized_vol_96": 5151,
+    "funding_rate": 4545,
+    "eth_btc_corr_96": 4517,
+    "funding_z": 3914,
+    "sma_100_slope": 3509,
+    "atr_pct": 3196,
+    "realized_vol_24": 2943,
+    "bb_width": 2403,
+    "sma_100_dist": 2281,
+    "hour_cos": 2237,
+    "sma_50_slope": 2125,
+    "hour_sin": 2109,
+    "obv_slope": 2094,
+    "dow_sin": 1677
+  },
+  "label_map": {
+    "0": "timeout",
+    "1": "up",
+    "2": "down"
+  }
+}
