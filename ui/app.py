@@ -21,6 +21,7 @@ if str(_UI_DIR) not in sys.path:
     sys.path.insert(0, str(_UI_DIR))
 
 import desk_chat as chat  # noqa: E402
+import desk_portfolio as port  # noqa: E402
 import desk_visibility as vis  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1157,6 +1158,92 @@ def equity_series() -> pd.DataFrame:
     return pd.concat(rows, ignore_index=True)
 
 
+def render_wf_context() -> None:
+    wf = port.load_wf_context()
+    v7_path = ROOT / "models" / "htf_v7_stop_winner.json"
+    if wf.empty and not v7_path.exists():
+        st.info("No walk-forward winner files yet.")
+        return
+    if not wf.empty:
+        show = wf.copy()
+        if "wf_oos_ret" in show.columns:
+            show["wf_oos_ret"] = show["wf_oos_ret"].apply(
+                lambda x: f"{float(x):+.1%}" if pd.notna(x) else "—"
+            )
+        if "wf_median_pf" in show.columns:
+            show["wf_median_pf"] = show["wf_median_pf"].apply(
+                lambda x: f"{float(x):.2f}" if pd.notna(x) else "—"
+            )
+        if "wf_worst_dd" in show.columns:
+            show["wf_worst_dd"] = show["wf_worst_dd"].apply(
+                lambda x: f"{float(x):.1%}" if pd.notna(x) else "—"
+            )
+        if "stop_pct" in show.columns:
+            show["stop_pct"] = show["stop_pct"].apply(
+                lambda x: f"{float(x):.0%}" if pd.notna(x) else "none"
+            )
+        st.dataframe(show, use_container_width=True, hide_index=True)
+    if v7_path.exists():
+        try:
+            v7 = json.loads(v7_path.read_text(encoding="utf-8"))
+            w = v7.get("winner") or {}
+            wf7 = v7.get("walkforward") or {}
+            st.caption(
+                f"v7 stop search: **{v7.get('status')}** — `{w.get('name')}` "
+                f"(stop={w.get('stop_pct')}, atr_max={w.get('atr_max')}) · "
+                f"edged {wf7.get('edged')} · OOS {float(wf7.get('compounded_oos_ret') or 0):+.1%} · "
+                f"medPF {float(wf7.get('median_pf') or 0):.2f}. "
+                "Frozen research artifact — not auto-swapped into shadow sleeves."
+            )
+        except Exception:
+            pass
+
+
+def render_portfolio_views() -> None:
+    curves = port.portfolio_curves()
+    if curves.empty:
+        st.info("No portfolio curves yet — need shadow signals.")
+        return
+    summary = port.portfolio_summary(curves)
+    if not summary.empty:
+        show = summary.copy()
+        for col in ("final_equity", "total_return", "max_dd"):
+            if col in show.columns:
+                if col == "final_equity":
+                    show[col] = show[col].map(lambda x: f"{float(x):.4f}")
+                else:
+                    show[col] = show[col].map(lambda x: f"{float(x):+.1%}")
+        st.dataframe(show, use_container_width=True, hide_index=True)
+    chart = curves.set_index("day")[["equal", "agreement_2of3", "s2_primary"]].copy()
+    chart = chart.rename(
+        columns={
+            "equal": "Equal weight",
+            "agreement_2of3": "Agreement 2-of-3",
+            "s2_primary": "S2 primary",
+        }
+    )
+    st.line_chart(chart, height=280)
+    st.caption(
+        "Equal = avg of three paper equities · Agreement = risk-on only when ≥2 share the same non-flat side · "
+        "S2 primary = cool7/stable7 sleeve alone."
+    )
+    st.markdown(port.s1_s3_correlation_note(curves))
+    trades = port.closed_trades_summary()
+    if not trades.empty:
+        st.markdown('<p class="note">Closed paper trades (from trades.csv)</p>', unsafe_allow_html=True)
+        tshow = trades.copy()
+        for col in ("sum_net", "avg_net", "win_rate", "equity_from_trades"):
+            if col not in tshow.columns:
+                continue
+            if col == "win_rate":
+                tshow[col] = tshow[col].map(lambda x: f"{float(x):.0%}")
+            elif col == "equity_from_trades":
+                tshow[col] = tshow[col].map(lambda x: f"{float(x):.4f}")
+            else:
+                tshow[col] = tshow[col].map(lambda x: f"{float(x):+.2%}")
+        st.dataframe(tshow, use_container_width=True, hide_index=True)
+
+
 def main() -> None:
     st.set_page_config(
         page_title="SHADOW DESK",
@@ -1197,6 +1284,13 @@ def main() -> None:
     )
 
     with tab_overview:
+        st.markdown('<p class="section-title">Walk-forward context</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="note">Frozen research winners that justify the three paper sleeves. Shadow PnL is not the gate — WF is.</p>',
+            unsafe_allow_html=True,
+        )
+        render_wf_context()
+
         st.markdown('<p class="section-title">Regime + price</p>', unsafe_allow_html=True)
         st.markdown(
             '<p class="note">Daily ETH close from S1 signals with regime labels (Bull / Bear / Neutral).</p>',
@@ -1211,15 +1305,27 @@ def main() -> None:
         )
         render_agreement_timeline()
 
-        st.markdown('<p class="section-title">Equity path</p>', unsafe_allow_html=True)
+        st.markdown('<p class="section-title">Equity path (full paper history)</p>', unsafe_allow_html=True)
         eq = equity_series()
         if eq.empty:
             st.info("No signal equity history yet.")
         else:
             pivot = eq.pivot_table(index="day", columns="strategy", values="equity", aggfunc="last")
             pivot = pivot.sort_index()
+            # one row per day (last equity that day) — full span, no head truncate
             st.line_chart(pivot, height=320)
-            st.caption("Equity from paper signals (start = 1.0). Daily HTF strategies — flat stretches are normal in Neutral.")
+            n_days = len(pivot)
+            st.caption(
+                f"Full signal equity path ({n_days} days, start = 1.0). "
+                "Flat stretches in Neutral are expected. Recent drawdowns ≠ WF failure — sample is tiny."
+            )
+
+        st.markdown('<p class="section-title">Portfolio views</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="note">How size/risk could look later: equal sleeves, agreement-only, or S2-primary. Paper only.</p>',
+            unsafe_allow_html=True,
+        )
+        render_portfolio_views()
 
         if latest:
             policy = latest.get("model_policy", {})

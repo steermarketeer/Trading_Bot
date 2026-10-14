@@ -6,12 +6,12 @@
   "side": null,
   "entry_price": null,
   "entry_time": null,
-  "equity": 0.8847489378599098,
+  "equity": 0.850042224074579,
   "peak": 1.0,
   "halted": false,
-  "cooldown_left": 0,
-  "last_processed_day": "2026-10-06",
-  "n_signals": 99,
-  "n_trades_closed": 2,
-  "updated_at": "2026-10-07T12:10:50.238088+00:00"
+  "cooldown_left": 3,
+  "last_processed_day": "2026-10-12",
+  "n_signals": 105,
+  "n_trades_closed": 3,
+  "updated_at": "2026-10-13T12:10:38.895099+00:00"
 }

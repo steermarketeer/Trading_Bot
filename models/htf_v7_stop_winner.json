@@ -1,0 +1,183 @@
+{
+  "status": "PASS",
+  "role": "stop_risk_search_v7",
+  "verdict": "Stop-aware PASS: 'both_btc_confirm__stop10_atr06' edged=5/9 OOS=+188.6% medPF=3.12 stop=0.1. Candidate to replace/augment matching base in shadow after review.",
+  "winner": {
+    "name": "both_btc_confirm__stop10_atr06",
+    "mode": "both",
+    "entry_sma": 50,
+    "exit_sma": 30,
+    "align": true,
+    "regime_stable": 5,
+    "stop_pct": 0.1,
+    "dd_halt": 0.25,
+    "cooldown": 5,
+    "atr_max": 0.06,
+    "atr_min": 0.01,
+    "btc_confirm": true
+  },
+  "walkforward": {
+    "edged": "5/9",
+    "compounded_oos_ret": 1.8855657656974283,
+    "median_pf": 3.124911743425566,
+    "worst_dd": -0.08580764677594911,
+    "pass": true
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "test_start": "2022-04-30",
+      "test_end": "2022-10-27",
+      "n_trades": 3,
+      "ret": 0.6234773900028441,
+      "pf": 999.0,
+      "dd": 0.0,
+      "win": 1.0,
+      "edge": true
+    },
+    {
+      "fold": 1,
+      "test_start": "2022-10-27",
+      "test_end": "2023-04-25",
+      "n_trades": 5,
+      "ret": 0.005168255108207065,
+      "pf": 1.110880682727374,
+      "dd": -0.029471035429736517,
+      "win": 0.6,
+      "edge": true
+    },
+    {
+      "fold": 2,
+      "test_start": "2023-04-25",
+      "test_end": "2023-10-22",
+      "n_trades": 6,
+      "ret": 0.0066939173086968395,
+      "pf": 1.2962513900768982,
+      "dd": -0.013081358652046151,
+      "win": 0.3333333333333333,
+      "edge": true
+    },
+    {
+      "fold": 3,
+      "test_start": "2023-10-22",
+      "test_end": "2024-04-19",
+      "n_trades": 5,
+      "ret": 0.22195867967447191,
+      "pf": 3.124911743425566,
+      "dd": -0.0651829209586712,
+      "win": 0.6,
+      "edge": true
+    },
+    {
+      "fold": 4,
+      "test_start": "2024-04-19",
+      "test_end": "2024-10-16",
+      "n_trades": 3,
+      "ret": -0.1254292794376597,
+      "pf": 0.0,
+      "dd": -0.05901585864190404,
+      "win": 0.0,
+      "edge": false
+    },
+    {
+      "fold": 5,
+      "test_start": "2024-10-16",
+      "test_end": "2025-04-14",
+      "n_trades": 2,
+      "ret": 0.43653456894496956,
+      "pf": 999.0,
+      "dd": 0.0,
+      "win": 1.0,
+      "edge": false
+    },
+    {
+      "fold": 6,
+      "test_start": "2025-04-14",
+      "test_end": "2025-10-11",
+      "n_trades": 2,
+      "ret": 0.13373875142469305,
+      "pf": 3.859485041497327,
+      "dd": -0.050167096668739745,
+      "win": 0.5,
+      "edge": false
+    },
+    {
+      "fold": 7,
+      "test_start": "2025-10-11",
+      "test_end": "2026-04-09",
+      "n_trades": 5,
+      "ret": -0.13061235119934034,
+      "pf": 0.0,
+      "dd": -0.08580764677594911,
+      "win": 0.0,
+      "edge": false
+    },
+    {
+      "fold": 8,
+      "test_start": "2026-04-09",
+      "test_end": "2026-10-06",
+      "n_trades": 3,
+      "ret": 0.16079233214774225,
+      "pf": 24.073348146649902,
+      "dd": -0.007010653976834758,
+      "win": 0.3333333333333333,
+      "edge": true
+    }
+  ],
+  "all_passes": [
+    "both_align_no_stop__nostop",
+    "both_align_no_stop__stop8",
+    "both_align_no_stop__stop10",
+    "both_align_no_stop__stop12",
+    "both_align_no_stop__stop15",
+    "both_align_no_stop__stop10_atr06",
+    "both_btc_confirm__nostop",
+    "both_btc_confirm__stop8",
+    "both_btc_confirm__stop10",
+    "both_btc_confirm__stop12",
+    "both_btc_confirm__stop15",
+    "both_btc_confirm__stop10_atr06"
+  ],
+  "stop_passes": [
+    "both_align_no_stop__stop8",
+    "both_align_no_stop__stop10",
+    "both_align_no_stop__stop12",
+    "both_align_no_stop__stop15",
+    "both_align_no_stop__stop10_atr06",
+    "both_btc_confirm__stop8",
+    "both_btc_confirm__stop10",
+    "both_btc_confirm__stop12",
+    "both_btc_confirm__stop15",
+    "both_btc_confirm__stop10_atr06"
+  ],
+  "model_policy": {
+    "name": "stateless_no_trade_pattern_memory",
+    "version": "1.0",
+    "stateless": true,
+    "trade_pattern_memory": false,
+    "last_n_retrieval": false,
+    "user_profile_patterns": false,
+    "forbidden_feature_tokens": [
+      "last_50",
+      "last50",
+      "similar_setup",
+      "retrieval",
+      "knn_",
+      "trade_memory",
+      "trade_history",
+      "closed_trade",
+      "win_streak",
+      "loss_streak",
+      "pattern_store",
+      "user_profile",
+      "profile_memory",
+      "past_pnl",
+      "historical_trade",
+      "mae_history",
+      "mfe_history",
+      "trade_db"
+    ],
+    "note": "Each signal uses only current market/regime features. Closed trades are not fed back into the model. Patterns stay blank."
+  },
+  "note": "If stop_passes empty, do not force stops into live shadow winners. Prefer portfolio agreement_2of3 / s2_primary for delivery risk framing."
+}
