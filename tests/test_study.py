@@ -297,3 +297,39 @@ def test_level_hints_use_only_confirmed_swings():
         cut = eth[eth["open_time"] < trades["entry_time"][k]]
         one = trades.iloc[[k]].reset_index(drop=True)
         assert level_hints(one, cut).iloc[0].tolist() == full.iloc[k].tolist()
+
+
+def test_sr_label_trades():
+    from bot.study.sr_study import label_trades
+    b = pd.DataFrame({"open": [100, 100, 101, 103, 104.5], "high": [100, 101, 103, 105, 105],
+                      "low": [99, 99.5, 100.5, 102.5, 104], "close": [100, 101, 103, 104.5, 104.5]})
+    ev = pd.DataFrame({"j": [0], "direction": [1], "stop": [98.0]})
+    r = label_trades(b, ev).iloc[0]
+    assert r.entry == 100 and r.risk == 2 and r.outcome == "win" and r.r == 2  # target 104 hit on candle 3
+    ev2 = pd.DataFrame({"j": [0], "direction": [-1], "stop": [101.5]})
+    assert label_trades(b, ev2).iloc[0].outcome == "loss"  # short: high 103 on candle 2 > stop
+
+
+def test_sr_touch_features_no_lookahead():
+    from bot.study.sr_study import find_touches
+    eth = _synthetic_5m(days=260, seed=21)
+    full = find_touches(eth, "4h", None)
+    assert len(full) > 5
+    cut_t = full["time"].iloc[len(full) // 2]
+    part = find_touches(eth[eth["open_time"] < cut_t], "4h", None)
+    cols = ["time", "kind", "level", "held_at_close", "stop", "vol_touch", "vol_approach", "vol_slope", "vol_div",
+            "wick", "sweep", "rsi", "rsi_div", "macd_turn", "ema50_with", "ema200_with", "structure", "speed",
+            "zone_weekly", "zone_touches", "weekly_trend_vs", "daily_trend_vs"]
+    a = full[full["time"] < cut_t][cols].reset_index(drop=True)
+    b = part[part["time"] < cut_t][cols].reset_index(drop=True)
+    pd.testing.assert_frame_equal(a, b)
+
+
+def test_sizing_risk_caps_leverage():
+    from bot.study.sr_study import sequential_weekly
+    t = pd.DataFrame({"time": pd.to_datetime(["2024-01-01", "2024-01-08"], utc=True), "r": [-1.0, 2.0],
+                      "risk": [1.0, 1.0], "entry": [100.0, 100.0], "outcome": ["loss", "win"],
+                      "bars": [1, 1], "bar_len": pd.Timedelta("4h")})
+    out = sequential_weekly(t, 5, 0.0, sizing="risk", risk_frac=0.02)
+    # 1% stop -> 2% risk needs 2x leverage: -2% then +4%
+    assert out["final_equity"] == pytest.approx(0.98 * 1.04)

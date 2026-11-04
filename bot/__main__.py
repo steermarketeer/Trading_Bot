@@ -138,6 +138,12 @@ def cmd_indicators(args, cfg):
     print(f"report: {path}")
 
 
+def cmd_sr(args, cfg):
+    from .study.sr_study import run_sr_study
+
+    print(f"report: {run_sr_study(cfg, Path(args.out), leverage=args.leverage)}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -179,9 +185,13 @@ def main(argv=None):
     ind.add_argument("--out", default="reports")
     ind.add_argument("--holdout-start", default="2025-11-01")
 
+    sr = sub.add_parser("sr-study", help="support/resistance reversal study with volume & structure")
+    sr.add_argument("--out", default="reports")
+    sr.add_argument("--leverage", type=float, default=5.0)
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
