@@ -177,6 +177,12 @@ def cmd_smalltf(args, cfg):
     print(f"report: {run_smalltf(cfg, Path(args.out))}")
 
 
+def cmd_level_tests(args, cfg):
+    from .study.level_tests import run_level_tests
+
+    print(f"report: {run_level_tests(cfg, Path(args.out), timeframes=tuple(args.tf))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -240,9 +246,13 @@ def main(argv=None):
     stf = sub.add_parser("smalltf", help="1h/2h/4h/1D certainty trades: 1:1 vs 1.5:1 vs 2:1, account sim")
     stf.add_argument("--out", default="reports")
 
+    lt = sub.add_parser("level-tests", help="repeated tests of S/R: break vs massive reversal")
+    lt.add_argument("--out", default="reports")
+    lt.add_argument("--tf", nargs="*", default=["2h", "4h", "1D"])
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

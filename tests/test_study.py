@@ -397,3 +397,16 @@ def test_trendline_rules():
     b2 = b.copy()
     b2.loc[45, "close"] = 90.0
     assert best_trendline([(10, 94.7), (30, 98.7)], "support", 55, Bars(b2)) is None
+
+
+def test_level_test_counts_no_lookahead():
+    from bot.study.level_tests import tests_for
+    eth = _synthetic_5m(days=300, seed=41)
+    full = tests_for(eth, "4h")
+    assert len(full) > 10
+    cut_t = full["time"].iloc[len(full) // 2]
+    part = tests_for(eth[eth["open_time"] < cut_t], "4h")
+    cols = ["time", "kind", "level", "test_n", "prev_failed_breaks", "held"]
+    lim = cut_t - pd.Timedelta("4h") * 5
+    pd.testing.assert_frame_equal(full[full["time"] < lim][cols].reset_index(drop=True),
+                                  part[part["time"] < lim][cols].reset_index(drop=True))
