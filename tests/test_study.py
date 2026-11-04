@@ -423,3 +423,22 @@ def test_hints_at_keeps_rows_aligned_when_input_unsorted():
     for i in range(4):
         one = hints_at(eth, trades.iloc[[i]])
         assert one[hint_columns()].iloc[0].tolist() == out[hint_columns()].iloc[i].tolist()
+
+
+def test_flow_features_use_only_data_before_entry():
+    from bot.study.flow import flow_features
+    rng = np.random.default_rng(5)
+    n = 288 * 60
+    t = pd.date_range("2024-01-01", periods=n, freq="5min")
+    c = 100 * np.exp(np.cumsum(rng.normal(0, 0.002, n)))
+    v = rng.uniform(1, 10, n)
+    fl = pd.DataFrame({"open_time": t, "high": c * 1.001, "low": c * 0.999, "close": c, "volume": v,
+                       "taker_buy_base": v * rng.uniform(0.3, 0.7, n)})
+    fl["delta"] = 2 * fl["taker_buy_base"] - fl["volume"]
+    fl["cvd"] = fl["delta"].cumsum()
+    fl["tp"] = (fl["high"] + fl["low"] + fl["close"]) / 3
+    tr = pd.DataFrame({"entry_time": [pd.Timestamp("2024-02-15 08:00")], "tf": ["4h"], "direction": [1],
+                       "entry": [100.0], "risk": [1.0], "atr_ref": [2.0]})
+    full = flow_features(tr, fl)
+    cut = flow_features(tr, fl[fl["open_time"] < tr["entry_time"][0]])
+    pd.testing.assert_frame_equal(full, cut)

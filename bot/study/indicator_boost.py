@@ -279,6 +279,8 @@ def run_indicator_boost(cfg: Config, out_dir: Path) -> Path:
          "Split per indicator into *yes* / *no* (flags > 0, values above the research median). avg R after costs at the "
          "setup's target. **HELPS** = Welch t-test FDR q < 0.10 across all indicators of that set AND the same sign in "
          "2022-23 and 2024-25. The holdout columns are a later check, never used to choose.", ""]
+    A.to_pickle(ROOT / "results" / "boost_A.pkl")
+    B.to_pickle(ROOT / "results" / "boost_B.pkl")
     summary = []
     sets = [("A. Breakouts (certainty >= 7, fixed) at 2:1", A, "2:1"),
             ("B. 1D zone tested 4+ times, bounce at 3:1", B, "3:1")] + [(k, v[0], v[1]) for k, v in extra.items()]
