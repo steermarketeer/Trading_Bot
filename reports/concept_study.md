@@ -182,11 +182,11 @@ No indicator passed all checks.
 | 4h roc against (+ = supports) | > 0 | 1092 | 55% | 46% | HELPS | 50% | 45% | yes |
 | 2h di (+ = supports) | > 0 | 1118 | 55% | 46% | HELPS | 50% | 45% | yes |
 | 4h climax (+ = supports) | > 0 | 146 | 64% | 51% | HELPS | 57% | 47% | yes |
+| 2h slope (+ = supports) | > 0 | 1103 | 55% | 46% | HELPS | 50% | 44% | yes |
 | RSI in trade direction | > 55.6 (median) | 774 | 56% | 49% | HELPS | 51% | 46% | yes |
 | 2h cmf (+ = supports) | > 0 | 1047 | 55% | 47% | HELPS | 50% | 45% | yes |
 | DI spread in trade direction | > 4.44 (median) | 774 | 56% | 49% | HELPS | 51% | 46% | yes |
-| 2h slope (+ = supports) | > 0 | 1096 | 55% | 47% | HELPS | 50% | 44% | yes |
-| 4h macd (+ = supports) | > 0 | 1034 | 55% | 47% | HELPS | 48% | 49% | no |
+| 4h macd (+ = supports) | > 0 | 1039 | 55% | 47% | HELPS | 48% | 48% | no |
 
 ### trendline bounce (confirmed) (793 research trades)
 
