@@ -183,6 +183,12 @@ def cmd_level_tests(args, cfg):
     print(f"report: {run_level_tests(cfg, Path(args.out), timeframes=tuple(args.tf))}")
 
 
+def cmd_strategy_eval(args, cfg):
+    from .study.strategy_eval import run_strategy_eval
+
+    print(f"report: {run_strategy_eval(cfg, Path(args.out))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -250,9 +256,12 @@ def main(argv=None):
     lt.add_argument("--out", default="reports")
     lt.add_argument("--tf", nargs="*", default=["2h", "4h", "1D"])
 
+    se = sub.add_parser("strategy-eval", help="2:1 fixes + combined strategy (breakouts + 1D 4th-test bounce)")
+    se.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
