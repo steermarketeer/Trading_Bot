@@ -145,7 +145,8 @@ def _line_at(line, i):
     return p1 + (p2 - p1) / (i2 - i1) * (i - i1)
 
 
-def detect_events(df5: pd.DataFrame, rule: str, resample_fn) -> pd.DataFrame:
+def detect_events(df5: pd.DataFrame, rule: str, resample_fn, live: bool = False) -> pd.DataFrame:
+    """live=True also emits signals from the newest closed candles (entry may still be pending)."""
     bars = Bars(resample_fn(df5, rule))
     o, h, l, c, a = bars.o, bars.h, bars.l, bars.c, bars.a
     table = _level_table(df5)
@@ -158,15 +159,20 @@ def detect_events(df5: pd.DataFrame, rule: str, resample_fn) -> pd.DataFrame:
 
     def add(kind, j_dec, d, stop, extra):
         if j_dec + 1 >= bars.n:
-            return
-        lab = label_multi(o, h, l, c, j_dec + 1, d, stop)
-        if lab is None:
-            return
+            if not live:
+                return
+            lab = {"entry": np.nan, "risk": np.nan, "out_1": "pending"}  # entry candle not opened yet
+        else:
+            lab = label_multi(o, h, l, c, j_dec + 1, d, stop)
+            if lab is None:
+                return
+        extra = {**extra, "stop": stop}
         rows.append({"event": kind, "j": j_dec, "decision_time": bars.ct.iloc[j_dec],
                      "day": bars.ct.iloc[j_dec].strftime("%Y-%m-%d"), "direction": d, "atr": a[j_dec],
                      **extra, **bars.features(j_dec, d), **lab})
 
-    for j in range(210, bars.n - 2):
+    last_j = bars.n if live else bars.n - 2
+    for j in range(210, last_j):
         if not np.isfinite(a[j]) or a[j] <= 0 or not np.isfinite(bars.vavg[j]):
             continue
         highs, lows = bars.known_swings(j - 1)   # swings known before candle j (confirmed by j-1's close)
@@ -206,7 +212,7 @@ def detect_events(df5: pd.DataFrame, rule: str, resample_fn) -> pd.DataFrame:
             was_away = (c[j - 1] > lv_prev + TL_BAND_ATR * a[j]) if d > 0 else (c[j - 1] < lv_prev - TL_BAND_ATR * a[j])
             held = (c[j] > lv) if d > 0 else (c[j] < lv)
             k = j + 1
-            if touched and was_away and held and k + 1 < bars.n:
+            if touched and was_away and held and (k < bars.n if live else k + 1 < bars.n):
                 lv_k = _line_at(line, k)
                 bounce = d * (c[k] - o[k]) > 0 and d * (c[k] - c[j]) > 0 and ((c[k] > lv_k) if d > 0 else (c[k] < lv_k))
                 if bounce:
@@ -266,7 +272,7 @@ def detect_events(df5: pd.DataFrame, rule: str, resample_fn) -> pd.DataFrame:
                 held = (c[j] > L) if d > 0 else (c[j] < L)
                 if held:
                     k = j + 1
-                    if k + 1 < bars.n and d * (c[k] - o[k]) > 0 and d * (c[k] - c[j]) > 0 and ((c[k] > L) if d > 0 else (c[k] < L)):
+                    if (k < bars.n if live else k + 1 < bars.n) and d * (c[k] - o[k]) > 0 and d * (c[k] - c[j]) > 0 and ((c[k] > L) if d > 0 else (c[k] < L)):
                         stop = (min(l[j], l[k], L) - PAD * a[j]) if d > 0 else (max(h[j], h[k], L) + PAD * a[j])
                         add("zone_bounce", k, d, stop, {**ctx, "ref_level": L, "f_bvol": bars.v[k] / bars.vavg[j]})
                 else:

@@ -34,6 +34,26 @@ Full history (first time only, ~20-30 min): `python download_data.py`
 Daily automation: point Task Scheduler at `scripts/run_shadow.ps1` (Windows), or cron at
 `scripts/run_shadow.sh` (Linux/VPS).
 
+
+## Strategy v3 (current) - paper trading
+
+Rules frozen from research (see `reports/strategy_v2.md`, `reports/failure_liquidity.md`):
+2:1 breakouts on 2h / 4h / 1D with certainty >= 7, BTC 4h + 6h MACD agreement, a clean risk zone (no swing
+liquidity or equal-high/low pool between entry and stop), A+ when breaking into a low-volume zone; plus 1D bounces
+at zones tested 4+ times (3:1). Risk: A+ 4%, others 2%, leverage cap 5x. **No exchange orders.**
+
+| What | Command |
+|---|---|
+| Refit / freeze the v3 models (only after new research) | `python -m bot freeze-v3` |
+| Start paper trading from today | `python -m bot shadow-v3` |
+| Paper run without downloading | `python -m bot shadow-v3 --no-refresh` |
+| Restart from a date (e.g. to replay) | `python -m bot shadow-v3 --reset --start 2025-11-01` |
+
+Schedule `scripts/run_shadow_v3.ps1` (Windows) or `scripts/run_shadow_v3.sh` (cron) every 2 hours at :10 UTC.
+Output in `shadow_v3/`: `latest.json` (summary, open positions), `trades.csv`, `equity.csv`, `run.log`.
+A replay of the holdout period (Nov 2025 - Oct 2026) is in `reports/v3_holdout_replay/`; it reproduces the research
+holdout trades exactly (107/107 identical).
+
 ## Layout
 
 ```

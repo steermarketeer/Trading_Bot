@@ -207,6 +207,26 @@ def cmd_failure_liquidity(args, cfg):
     print(f"report: {run_failure_liquidity(cfg, Path(args.out))}")
 
 
+def cmd_freeze_v3(args, cfg):
+    from .live.v3 import freeze
+
+    print(json.dumps(freeze(cfg), indent=2))
+
+
+def cmd_shadow_v3(args, cfg):
+    from .live.v3 import run_shadow_v3
+
+    s = run_shadow_v3(cfg, start=args.start, refresh=not args.no_refresh, reset=args.reset)
+    print(f"V3 PAPER  since {s['forward_from']}  data until {s['data_until']}")
+    print(f"  closed {s['trades_closed']}  win {s['win_rate']}  avg R {s['avg_R']}  "
+          f"equity {s['equity_closed']}x (incl. open {s['equity_incl_open']}x)")
+    print(f"  open positions {s['open_positions']}, pending signals {s['pending_signals']}")
+    for o in s["open"]:
+        print(f"   OPEN {o['setup']:12s} {o['tf']:3s} {'LONG' if o['direction'] in ('1', '1.0') else 'SHORT'} "
+              f"entry {o['entry']} stop {o['stop']} target {o['target']} since {o['entry_time']}")
+    print("details: shadow_v3/latest.json, trades.csv, equity.csv")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -286,9 +306,16 @@ def main(argv=None):
     fl = sub.add_parser("failure-liquidity", help="strategy v2 failures: liquidity vs indicators")
     fl.add_argument("--out", default="reports")
 
+    sub.add_parser("freeze-v3", help="freeze strategy v3 models/thresholds from research data")
+    s3 = sub.add_parser("shadow-v3", help="strategy v3 paper trading (simulated fills, no orders)")
+    s3.add_argument("--start", help="forward-from date (default today) when starting/resetting")
+    s3.add_argument("--reset", action="store_true")
+    s3.add_argument("--no-refresh", action="store_true")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
+     "freeze-v3": cmd_freeze_v3, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

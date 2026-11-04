@@ -39,18 +39,20 @@ RRS = (1.0, 1.5, 2.0, 3.0)
 HOLDOUT = pd.Timestamp("2025-11-01", tz="UTC")
 
 
-def _trade(o, h, l, c, i, d, stop, max_bars=60):
+def _trade(o, h, l, c, i, d, stop, max_bars=60, live=False):
     n = len(o)
     if i >= n:
-        return None
+        return {"entry": np.nan, "risk": np.nan, "stop": stop, "pending": True} if live else None
     e = o[i]
     risk = (e - stop) * d
     if risk <= 0:
         return None
     last = min(n - 1, i + max_bars - 1)
     if last - i + 1 < max_bars:
+        if live:  # trade still running: outcome decided later by the live runner
+            return {"entry": e, "risk": risk, "stop": stop, "pending": False}
         return None
-    out = {"entry": e, "risk": risk}
+    out = {"entry": e, "risk": risk, "stop": stop}
     for rr in RRS:
         tg = e + d * rr * risk
         res = None
@@ -71,7 +73,7 @@ def _trade(o, h, l, c, i, d, stop, max_bars=60):
     return out
 
 
-def tests_for(df5: pd.DataFrame, rule: str) -> pd.DataFrame:
+def tests_for(df5: pd.DataFrame, rule: str, live: bool = False) -> pd.DataFrame:
     b = resample(df5, rule).reset_index(drop=True)
     table = _level_table(df5)
     a = atr(b, 14).to_numpy(float)
@@ -82,7 +84,7 @@ def tests_for(df5: pd.DataFrame, rule: str) -> pd.DataFrame:
     last_test: dict = {}
     zk, zones = None, np.array([])
     rows = []
-    for j in range(60, len(b) - 2):
+    for j in range(60, len(b) if live else len(b) - 2):
         if not np.isfinite(a[j]) or a[j] <= 0:
             continue
         key = (int((table["known"] <= ot.iloc[j]).sum()), ot.iloc[j].normalize())
@@ -125,10 +127,10 @@ def tests_for(df5: pd.DataFrame, rule: str) -> pd.DataFrame:
                    "outcome": outcome, "complete": j + FWD < len(b)}
             # bounce-confirmed reversal trade
             k = j + 1
-            if held and k + 1 < len(b) and d * (c[k] - o[k]) > 0 and d * (c[k] - c[j]) > 0 and \
-                    ((c[k] > L) if d > 0 else (c[k] < L)):
+            if held and (k < len(b) if live else k + 1 < len(b)) and d * (c[k] - o[k]) > 0 and \
+                    d * (c[k] - c[j]) > 0 and ((c[k] > L) if d > 0 else (c[k] < L)):
                 stop = (min(l[j], l[k], L) - 0.25 * a[j]) if d > 0 else (max(h[j], h[k], L) + 0.25 * a[j])
-                tr = _trade(o, h, l, c, k + 1, d, stop)
+                tr = _trade(o, h, l, c, k + 1, d, stop, live=live)
                 if tr:
                     row.update({"traded": True, **tr})
             rows.append(row)

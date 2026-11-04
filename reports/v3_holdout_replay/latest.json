@@ -1,0 +1,91 @@
+{
+  "run_at_utc": "2026-11-04T16:26:11.978340+00:00",
+  "mode": "PAPER_ONLY",
+  "places_orders": false,
+  "forward_from": "2025-11-01",
+  "data_until": "2026-10-13 12:10:00",
+  "trades_closed": 122,
+  "open_positions": 6,
+  "pending_signals": 0,
+  "win_rate": 0.4672131147540984,
+  "avg_R": 0.4500485622394201,
+  "equity_closed": 4.0994,
+  "equity_incl_open": 4.1211,
+  "by_setup": {
+    "1D bounce": {
+      "n": 68,
+      "win": 0.36764705882352944
+    },
+    "A+ breakout": {
+      "n": 40,
+      "win": 0.625
+    },
+    "breakout": {
+      "n": 14,
+      "win": 0.5
+    }
+  },
+  "open": [
+    {
+      "entry_time": "2026-08-20",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2252.17",
+      "stop": "1872.4308086044944",
+      "target": "3391.387574186517",
+      "R": "0.6518421211420142"
+    },
+    {
+      "entry_time": "2026-08-21",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2326.18",
+      "stop": "1886.5639651327447",
+      "target": "3645.0281046017653",
+      "R": "0.3947080775895616"
+    },
+    {
+      "entry_time": "2026-08-22",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2515.98",
+      "stop": "2186.373205718501",
+      "target": "3504.8003828444967",
+      "R": "-0.04939218572690087"
+    },
+    {
+      "entry_time": "2026-08-25",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2481.03",
+      "stop": "2331.338776893907",
+      "target": "2930.10366931828",
+      "R": "0.12472341138376097"
+    },
+    {
+      "entry_time": "2026-09-04",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2506.42",
+      "stop": "2331.004354573597",
+      "target": "3032.666936279209",
+      "R": "-0.03830901162587395"
+    },
+    {
+      "entry_time": "2026-09-20",
+      "setup": "1D bounce",
+      "tf": "1D",
+      "direction": "1",
+      "entry": "2631.58",
+      "stop": "2395.5991584194608",
+      "target": "3339.5225247416174",
+      "R": "-0.5588589273463967"
+    }
+  ],
+  "fingerprint": "46966e57fcae"
+}
