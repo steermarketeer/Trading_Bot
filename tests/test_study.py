@@ -410,3 +410,16 @@ def test_level_test_counts_no_lookahead():
     lim = cut_t - pd.Timedelta("4h") * 5
     pd.testing.assert_frame_equal(full[full["time"] < lim][cols].reset_index(drop=True),
                                   part[part["time"] < lim][cols].reset_index(drop=True))
+
+
+def test_hints_at_keeps_rows_aligned_when_input_unsorted():
+    """Regression: merge_asof dropped the index, so unsorted trades got another trade's hints."""
+    from bot.study.mtf import hint_columns, hints_at
+    eth = _synthetic_5m(days=120, seed=3)
+    times = pd.to_datetime(["2024-04-20", "2024-03-15", "2024-04-02", "2024-03-15"], utc=True)
+    trades = pd.DataFrame({"entry_time": times, "direction": [1, -1, 1, 1]}, index=[10, 7, 3, 99])
+    out = hints_at(eth, trades)
+    assert list(out.index) == [10, 7, 3, 99]
+    for i in range(4):
+        one = hints_at(eth, trades.iloc[[i]])
+        assert one[hint_columns()].iloc[0].tolist() == out[hint_columns()].iloc[i].tolist()

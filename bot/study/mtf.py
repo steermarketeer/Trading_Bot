@@ -85,8 +85,10 @@ def hints_at(df5: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
     Returns trades + one column per (timeframe, hint): +1 supports, -1 warns, 0 neutral.
     """
     t = trades.copy()
+    orig_index = t.index
     t["entry_time"] = pd.to_datetime(t["entry_time"], utc=True).dt.as_unit("ns")
-    t = t.sort_values("entry_time")
+    t["_row"] = np.arange(len(t))           # merge_asof drops the index; keep each trade's position
+    t = t.sort_values(["entry_time", "_row"], kind="mergesort")
     for tf, rule in TIMEFRAMES.items():
         st = tf_states(resample(df5, rule))
         st = st.rename(columns={h: f"{tf}_{h}" for h in HINTS})
@@ -95,7 +97,9 @@ def hints_at(df5: pd.DataFrame, trades: pd.DataFrame) -> pd.DataFrame:
         for h in HINTS:
             col = f"{tf}_{h}"
             t[col] = (t[col].fillna(0) * t["direction"]).astype(int)
-    return t.sort_index()
+    t = t.sort_values("_row").drop(columns="_row")
+    t.index = orig_index
+    return t
 
 
 def hint_columns() -> list[str]:
