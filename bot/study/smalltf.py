@@ -152,10 +152,14 @@ def run_smalltf(cfg: Config, out_dir: Path) -> Path:
     for tag in ("_1h", "_2h", ""):
         f = ROOT / "results" / f"scored_breakout{tag}.pkl"
         if f.exists():
-            sets.append(pd.read_pickle(f).assign(family="breakout"))
+            d_ = pd.read_pickle(f)
+            d_.attrs = {}  # model weights stored as metadata; not needed here
+            sets.append(d_.assign(family="breakout"))
         f = ROOT / "results" / f"scored_reversal{tag}.pkl"
         if f.exists():
-            sets.append(pd.read_pickle(f).assign(family="reversal"))
+            d_ = pd.read_pickle(f)
+            d_.attrs = {}
+            sets.append(d_.assign(family="reversal"))
     allt = pd.concat(sets, ignore_index=True)
     allt = allt[allt["certainty"] >= 6]
     rp = replay(allt, df5)
@@ -195,6 +199,8 @@ def run_smalltf(cfg: Config, out_dir: Path) -> Path:
     # account simulation: all breakout trades certainty >= 7 across timeframes where avg R (market, research) > 0
     L += ["## Account simulation (compounding, positions can overlap, leverage capped at 5x)", ""]
     for label, pick in (("Breakouts certainty >= 7, all timeframes", (rp["family"] == "breakout") & (rp["certainty"] >= 7)),
+                        ("Breakouts certainty >= 7, 2h + 4h + 1D (no 1h)", (rp["family"] == "breakout")
+                         & (rp["certainty"] >= 7) & rp["tf"].isin(["2h", "4h", "1D"])),
                         ("Breakouts certainty >= 7, 4h + 1D only", (rp["family"] == "breakout") & (rp["certainty"] >= 7)
                          & rp["tf"].isin(["4h", "1D"]))):
         x = rp[pick].reset_index(drop=True)
