@@ -333,3 +333,28 @@ def test_sizing_risk_caps_leverage():
     out = sequential_weekly(t, 5, 0.0, sizing="risk", risk_frac=0.02)
     # 1% stop -> 2% risk needs 2x leverage: -2% then +4%
     assert out["final_equity"] == pytest.approx(0.98 * 1.04)
+
+
+def test_sr2_label_multi():
+    from bot.study.sr2 import label_multi
+    o = np.array([100, 100, 101, 102.5, 104.5]); h = np.array([100, 101, 103, 105, 105])
+    l = np.array([99, 99.5, 100.5, 102, 104]); c = np.array([100, 101, 103, 104.5, 104.5])
+    r = label_multi(o, h, l, c, 1, 1, 98.0, max_bars=4)
+    # risk 2: 1R=102 hit on candle 2, 1.5R=103 hit on candle 2 (high 103), 2R=104 on candle 3
+    assert r["out_1"] == "win" and r["out_1.5"] == "win" and r["out_2"] == "win"
+    r2 = label_multi(o, h, l, c, 1, -1, 101.5, max_bars=4)   # short, stop 101.5: candle 2 high 103 -> loss
+    assert r2["out_1"] == "loss" and r2["r_1"] == -1
+
+
+def test_sr2_features_no_lookahead():
+    from bot.study.mtf import resample
+    from bot.study.sr2 import build_events
+    eth = _synthetic_5m(days=260, seed=23)
+    full = build_events(eth, "4h", resample)
+    assert len(full) > 5 and set(full["event"]) >= {"reversal_now"}
+    cut_t = full["time"].iloc[len(full) // 2]
+    part = build_events(eth[eth["open_time"] < cut_t], "4h", resample)
+    fcols = [c for c in full.columns if c.startswith("f_")] + ["time", "event", "level", "touch_n", "direction"]
+    a = full[full["decision_time"] < cut_t - pd.Timedelta("4h")][fcols].reset_index(drop=True)
+    b = part[part["decision_time"] < cut_t - pd.Timedelta("4h")][fcols].reset_index(drop=True)
+    pd.testing.assert_frame_equal(a, b)

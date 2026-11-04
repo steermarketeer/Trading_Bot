@@ -144,6 +144,12 @@ def cmd_sr(args, cfg):
     print(f"report: {run_sr_study(cfg, Path(args.out), leverage=args.leverage)}")
 
 
+def cmd_sr2(args, cfg):
+    from .study.sr2_run import run_sr2
+
+    print(f"report: {run_sr2(cfg, Path(args.out), timeframes=tuple(args.tf))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -189,9 +195,13 @@ def main(argv=None):
     sr.add_argument("--out", default="reports")
     sr.add_argument("--leverage", type=float, default=5.0)
 
+    s2 = sub.add_parser("sr2", help="S/R v2: bounce, retests, breakouts, 1h/4h/1D, ML filter")
+    s2.add_argument("--out", default="reports")
+    s2.add_argument("--tf", nargs="*", default=["1h", "4h", "1D"])
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
