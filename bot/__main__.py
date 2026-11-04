@@ -227,6 +227,12 @@ def cmd_shadow_v3(args, cfg):
     print("details: shadow_v3/latest.json, trades.csv, equity.csv")
 
 
+def cmd_decision_map(args, cfg):
+    from .study.decision_map import run_decision_map
+
+    print(f"report: {run_decision_map(cfg, Path(args.out))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -312,10 +318,13 @@ def main(argv=None):
     s3.add_argument("--reset", action="store_true")
     s3.add_argument("--no-refresh", action="store_true")
 
+    dm = sub.add_parser("decision-map", help="factor map (concepts + indicators) with points per setup")
+    dm.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
