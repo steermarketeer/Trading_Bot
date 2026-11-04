@@ -150,6 +150,12 @@ def cmd_sr2(args, cfg):
     print(f"report: {run_sr2(cfg, Path(args.out), timeframes=tuple(args.tf))}")
 
 
+def cmd_concepts(args, cfg):
+    from .study.concepts_run import run_concepts
+
+    print(f"report: {run_concepts(cfg, Path(args.out), timeframes=tuple(args.tf))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -199,9 +205,13 @@ def main(argv=None):
     s2.add_argument("--out", default="reports")
     s2.add_argument("--tf", nargs="*", default=["1h", "4h", "1D"])
 
+    cc = sub.add_parser("concepts", help="structure / trendlines / liquidity / zones + indicator matrix")
+    cc.add_argument("--out", default="reports")
+    cc.add_argument("--tf", nargs="*", default=["4h", "1D"])
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

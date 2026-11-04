@@ -358,3 +358,42 @@ def test_sr2_features_no_lookahead():
     a = full[full["decision_time"] < cut_t - pd.Timedelta("4h")][fcols].reset_index(drop=True)
     b = part[part["decision_time"] < cut_t - pd.Timedelta("4h")][fcols].reset_index(drop=True)
     pd.testing.assert_frame_equal(a, b)
+
+
+def test_concept_events_no_lookahead():
+    from bot.study.concepts import add_confluence, detect_events
+    from bot.study.mtf import resample
+    eth = _synthetic_5m(days=300, seed=31)
+    full = detect_events(eth, "4h", resample)
+    assert len(full) > 10
+    kinds = set(full["event"])
+    assert {"bos", "zone_bounce"} & kinds
+    cut_t = full["decision_time"].iloc[len(full) // 2]
+    part = detect_events(eth[eth["open_time"] < cut_t], "4h", resample)
+    cols = [c for c in full.columns if c.startswith("f_")] + ["event", "decision_time", "direction", "ref_level",
+                                                               "structure"]
+    lim = cut_t - pd.Timedelta("4h")
+    a = full[full["decision_time"] < lim][cols].reset_index(drop=True)
+    b = part[part["decision_time"] < lim][cols].reset_index(drop=True)
+    pd.testing.assert_frame_equal(a, b)
+    ca, cb = add_confluence(full), add_confluence(part)
+    cc = [c for c in ca.columns if c.startswith("c_")] + ["event", "decision_time"]
+    pd.testing.assert_frame_equal(ca[ca["decision_time"] < lim][cc].reset_index(drop=True),
+                                  cb[cb["decision_time"] < lim][cc].reset_index(drop=True))
+
+
+def test_trendline_rules():
+    from bot.study.concepts import Bars, best_trendline
+    # rising lows at bars 10 and 30, price above the line afterwards -> valid support line
+    n = 60
+    c = np.r_[np.linspace(100, 95, 11), np.linspace(95.5, 110, 10), np.linspace(109, 99, 10), np.linspace(99.5, 115, 29)]
+    b = pd.DataFrame({"open_time": pd.date_range("2024-01-01", periods=n, freq="4h", tz="UTC"),
+                      "close_time": pd.date_range("2024-01-01 04:00", periods=n, freq="4h", tz="UTC"),
+                      "open": c, "high": c + 0.3, "low": c - 0.3, "close": c, "volume": 1.0})
+    bars = Bars(b)
+    line = best_trendline([(10, 94.7), (30, 98.7)], "support", 55, bars)
+    assert line is not None and line[0] == 10 and line[2] == 30
+    # a close far below the line invalidates it
+    b2 = b.copy()
+    b2.loc[45, "close"] = 90.0
+    assert best_trendline([(10, 94.7), (30, 98.7)], "support", 55, Bars(b2)) is None
