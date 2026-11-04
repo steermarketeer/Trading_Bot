@@ -66,9 +66,16 @@ def label_multi(o, h, l, c, i, d, stop, max_bars=MAX_BARS):
                 break
         if res is None:
             res = ("timeout", d * (c[last] - e) / risk) if complete_window else ("incomplete", math.nan)
+            k = last
         out[rr] = res
+        if rr == 1.0:
+            # path of the 1R trade: candles until exit, best move our way and worst against (in R)
+            seg = slice(i, k + 1)
+            fav = ((h[seg].max() - e) if d > 0 else (e - l[seg].min())) / risk
+            adv = ((e - l[seg].min()) if d > 0 else (h[seg].max() - e)) / risk
+            path = {"bars_1": k - i + 1, "mfe_1": min(fav, 1.0) if res[0] == "loss" else fav, "mae_1": adv}
     return {"entry": e, "risk": risk, **{f"out_{rr:g}": v[0] for rr, v in out.items()},
-            **{f"r_{rr:g}": v[1] for rr, v in out.items()}}
+            **{f"r_{rr:g}": v[1] for rr, v in out.items()}, **path}
 
 
 def _structure(sh, sl, t):

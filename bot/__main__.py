@@ -156,6 +156,12 @@ def cmd_concepts(args, cfg):
     print(f"report: {run_concepts(cfg, Path(args.out), timeframes=tuple(args.tf))}")
 
 
+def cmd_scoring(args, cfg):
+    from .study.scoring import run_scoring
+
+    print(f"report: {run_scoring(cfg, Path(args.out))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -209,9 +215,12 @@ def main(argv=None):
     cc.add_argument("--out", default="reports")
     cc.add_argument("--tf", nargs="*", default=["4h", "1D"])
 
+    sc = sub.add_parser("scoring", help="combined concept+indicator score with certainty 1-10 (run `concepts` first)")
+    sc.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
