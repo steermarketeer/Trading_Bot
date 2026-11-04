@@ -48,3 +48,18 @@ def test_time_stop_exits_flat_trades():
     o, h, l, c = path([100, 100.1, 100.2, 100.1, 100.3, 100.2, 102.5])
     r = simulate(o, h, l, c, 100, 1, 1, 1)
     assert r["time3_2R"] == pytest.approx(0.2)   # out at the 3rd candle close (100.2); never reached +0.5R
+
+
+def test_smalltf_exits_and_account():
+    import pandas as pd
+    from bot.study.smalltf import account, exits
+    o, h, l, c = path([100, 100.6, 101.2, 100.4, 99.9, 99])
+    ex = exits(o, h, l, c, 100, 1)
+    assert ex["1:1"][0] == pytest.approx(1) and ex["2:1"][0] == pytest.approx(-1)
+    assert ex["half@1R+2R"][0] == pytest.approx(0.5)
+    t0 = pd.Timestamp("2024-01-01")
+    x = pd.DataFrame({"decision_time": [t0, t0 + pd.Timedelta(hours=1)], "stop_pct": [0.01, 0.01],
+                      "R_1:1": [1.0, -1.0], "exit_1:1": [t0 + pd.Timedelta(hours=3), t0 + pd.Timedelta(hours=2)]})
+    a = account(x, "1:1", 0.0, 0.02)
+    # both sized on equity 1.0 (overlapping): -2% booked first, then +2%
+    assert a["final"] == pytest.approx(1.0)

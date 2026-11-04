@@ -69,9 +69,9 @@ def _text(c):
     return TEXT.get(c, c)
 
 
-def load_events() -> pd.DataFrame:
+def load_events(tfs=("4h", "1D")) -> pd.DataFrame:
     parts = []
-    for tf in ("4h", "1D"):
+    for tf in tfs:
         e = pd.read_pickle(ROOT / "results" / f"concept_events_{tf}.pkl")
         e["tf"] = tf
         parts.append(e)
@@ -167,8 +167,8 @@ def compare_losses(t: pd.DataFrame, family: str) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("gap_sd", key=abs, ascending=False)
 
 
-def run_scoring(cfg: Config, out_dir: Path) -> Path:
-    ev = load_events()
+def run_scoring(cfg: Config, out_dir: Path, tfs=("4h", "1D"), tag: str = "") -> Path:
+    ev = load_events(tfs)
     L = ["# Combined score: main concepts + indicators -> certainty 1-10", "",
          "Every trade gets a **certainty from 1 to 10** = the model's expected win probability at a 1R target x 10. "
          "The model weighs the main concepts first (which concept, confluence, structure, weekly/daily trend) and then "
@@ -180,7 +180,7 @@ def run_scoring(cfg: Config, out_dir: Path) -> Path:
         s = walk_forward(ev, family)
         if s.empty:
             continue
-        s.to_pickle(ROOT / "results" / f"scored_{family}.pkl")
+        s.to_pickle(ROOT / "results" / f"scored_{family}{tag}.pkl")
         L += [f"## {family.capitalize()} trades ({', '.join(NAMES[e] for e in FAMILIES[family])})", ""]
         # calibration: certainty vs actual win rate
         res = s[s["period"] != "holdout"]
@@ -234,6 +234,6 @@ def run_scoring(cfg: Config, out_dir: Path) -> Path:
                   _table(cl, [("factor", "factor", str), ("winners", "avg for winners", lambda x: f"{x:.2f}"),
                               ("losers", "avg for losers", lambda x: f"{x:.2f}"),
                               ("gap_sd", "gap", lambda x: f"{x:+.2f}")]), ""]
-    path = out_dir / "scoring.md"
+    path = out_dir / f"scoring{tag}.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

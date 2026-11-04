@@ -153,19 +153,28 @@ def cmd_sr2(args, cfg):
 def cmd_concepts(args, cfg):
     from .study.concepts_run import run_concepts
 
-    print(f"report: {run_concepts(cfg, Path(args.out), timeframes=tuple(args.tf))}")
+    rep = "concept_study.md" if tuple(args.tf) == ("4h", "1D") else f"concept_study_{'_'.join(args.tf)}.md"
+    print(f"report: {run_concepts(cfg, Path(args.out), timeframes=tuple(args.tf), report=rep)}")
 
 
 def cmd_scoring(args, cfg):
     from .study.scoring import run_scoring
 
-    print(f"report: {run_scoring(cfg, Path(args.out))}")
+    tfs = tuple(args.tf)
+    tag = "" if tfs == ("4h", "1D") else "_" + "_".join(tfs)
+    print(f"report: {run_scoring(cfg, Path(args.out), tfs=tfs, tag=tag)}")
 
 
 def cmd_exits(args, cfg):
     from .study.exits import run_exits
 
     print(f"report: {run_exits(cfg, Path(args.out))}")
+
+
+def cmd_smalltf(args, cfg):
+    from .study.smalltf import run_smalltf
+
+    print(f"report: {run_smalltf(cfg, Path(args.out))}")
 
 
 def main(argv=None):
@@ -223,13 +232,17 @@ def main(argv=None):
 
     sc = sub.add_parser("scoring", help="combined concept+indicator score with certainty 1-10 (run `concepts` first)")
     sc.add_argument("--out", default="reports")
+    sc.add_argument("--tf", nargs="*", default=["4h", "1D"])
 
     ex = sub.add_parser("exits", help="exit-rule study on 5m data (run `concepts` and `scoring` first)")
     ex.add_argument("--out", default="reports")
 
+    stf = sub.add_parser("smalltf", help="1h/2h/4h/1D certainty trades: 1:1 vs 1.5:1 vs 2:1, account sim")
+    stf.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

@@ -104,7 +104,7 @@ def indicator_matrix(res: pd.DataFrame, hold: pd.DataFrame) -> pd.DataFrame:
     return t
 
 
-def run_concepts(cfg: Config, out_dir: Path, timeframes=("4h", "1D")) -> Path:
+def run_concepts(cfg: Config, out_dir: Path, timeframes=("4h", "1D"), report: str = "concept_study.md") -> Path:
     df5, _ = load_klines_5m(cfg.data_dir, cfg.symbol)
     cache = ROOT / "results"
     cache.mkdir(exist_ok=True)
@@ -190,6 +190,6 @@ def run_concepts(cfg: Config, out_dir: Path, timeframes=("4h", "1D")) -> Path:
         cross["what"] = cross["feature"].map(_desc)
         L += ["## Indicators that help several concepts (HELPS + holdout agrees)", "",
               _table(cross.head(25), [("what", "indicator", str), ("n_concepts", "concepts", str), ("event", "helps", str)]), ""]
-    path = out_dir / "concept_study.md"
+    path = out_dir / report
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path
