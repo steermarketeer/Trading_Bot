@@ -1,0 +1,23 @@
+# Global settings for the bot/ package. Strategy-specific settings live in strategies/*.yaml.
+
+data_dir: data
+symbol: ETHUSDT
+btc_symbol: BTCUSDT
+
+costs:
+  taker_fee: 0.0004          # per side, fraction of notional (Binance USDT-M taker ~0.04-0.05%)
+  slippage_bps: 5            # adverse slippage per fill, in basis points (5 = 0.05%)
+  funding: true              # charge/credit perp funding at 00/08/16 UTC from data/funding/
+  maintenance_margin: 0.005  # used for the liquidation price (isolated margin)
+
+regime:
+  # 1 = use the week/month BEFORE the last completed one (what the legacy scripts did).
+  # 0 = use the last completed week/month (less lag). Try both when tuning.
+  extra_lag_periods: 1
+
+shadow:
+  dir: shadow_v2
+  strategies:
+    - strategies/s1_align.yaml
+    - strategies/s2_cool7.yaml
+    - strategies/s3_btc_confirm.yaml

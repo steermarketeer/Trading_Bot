@@ -1,0 +1,20 @@
+name: s3_v7_stop
+type: htf_trend
+description: Legacy v7 research winner - S3 with a 10% stop and ATR cap 6%.
+params:
+  sides: both
+  entry_sma: 50
+  exit_sma: 30
+  align_sma: 20
+  regime_stable_days: 5
+  atr_pct_min: 0.01
+  atr_pct_max: 0.06
+  btc_confirm: true
+risk:
+  size_frac: 1.0
+  leverage: 1
+  stop_pct: 0.10
+  cooldown_days: 5
+  dd_halt: 0.25
+  halt_days: 30
+  dd_basis: closed   # closed | mtm

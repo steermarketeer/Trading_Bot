@@ -10,3 +10,7 @@ __pycache__/
 data/klines/*_1m.csv
 data/processed/train_5m.parquet
 data/processed/train_5m_h48.parquet
+
+# New engine outputs
+results/
+shadow_v2/run.log

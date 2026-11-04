@@ -35,11 +35,37 @@ Written 2026-11-04 after a code review of the `main` branch (commit `2dc5b2d`).
 15. There is no `requirements.txt` or `pyproject.toml` for the core code (only `ui/requirements.txt` with streamlit), and no tests.
 16. About 20 flat scripts named by version (`strategy_htf_v4_pass`, `v5_search`, `v6_s3_search`, …), with dead ML scripts mixed in with live code.
 
+## Status (updated 2026-11-04)
+
+**Phase 0 + 1 done** on branch `claude/implementation-plan` (new `bot/` package, 23 tests passing).
+First results with realistic costs (fee 0.04%/side, 5 bps slippage, funding), 2020-01 → 2026-10:
+
+| strategy | trades | return | max DD | return w/o funding+slippage |
+|---|---|---|---|---|
+| s1_align | 53 | +150% | −61% | +312% |
+| s2_cool7 | 44 | +141% | −60% | +292% |
+| s3_btc_confirm | 47 | +279% | −50% | +528% |
+| s3_v7_stop | 38 | +67% | −69% | +136% |
+| buy & hold ETH | – | +1376% | −79% | |
+
+- **Funding roughly halves returns.** Longs in 2021 paid ~0.1% every 8h. The legacy backtests ignored it.
+- **The v7 "winner" (10% stop) is the worst** once stops trigger on intraday lows: wicks stop it out.
+- Every strategy trails buy-and-hold by a wide margin. Drawdowns are smaller, but not small.
+
+More bugs found while building:
+- `refresh_recent_data.py` stores the still-forming 5m candle and never corrects it, and never refreshes funding (the funding file ends 2026-09-22). Fixed in `bot/refresh.py`.
+- S1 `trades.csv` repaired (missing `strategy` column added to older rows).
+
+Deliberately **not** done yet:
+- Removing `data/` from git. Merging that commit would *delete* those files from your local folder on pull. Do it later with a backup step.
+- Moving legacy scripts to `research/`. Your Task Scheduler job and the UI still call `shadow_htf_v4.py`. Do it once you switch to `scripts/run_shadow.ps1`.
+- Pointing the UI at `shadow_v2/`. That's the next small task.
+
 ## Plan
 
 ### Phase 0 — Clean foundation (1–2 sessions)
-- [ ] Add `pyproject.toml` / `requirements.txt` (pandas, numpy, requests, pyarrow, lightgbm, streamlit).
-- [ ] Restructure into a package:
+- [x] Add `pyproject.toml` / `requirements.txt` (pandas, numpy, requests, pyarrow, lightgbm, streamlit).
+- [x] Restructure into a package (`bot/`; legacy scripts left in place for now):
   ```
   bot/
     data/        download + refresh + quality checks
@@ -52,18 +78,18 @@ Written 2026-11-04 after a code review of the `main` branch (commit `2dc5b2d`).
   ui/
   tests/
   ```
-- [ ] Stop committing `data/` and big `models/` artifacts. Regenerate them with the download script or use Git LFS. Keep only the small frozen config JSONs.
-- [ ] Use cross-platform paths and a single `config.yaml` (symbols, fees, funding, slippage, sizing).
-- [ ] Repair `trades.csv`: use a fixed schema and write with the csv module or parquet, never by appending a mismatched header.
+- [ ] *(deferred, see Status)* Stop committing `data/` and big `models/` artifacts. Regenerate them with the download script or use Git LFS. Keep only the small frozen config JSONs.
+- [x] Use cross-platform paths and a single `config.yaml` (symbols, fees, funding, slippage, sizing).
+- [x] Repair `trades.csv`: use a fixed schema and write with the csv module or parquet, never by appending a mismatched header.
 
 ### Phase 1 — Correct and realistic engine (2–3 sessions)
-- [ ] **One strategy core** used by backtest, shadow and (later) live. Add a test that backtest and shadow produce identical trades on the same bars.
-- [ ] Fill at the **next daily open** after the signal, plus configurable slippage.
-- [ ] **Intraday stops** from the daily high/low, with stop-first when both target and stop are hit. Use 5m data to resolve the order when needed.
-- [ ] **Funding cost** from `data/funding/*.csv` for every 8h settlement the position is held.
-- [ ] **Leverage + liquidation** model (maintenance margin), with sizing as a parameter.
-- [ ] Fix the **halt deadlock**: resume after N days or when the regime flips, not on equity recovery.
-- [ ] Unit tests: regime has no lookahead, cooldown, halt/resume, stop-first, funding math.
+- [x] **One strategy core** used by backtest, shadow and (later) live. Add a test that backtest and shadow produce identical trades on the same bars.
+- [x] Fill at the **next daily open** after the signal, plus configurable slippage.
+- [x] **Intraday stops** from the daily high/low, with stop-first when both target and stop are hit. Use 5m data to resolve the order when needed.
+- [x] **Funding cost** from `data/funding/*.csv` for every 8h settlement the position is held.
+- [x] **Leverage + liquidation** model (maintenance margin), with sizing as a parameter.
+- [x] Fix the **halt deadlock**: resume after N days or when the regime flips, not on equity recovery.
+- [x] Unit tests: regime has no lookahead, cooldown, halt/resume, stop-first, funding math.
 
 ### Phase 2 — Honest validation (2 sessions)
 - [ ] **Lock a final holdout**: the last 12 months, untouched until the end.
