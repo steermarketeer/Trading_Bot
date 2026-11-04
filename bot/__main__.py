@@ -195,6 +195,12 @@ def cmd_indicator_boost(args, cfg):
     print(f"report: {run_indicator_boost(cfg, Path(args.out))}")
 
 
+def cmd_strategy_v2(args, cfg):
+    from .study.strategy_v2 import run_strategy_v2
+
+    print(f"report: {run_strategy_v2(cfg, Path(args.out))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -268,9 +274,12 @@ def main(argv=None):
     ib = sub.add_parser("indicator-boost", help="which indicators improve the current strategy")
     ib.add_argument("--out", default="reports")
 
+    sv2 = sub.add_parser("strategy-v2", help="filtered breakouts (+A+) and 1D 4th-test bounces: win % and account")
+    sv2.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
