@@ -223,3 +223,22 @@ def test_bad_wick_is_clipped_but_real_crash_kept():
     real.loc[3, "open"] = 90
     out2, hits2 = clip_bad_wicks(real.iloc[:4])
     assert hits2 == []
+
+
+def test_mtf_hints_use_only_closed_candles():
+    """Hints at entry must not change when all 5m data after the entry time is removed."""
+    from bot.study.mtf import hint_columns, hints_at
+    rng = np.random.default_rng(3)
+    n = 288 * 120  # 120 days of 5m bars
+    ts = pd.date_range("2024-01-01", periods=n, freq="5min", tz="UTC")
+    c = 100 * np.exp(np.cumsum(rng.normal(0, 0.002, n)))
+    o = np.r_[c[0], c[:-1]]
+    df5 = pd.DataFrame({"open_time": ts, "open": o, "close": c, "high": np.maximum(o, c) * 1.001,
+                        "low": np.minimum(o, c) * 0.999, "volume": 1.0})
+    trades = pd.DataFrame({"entry_time": pd.to_datetime(["2024-03-20", "2024-04-10"], utc=True),
+                           "direction": [1, -1]})
+    full = hints_at(df5, trades)
+    for k in range(2):
+        cut = df5[df5["open_time"] < trades["entry_time"][k]]
+        part = hints_at(cut, trades.iloc[[k]])
+        assert part[hint_columns()].iloc[0].tolist() == full[hint_columns()].iloc[k].tolist()

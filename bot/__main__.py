@@ -122,6 +122,15 @@ def cmd_study(args, cfg):
     print(f"report: {path}")
 
 
+def cmd_failures(args, cfg):
+    from .study.failures import run_failures
+
+    out = Path(args.out)
+    path = run_failures(cfg, out / "signal_events.csv", out, holdout_start=args.holdout_start,
+                        leverage=args.leverage)
+    print(f"report: {path}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -154,9 +163,14 @@ def main(argv=None):
     st.add_argument("--max-days", type=int, default=20)
     st.add_argument("--leverage", type=float, default=5.0)
 
+    fa = sub.add_parser("failures", help="multi-timeframe autopsy of study trades (run `study` first)")
+    fa.add_argument("--out", default="reports")
+    fa.add_argument("--holdout-start", default="2025-11-01")
+    fa.add_argument("--leverage", type=float, default=5.0)
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
