@@ -9,19 +9,19 @@
 | 1h | Reversal, enter right after the touch | 4870 | 49% | 61% | -0.29 | 846 | 45% | -0.39 |
 | 1h | Reversal, wait for the bounce candle | 2423 | 51% | 57% | -0.13 | 418 | 47% | -0.22 |
 | 1h | Breakout, trade the break | 2141 | 53% | 60% | -0.17 | 429 | 47% | -0.33 |
-| 1h | ML picked: Reversal, wait for the bounce candle | 449 | 53% | 58% | -0.10 | 100 | 42% | -0.33 |
-| 1h | ML picked: Reversal, enter right after the touch | 574 | 55% | 60% | -0.14 | 134 | 51% | -0.25 |
-| 1h | ML picked: Breakout, trade the break | 229 | 60% | 58% | +0.04 | 61 | 48% | -0.27 |
+| 1h | ML picked: Reversal, wait for the bounce candle | 454 | 53% | 58% | -0.09 | 102 | 46% | -0.25 |
+| 1h | ML picked: Reversal, enter right after the touch | 584 | 53% | 60% | -0.17 | 130 | 50% | -0.26 |
+| 1h | ML picked: Breakout, trade the break | 222 | 58% | 58% | +0.01 | 58 | 47% | -0.29 |
 | 4h | Reversal, enter right after the touch | 2388 | 52% | 56% | -0.09 | 455 | 50% | -0.13 |
 | 4h | Reversal, wait for the bounce candle | 1219 | 52% | 54% | -0.04 | 233 | 44% | -0.20 |
 | 4h | Breakout, trade the break | 1092 | 54% | 55% | -0.04 | 197 | 48% | -0.16 |
-| 4h | ML picked: Reversal, wait for the bounce candle | 130 | 61% | 54% | +0.15 | 88 | 39% | -0.32 |
-| 4h | ML picked: Reversal, enter right after the touch | 346 | 55% | 55% | -0.02 | 100 | 45% | -0.24 |
-| 4h | ML picked: Breakout, trade the break | 98 | 58% | 54% | +0.07 | 58 | 53% | -0.05 |
+| 4h | ML picked: Reversal, wait for the bounce candle | 123 | 62% | 54% | +0.18 | 93 | 39% | -0.31 |
+| 4h | ML picked: Reversal, enter right after the touch | 369 | 51% | 55% | -0.09 | 87 | 56% | -0.00 |
+| 4h | ML picked: Breakout, trade the break | 96 | 59% | 54% | +0.10 | 58 | 53% | -0.03 |
 | 1D | Reversal, enter right after the touch | 895 | 48% | 52% | -0.09 | 183 | 54% | +0.03 |
 | 1D | Reversal, wait for the bounce candle | 437 | 55% | 51% | +0.08 | 95 | 59% | +0.14 |
 | 1D | Breakout, trade the break | 457 | 50% | 52% | -0.05 | 106 | 48% | -0.09 |
-| 1D | ML picked: Reversal, enter right after the touch | 71 | 48% | 52% | -0.09 | 47 | 70% | +0.35 |
+| 1D | ML picked: Reversal, enter right after the touch | 74 | 54% | 52% | +0.03 | 54 | 67% | +0.28 |
 
 ## 1h chart
 
@@ -82,18 +82,18 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2022 | 406 | 50% | 135 | 53% | 43% | 36% | -0.08 |
-| 2023 | 540 | 50% | 150 | 52% | 42% | 34% | -0.16 |
-| 2024 | 413 | 53% | 85 | 51% | 42% | 32% | -0.14 |
-| 2025 | 429 | 53% | 79 | 57% | 46% | 38% | -0.01 |
+| 2022 | 406 | 50% | 145 | 52% | 43% | 35% | -0.11 |
+| 2023 | 540 | 50% | 147 | 54% | 42% | 35% | -0.11 |
+| 2024 | 413 | 53% | 90 | 53% | 46% | 33% | -0.08 |
+| 2025 | 429 | 53% | 72 | 56% | 43% | 36% | -0.04 |
 
-**All test years together: picked 449 trades, win @1R 53%, @1.5R 43%, @2R 35%.**
+**All test years together: picked 454 trades, win @1R 53%, @1.5R 43%, @2R 35%.**
 
-**Holdout (final model, never seen): all 418 trades win @1R 47%; picked 100 trades win @1R 42%, @1.5R 35%, @2R 27%.**
+**Holdout (final model, never seen): all 418 trades win @1R 47%; picked 102 trades win @1R 46%, @1.5R 38%, @2R 29%.**
 
 Most important features:
 
-f_bbody, f_bvol_vs_touch, f_vol_approach, f_range, f_bclose_pos, f_wick, atr_pct, f_pierce, f_speed, f_vol_touch, f_macd, f_ret_20, f_bb_pos, f_adx, f_rsi, f_bvol, f_vol_slope, f_di, f_d_e200, touch_n
+f_bbody, f_vol_approach, f_range, f_bclose_pos, atr_pct, f_pierce, f_wick, f_bvol_vs_touch, f_vol_touch, f_macd, f_speed, f_vol_slope, f_ret_20, f_body, f_adx, f_rsi, f_bvol, f_bb_pos, f_d_e200, f_di
 
 ### Machine-learning filter: Reversal, enter right after the touch (1h)
 
@@ -101,18 +101,18 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2022 | 805 | 47% | 193 | 51% | 45% | 40% | -0.19 |
-| 2023 | 1125 | 47% | 163 | 51% | 41% | 37% | -0.28 |
-| 2024 | 802 | 51% | 99 | 69% | 62% | 54% | +0.15 |
-| 2025 | 883 | 48% | 119 | 54% | 46% | 41% | -0.12 |
+| 2022 | 805 | 47% | 201 | 51% | 43% | 38% | -0.20 |
+| 2023 | 1125 | 47% | 150 | 49% | 39% | 35% | -0.31 |
+| 2024 | 802 | 51% | 110 | 65% | 59% | 53% | +0.09 |
+| 2025 | 883 | 48% | 123 | 52% | 45% | 38% | -0.17 |
 
-**All test years together: picked 574 trades, win @1R 55%, @1.5R 47%, @2R 42%.**
+**All test years together: picked 584 trades, win @1R 53%, @1.5R 45%, @2R 40%.**
 
-**Holdout (final model, never seen): all 846 trades win @1R 45%; picked 134 trades win @1R 51%, @1.5R 40%, @2R 34%.**
+**Holdout (final model, never seen): all 846 trades win @1R 45%; picked 130 trades win @1R 50%, @1.5R 39%, @2R 33%.**
 
 Most important features:
 
-f_vol_approach, f_vol_touch, atr_pct, f_pierce, f_body, f_wick, f_rsi, f_speed, f_adx, f_d_e200, f_ret_20, f_d_e20, f_macd, f_bb_pos, f_range, m_2h_climax, f_di, f_vol_slope, f_hour, touch_n
+f_vol_approach, f_pierce, atr_pct, f_wick, f_vol_touch, f_bb_pos, f_rsi, f_body, f_speed, f_macd, f_d_e200, f_range, f_vol_slope, f_ret_20, f_adx, f_hour, m_2h_climax, f_di, f_d_e20, f_d_e50
 
 ### Machine-learning filter: Breakout, trade the break (1h)
 
@@ -120,18 +120,18 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2022 | 362 | 56% | 68 | 60% | 46% | 37% | +0.07 |
-| 2023 | 505 | 48% | 68 | 54% | 46% | 40% | -0.12 |
-| 2024 | 334 | 55% | 49 | 67% | 57% | 47% | +0.20 |
-| 2025 | 379 | 52% | 44 | 59% | 48% | 36% | +0.03 |
+| 2022 | 362 | 56% | 68 | 59% | 46% | 37% | +0.03 |
+| 2023 | 505 | 48% | 59 | 53% | 46% | 39% | -0.14 |
+| 2024 | 334 | 55% | 52 | 63% | 52% | 42% | +0.13 |
+| 2025 | 379 | 52% | 43 | 58% | 47% | 37% | +0.02 |
 
-**All test years together: picked 229 trades, win @1R 60%, @1.5R 48%, @2R 40%.**
+**All test years together: picked 222 trades, win @1R 58%, @1.5R 47%, @2R 39%.**
 
-**Holdout (final model, never seen): all 429 trades win @1R 47%; picked 61 trades win @1R 48%, @1.5R 41%, @2R 34%.**
+**Holdout (final model, never seen): all 429 trades win @1R 47%; picked 58 trades win @1R 47%, @1.5R 40%, @2R 34%.**
 
 Most important features:
 
-f_body, atr_pct, f_di, f_wick, f_d_e200, f_vol_approach, f_adx, f_pierce, f_macd, f_ret_20, f_bb_pos, f_vol_touch, f_d_e20, f_range, f_d_e50, f_speed, f_rsi, f_hour, bars_since_touch, f_vol_slope
+f_body, atr_pct, f_wick, f_d_e200, f_vol_touch, f_ret_20, f_adx, f_di, f_vol_approach, f_pierce, f_d_e20, f_macd, f_bb_pos, f_d_e50, f_hour, f_range, f_rsi, f_speed, f_vol_slope, bars_since_touch
 
 ## 4h chart
 
@@ -184,21 +184,21 @@ Features that separate breaks that worked (win @1R) from those that failed (q < 
 
 | feature | split | win if high | win if low | q |
 |---|---|---|---|---|
-| m_2h_slope | > 0 (supports) | 58% | 45% | 0.005 |
-| f_macd | > median | 59% | 48% | 0.013 |
-| m_2h_di | > 0 (supports) | 57% | 46% | 0.025 |
-| m_1h_slope | > 0 (supports) | 57% | 45% | 0.025 |
-| m_30m_cloud | > 0 (supports) | 57% | 47% | 0.039 |
-| m_4h_macd | > 0 (supports) | 57% | 47% | 0.039 |
-| m_2h_climax | > 0 (supports) | 67% | 52% | 0.039 |
-| m_4h_roc_against | > 0 (supports) | 57% | 47% | 0.040 |
-| f_range | > median | 58% | 49% | 0.042 |
-| m_2h_cmf | > 0 (supports) | 57% | 47% | 0.042 |
-| m_15m_cloud | > 0 (supports) | 56% | 47% | 0.042 |
-| m_1h_macd | > 0 (supports) | 56% | 46% | 0.042 |
-| bars_since_touch | > median | 59% | 50% | 0.042 |
-| f_di | > median | 58% | 49% | 0.042 |
-| m_1h_trend | > 0 (supports) | 56% | 46% | 0.042 |
+| f_macd | > median | 59% | 48% | 0.018 |
+| m_2h_slope | > 0 (supports) | 58% | 46% | 0.018 |
+| m_2h_di | > 0 (supports) | 57% | 46% | 0.028 |
+| m_2h_climax | > 0 (supports) | 67% | 52% | 0.063 |
+| m_4h_roc_against | > 0 (supports) | 57% | 47% | 0.063 |
+| f_range | > median | 58% | 49% | 0.063 |
+| m_2h_cmf | > 0 (supports) | 57% | 47% | 0.063 |
+| bars_since_touch | > median | 59% | 50% | 0.063 |
+| f_di | > median | 58% | 49% | 0.063 |
+| m_4h_macd | > 0 (supports) | 57% | 48% | 0.063 |
+| m_15m_macd_fade | > 0 (supports) | 28% | 54% | 0.063 |
+| m_30m_cloud | > 0 (supports) | 57% | 48% | 0.063 |
+| m_1h_supertrend | > 0 (supports) | 57% | 48% | 0.063 |
+| f_d_e20 | > median | 58% | 49% | 0.063 |
+| m_1h_slope | > 0 (supports) | 56% | 47% | 0.099 |
 
 ### Machine-learning filter: Reversal, wait for the bounce candle (4h)
 
@@ -206,16 +206,16 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2024 | 209 | 57% | 57 | 72% | 60% | 49% | +0.35 |
-| 2025 | 224 | 56% | 73 | 52% | 40% | 34% | -0.01 |
+| 2024 | 209 | 57% | 54 | 72% | 59% | 46% | +0.37 |
+| 2025 | 224 | 56% | 69 | 54% | 46% | 39% | +0.03 |
 
-**All test years together: picked 130 trades, win @1R 61%, @1.5R 48%, @2R 41%.**
+**All test years together: picked 123 trades, win @1R 62%, @1.5R 52%, @2R 42%.**
 
-**Holdout (final model, never seen): all 231 trades win @1R 44%; picked 88 trades win @1R 39%, @1.5R 30%, @2R 26%.**
+**Holdout (final model, never seen): all 231 trades win @1R 44%; picked 93 trades win @1R 39%, @1.5R 28%, @2R 23%.**
 
 Most important features:
 
-atr_pct, touch_n, f_pierce, f_vol_approach, f_vol_slope, f_bbody, f_bb_pos, f_bclose_pos, f_speed, f_body, f_d_e200, f_di, f_bvol_vs_touch, f_range, f_d_e20, f_wick, f_vol_touch, f_bvol, f_ret_20, bars_since_touch
+atr_pct, touch_n, f_vol_approach, f_bb_pos, f_vol_touch, f_range, f_bbody, f_pierce, f_bclose_pos, f_body, f_vol_slope, f_wick, f_bvol, f_macd, f_speed, f_d_e200, f_di, f_adx, f_bvol_vs_touch, f_d_e20
 
 ### Machine-learning filter: Reversal, enter right after the touch (4h)
 
@@ -223,18 +223,18 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2022 | 384 | 51% | 91 | 53% | 38% | 33% | -0.04 |
-| 2023 | 560 | 52% | 75 | 48% | 40% | 31% | -0.21 |
-| 2024 | 428 | 53% | 70 | 61% | 51% | 43% | +0.10 |
-| 2025 | 407 | 55% | 110 | 58% | 46% | 39% | +0.06 |
+| 2022 | 384 | 51% | 95 | 48% | 37% | 29% | -0.13 |
+| 2023 | 560 | 52% | 95 | 44% | 36% | 28% | -0.28 |
+| 2024 | 428 | 53% | 73 | 56% | 48% | 42% | -0.01 |
+| 2025 | 407 | 55% | 106 | 58% | 46% | 37% | +0.05 |
 
-**All test years together: picked 346 trades, win @1R 55%, @1.5R 44%, @2R 36%.**
+**All test years together: picked 369 trades, win @1R 51%, @1.5R 41%, @2R 34%.**
 
-**Holdout (final model, never seen): all 454 trades win @1R 50%; picked 100 trades win @1R 45%, @1.5R 36%, @2R 32%.**
+**Holdout (final model, never seen): all 454 trades win @1R 50%; picked 87 trades win @1R 56%, @1.5R 44%, @2R 39%.**
 
 Most important features:
 
-f_pierce, f_vol_slope, f_vol_touch, f_d_e200, f_macd, f_vol_approach, f_wick, f_body, f_speed, f_rsi, f_range, atr_pct, f_bb_pos, f_adx, bars_since_touch, touch_n, f_d_e20, f_d_e50, f_ret_20, f_dow
+f_pierce, f_vol_slope, f_d_e200, f_macd, f_wick, f_vol_touch, f_vol_approach, f_range, f_body, f_adx, f_speed, f_rsi, f_d_e20, bars_since_touch, atr_pct, f_ret_20, f_bb_pos, touch_n, f_d_e50, f_di
 
 ### Machine-learning filter: Breakout, trade the break (4h)
 
@@ -242,16 +242,16 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2024 | 157 | 57% | 39 | 62% | 49% | 46% | +0.14 |
-| 2025 | 205 | 58% | 59 | 56% | 49% | 41% | +0.03 |
+| 2024 | 157 | 57% | 39 | 62% | 49% | 46% | +0.12 |
+| 2025 | 205 | 58% | 57 | 58% | 51% | 40% | +0.08 |
 
-**All test years together: picked 98 trades, win @1R 58%, @1.5R 49%, @2R 43%.**
+**All test years together: picked 96 trades, win @1R 59%, @1.5R 50%, @2R 43%.**
 
-**Holdout (final model, never seen): all 196 trades win @1R 48%; picked 58 trades win @1R 53%, @1.5R 48%, @2R 43%.**
+**Holdout (final model, never seen): all 196 trades win @1R 48%; picked 58 trades win @1R 53%, @1.5R 48%, @2R 45%.**
 
 Most important features:
 
-f_macd, f_d_e200, atr_pct, f_vol_touch, f_pierce, f_range, f_speed, f_adx, bars_since_touch, f_bb_pos, f_wick, f_di, f_ret_20, f_vol_approach, f_body, f_vol_slope, m_12h_obv, touch_n, f_rsi, f_hour
+f_macd, atr_pct, f_d_e200, bars_since_touch, f_range, f_vol_touch, f_pierce, f_speed, f_adx, f_ret_20, f_bb_pos, f_di, f_vol_approach, f_wick, f_vol_slope, f_body, m_12h_obv, f_hour, f_rsi, touch_n
 
 ## 1D chart
 
@@ -310,14 +310,14 @@ LightGBM on 290 features (this timeframe + hint states on 10 timeframes). Each y
 
 | test year | all trades | all: win @1R | picked | picked: win @1R | picked: win @1.5R | picked: win @2R | picked: avg R @1R |
 |---|---|---|---|---|---|---|---|
-| 2024 | 178 | 49% | 48 | 48% | 42% | 38% | -0.10 |
-| 2025 | 132 | 52% | 23 | 48% | 43% | 39% | -0.09 |
+| 2024 | 178 | 49% | 47 | 55% | 47% | 43% | +0.05 |
+| 2025 | 132 | 52% | 27 | 52% | 52% | 44% | -0.01 |
 
-**All test years together: picked 71 trades, win @1R 48%, @1.5R 42%, @2R 38%.**
+**All test years together: picked 74 trades, win @1R 54%, @1.5R 49%, @2R 43%.**
 
-**Holdout (final model, never seen): all 182 trades win @1R 54%; picked 47 trades win @1R 70%, @1.5R 55%, @2R 46%.**
+**Holdout (final model, never seen): all 182 trades win @1R 54%; picked 54 trades win @1R 67%, @1.5R 52%, @2R 38%.**
 
 Most important features:
 
-f_speed, f_di, f_rsi, f_vol_touch, atr_pct, f_ret_20, f_pierce, f_macd, f_d_e20, f_bb_pos, f_d_e200, f_adx, f_wick, f_dow, f_vol_approach, f_vol_slope, f_range, m_1W_cmf, bars_since_touch, f_d_e50
+f_speed, f_vol_touch, f_adx, atr_pct, f_di, f_d_e50, f_d_e20, f_ret_20, f_range, f_wick, f_pierce, f_macd, f_rsi, m_1W_macd_fade, f_vol_slope, f_dow, f_bb_pos, f_vol_approach, touch_n, m_1W_cmf
 

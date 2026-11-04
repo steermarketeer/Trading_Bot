@@ -203,10 +203,10 @@ For each concept, every indicator/feature is split at its median (or > 0 for wit
 | confluence: trendline break in last 3 candles | > 0 | 701 | 56% | 49% | HELPS | 47% | 48% | no |
 | 8h di (+ = supports) | > 0 | 2187 | 53% | 48% | HELPS | 51% | 44% | yes |
 | 6h di (+ = supports) | > 0 | 2190 | 53% | 48% | HELPS | 51% | 45% | yes |
+| 8h trend (+ = supports) | > 0 | 2210 | 53% | 48% | HELPS | 54% | 41% | yes |
 | MACD turning our way | > 0 | 2862 | 52% | 47% | HELPS | 48% | 47% | yes |
-| 12h slope (+ = supports) | > 0 | 2206 | 52% | 48% | HELPS | 52% | 44% | yes |
-| 8h trend (+ = supports) | > 0 | 2208 | 52% | 48% | HELPS | 54% | 41% | yes |
-| 12h trend (+ = supports) | > 0 | 2216 | 52% | 48% | HELPS | 54% | 40% | yes |
+| 12h trend (+ = supports) | > 0 | 2218 | 52% | 48% | HELPS | 54% | 40% | yes |
+| 12h slope (+ = supports) | > 0 | 2202 | 52% | 48% | HELPS | 52% | 44% | yes |
 | previous candle volume | > 1.11 (median) | 2083 | 52% | 48% | HELPS | 50% | 46% | yes |
 | 1D bb ext (+ = supports) | > 0 | 169 | 60% | 50% | HELPS | 44% | 48% | no |
 | confluence: liquidity sweep (stop hunt) reversal in last 3 candles | > 0 | 151 | 61% | 50% | HELPS | 47% | 48% | no |
@@ -226,9 +226,9 @@ For each concept, every indicator/feature is split at its median (or > 0 for wit
 | Bollinger position | > 0.735 (median) | 1834 | 56% | 50% | HELPS | 50% | 44% | yes |
 | volume trend (10 candles) | > 0.0548 (median) | 1834 | 56% | 50% | HELPS | 46% | 48% | no |
 | confluence: break of structure (continuation) in last 3 candles | > 0 | 290 | 63% | 52% | HELPS | 45% | 47% | no |
-| 2h macd (+ = supports) | > 0 | 2088 | 55% | 50% | HELPS | 48% | 45% | yes |
+| 2h macd (+ = supports) | > 0 | 2091 | 55% | 50% | HELPS | 48% | 45% | yes |
+| 1h macd (+ = supports) | > 0 | 2189 | 55% | 50% | HELPS | 47% | 47% | yes |
 | 5-candle return our way | > 0.00695 (median) | 1834 | 56% | 50% | HELPS | 46% | 47% | no |
-| 1h macd (+ = supports) | > 0 | 2184 | 55% | 50% | HELPS | 47% | 47% | no |
 | RSI in trade direction | > 56.6 (median) | 1834 | 56% | 51% | HELPS | 51% | 43% | yes |
 
 ### trendline bounce (confirmed) (4673 research trades)
@@ -241,6 +241,7 @@ No indicator passed all checks.
 |---|---|---|---|---|---|---|---|---|
 | 2h climax (+ = supports) | > 0 | 383 | 62% | 52% | HELPS | 54% | 50% | yes |
 | volume trend (10 candles) | > 0.0264 (median) | 2668 | 55% | 50% | HELPS | 51% | 50% | yes |
+| 1W macd fade (+ = supports) | > 0 | 685 | 58% | 51% | HELPS | 56% | 50% | yes |
 
 ### liquidity sweep (stop hunt) reversal (686 research trades)
 
@@ -270,8 +271,8 @@ No indicator passed all checks.
 | 2h climax (+ = supports) | > 0 | 176 | 66% | 49% | HELPS | 51% | 49% | yes |
 | volume trend (10 candles) | > 0.0798 (median) | 709 | 56% | 45% | HELPS | 48% | 52% | no |
 | volume into the event | > 1.01 (median) | 709 | 55% | 46% | HELPS | 46% | 53% | no |
-| 2h macd (+ = supports) | > 0 | 1110 | 53% | 42% | HELPS | 52% | 38% | yes |
 | 1h climax (+ = supports) | > 0 | 413 | 58% | 48% | HELPS | 49% | 50% | no |
+| 2h macd (+ = supports) | > 0 | 1111 | 53% | 43% | HELPS | 52% | 39% | yes |
 | 5-candle return our way | > 0.0193 (median) | 709 | 55% | 47% | HELPS | 52% | 48% | yes |
 | touch/decision candle volume | > 2.08 (median) | 709 | 55% | 47% | HELPS | 48% | 51% | no |
 | 1W stretch (+ = supports) | > 0 | 120 | 63% | 50% | HELPS | 0% | 50% | no |
@@ -283,28 +284,28 @@ No indicator passed all checks.
 | indicator | concepts | helps |
 |---|---|---|
 | 2h climax (+ = supports) | 4 | liq_run, range_break, tl_break, zone_break |
-| distance from EMA20 | 2 | liq_run, zone_break |
 | 2h macd (+ = supports) | 2 | range_break, zone_break |
+| distance from EMA20 | 2 | liq_run, zone_break |
+| confluence: trendline break in last 3 candles | 1 | zone_break |
+| Bollinger position | 1 | zone_break |
 | confluence: liquidity run (break of equal highs/lows) in last 3 candles | 1 | zone_break |
 | number of other concepts agreeing | 1 | range_break |
-| candle body our way | 1 | zone_break |
-| Bollinger position | 1 | zone_break |
-| confluence: trendline break in last 3 candles | 1 | zone_break |
 | DI spread in trade direction | 1 | zone_break |
-| candle range (ATR) | 1 | zone_break |
-| 20-candle return our way | 1 | zone_break |
+| candle body our way | 1 | zone_break |
 | MACD histogram in trade direction | 1 | zone_break |
 | MACD turning our way | 1 | zone_bounce |
-| previous candle volume | 1 | zone_bounce |
-| volume trend (10 candles) | 1 | tl_break |
+| 5-candle return our way | 1 | range_break |
+| RSI in trade direction | 1 | zone_break |
+| candle range (ATR) | 1 | zone_break |
+| 20-candle return our way | 1 | zone_break |
 | 12h di (+ = supports) | 1 | zone_bounce |
 | 12h slope (+ = supports) | 1 | zone_bounce |
 | 12h trend (+ = supports) | 1 | zone_bounce |
 | 15m slope (+ = supports) | 1 | zone_bounce |
-| 5-candle return our way | 1 | range_break |
-| RSI in trade direction | 1 | zone_break |
-| 1h climax (+ = supports) | 1 | zone_break |
 | 1D di (+ = supports) | 1 | zone_bounce |
+| 1W macd fade (+ = supports) | 1 | tl_break |
+| previous candle volume | 1 | zone_bounce |
+| volume trend (10 candles) | 1 | tl_break |
 | 1h cmf (+ = supports) | 1 | zone_bounce |
-| 1h di (+ = supports) | 1 | zone_break |
+| 1h climax (+ = supports) | 1 | zone_break |
 
