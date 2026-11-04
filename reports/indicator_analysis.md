@@ -18,7 +18,7 @@ Same trades as the failure analysis. Research: signals before 2025-10-12, split 
 | 1D | ADX < 20 (no trend) | 216 | 52% | 66% | -10 pts | -18 pts | 0.043 |
 | 1W | Supertrend against | 464 | 58% | 69% | -3 pts | -19 pts | 0.081 |
 
-These look 'wrong' but trades did better with them. That's typical of mean reversion: e.g. a long while short-term momentum is still down is a pullback entry.
+Trades did better when these were present. Directional ones (e.g. weekly Supertrend against the trade) point to mean reversion: buying weakness / selling strength. Direction-free ones (e.g. ADX < 20) describe market conditions where these signals work better: quiet, non-trending markets.
 
 ## 3. If we had used them: win rate
 

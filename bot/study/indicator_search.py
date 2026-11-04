@@ -134,6 +134,10 @@ def _r(x):
     return "-" if x is None or (isinstance(x, float) and math.isnan(x)) else f"{x:+.2f}"
 
 
+def _m(x):
+    return "-" if x is None or (isinstance(x, float) and math.isnan(x)) else f"{x:+.1%}"
+
+
 def _table(df, cols):
     head = "| " + " | ".join(c[1] for c in cols) + " |"
     sep = "|" + "|".join("---" for _ in cols) + "|"
@@ -195,8 +199,9 @@ def run_indicator_search(cfg: Config, out_dir: Path, holdout_start: str = "2025-
         r_, h_ = _stats(apply(res, cs)), _stats(apply(hold, cs))
         vrows.append({"variant": name, **{f"r_{k}": v for k, v in r_.items()}, **{f"h_{k}": v for k, v in h_.items()}})
     for col in inverse["column"]:  # reverse findings: keep ONLY the trades where the state was present
-        nm = f"only when {HINT_TEXT.get(ev.set_index('column').loc[col, 'hint'], col)} ({col.split('_')[0]})"
-        r_, h_ = _stats(res[res[col] < 0]), _stats(hold[hold[col] < 0])
+        row = ev.set_index("column").loc[col]
+        nm = f"only when {HINT_TEXT.get(row['hint'], col)} ({row['timeframe']})"
+        r_, h_ = _stats(res[res[col] < 0]), _stats(hold[hold[col] < 0])  # empty -> NaN, printed as "-"
         vrows.append({"variant": nm, **{f"r_{k}": v for k, v in r_.items()}, **{f"h_{k}": v for k, v in h_.items()}})
     vt = pd.DataFrame(vrows)
 
@@ -245,16 +250,17 @@ def run_indicator_search(cfg: Config, out_dir: Path, holdout_start: str = "2025-
             ("timeframe", "TF", str), ("what", "indicator state", str), ("n_warned", "trades", str),
             ("fail_if_warned", "fail if present", _pct), ("fail_if_not", "fail if not", _pct),
             ("diff_half1", "half 1", _pp), ("diff_half2", "half 2", _pp), ("q", "q", lambda x: f"{x:.3f}")]),
-              "", "These look 'wrong' but trades did better with them. That's typical of mean reversion: e.g. a long while "
-              "short-term momentum is still down is a pullback entry.", ""]
+              "", "Trades did better when these were present. Directional ones (e.g. weekly Supertrend against the trade) "
+              "point to mean reversion: buying weakness / selling strength. Direction-free ones (e.g. ADX < 20) describe "
+              "market conditions where these signals work better: quiet, non-trending markets.", ""]
 
     L += ["## 3. If we had used them: win rate", "",
           "Research = where the indicators were chosen (optimistic). **Holdout = never used for choosing: the honest number.**", "",
           _table(vt, [("variant", "rule", str),
                       ("r_trades", "research trades", lambda x: str(int(x))), ("r_win", "win", _pct),
-                      ("r_fail", "fail", _pct), ("r_avg_r", "avg R", _r), ("r_margin_5x", "margin/trade @5x", lambda x: f"{x:+.1%}"),
+                      ("r_fail", "fail", _pct), ("r_avg_r", "avg R", _r), ("r_margin_5x", "margin/trade @5x", _m),
                       ("h_trades", "holdout trades", lambda x: str(int(x))), ("h_win", "win", _pct),
-                      ("h_fail", "fail", _pct), ("h_avg_r", "avg R", _r), ("h_margin_5x", "margin/trade @5x", lambda x: f"{x:+.1%}")]),
+                      ("h_fail", "fail", _pct), ("h_avg_r", "avg R", _r), ("h_margin_5x", "margin/trade @5x", _m)]),
           "", "Note: the holdout has only ~120 trades, so a few percentage points either way is within luck.", ""]
 
     near = label[label["verdict"].str.startswith("weak (")].sort_values("z", ascending=False).head(15)

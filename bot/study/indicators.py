@@ -91,7 +91,7 @@ def rma(s: pd.Series, n: int) -> pd.Series:
         return pd.Series(out, index=s.index)
     out[seed_end] = v[start:seed_end + 1].mean()
     for i in range(seed_end + 1, len(v)):
-        out[i] = (out[i - 1] * (n - 1) + v[i]) / n
+        out[i] = out[i - 1] if np.isnan(v[i]) else (out[i - 1] * (n - 1) + v[i]) / n
     return pd.Series(out, index=s.index)
 
 
@@ -106,7 +106,7 @@ def adx(d: pd.DataFrame, n: int = 14):
     atr_n = rma(tr, n)
     pdi = 100 * rma(plus_dm, n) / atr_n
     mdi = 100 * rma(minus_dm, n) / atr_n
-    dx = 100 * (pdi - mdi).abs() / (pdi + mdi)
+    dx = (100 * (pdi - mdi).abs() / (pdi + mdi)).where((pdi + mdi) != 0, 0.0).where(pdi.notna())
     return rma(dx, n), pdi, mdi
 
 
@@ -139,7 +139,9 @@ def mfi(d: pd.DataFrame, n: int = 14) -> pd.Series:
     ps = pos.rolling(n, min_periods=n).sum()
     ns = neg.rolling(n, min_periods=n).sum()
     out = 100 - 100 / (1 + ps / ns.replace(0, np.nan))
-    return out.where(ns != 0, 100.0).where(ps.notna())
+    out = out.where(ns != 0, 100.0)
+    out = out.where(~((ps == 0) & (ns == 0)), 50.0)  # flat window: no flow either way -> neutral
+    return out.where(ps.notna())
 
 
 def obv(d: pd.DataFrame) -> pd.Series:
@@ -195,32 +197,30 @@ def supertrend(d: pd.DataFrame, n: int = 10, mult: float = 3.0) -> pd.Series:
 
 
 def psar(d: pd.DataFrame, step: float = 0.02, max_step: float = 0.2) -> pd.Series:
-    """Parabolic SAR value per bar (Wilder). Starts long on the second bar."""
+    """
+    Parabolic SAR (Wilder). Starts long with SAR = first low, EP = first high; first output on bar 1.
+    The SAR may not move inside the last two bars' range; on a reversal it jumps to the prior
+    extreme point, but never inside the reversal bar (or the bar before it).
+    """
     h, l = d["high"].to_numpy(float), d["low"].to_numpy(float)
     n = len(h)
-    sar = np.full(n, np.nan)
+    out = np.full(n, np.nan)
     if n < 2:
-        return pd.Series(sar, index=d.index)
-    up = True
-    af = step
-    ep = h[0]
-    sar[1] = l[0]
-    for i in range(2, n):
-        prev = sar[i - 1]
-        s = prev + af * (ep - prev)
+        return pd.Series(out, index=d.index)
+    up, af, ep, sar = True, step, h[0], l[0]
+    for i in range(1, n):
+        s = sar + af * (ep - sar)
         if up:
-            s = min(s, l[i - 1], l[i - 2])
+            s = min(s, l[i - 1], l[i - 2] if i >= 2 else l[i - 1])
             if l[i] < s:  # reversal to down
-                up, s, ep, af = False, ep, l[i], step
-            else:
-                if h[i] > ep:
-                    ep, af = h[i], min(af + step, max_step)
+                up, s, ep, af = False, max(ep, h[i], h[i - 1]), l[i], step
+            elif h[i] > ep:
+                ep, af = h[i], min(af + step, max_step)
         else:
-            s = max(s, h[i - 1], h[i - 2])
+            s = max(s, h[i - 1], h[i - 2] if i >= 2 else h[i - 1])
             if h[i] > s:  # reversal to up
-                up, s, ep, af = True, ep, h[i], step
-            else:
-                if l[i] < ep:
-                    ep, af = l[i], min(af + step, max_step)
-        sar[i] = s
-    return pd.Series(sar, index=d.index)
+                up, s, ep, af = True, min(ep, l[i], l[i - 1]), h[i], step
+            elif l[i] < ep:
+                ep, af = l[i], min(af + step, max_step)
+        out[i] = sar = s
+    return pd.Series(out, index=d.index)

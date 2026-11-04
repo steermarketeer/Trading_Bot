@@ -155,14 +155,42 @@ def test_supertrend_and_psar_follow_trend_and_flip():
 
 
 def test_psar_reference_small_case():
-    # hand-worked: rising highs/lows, AF steps 0.02 per new high
+    # hand-worked, rising market: SAR starts at low0=9, EP=high0=10, AF=0.02
     d = pd.DataFrame({"high": [10, 11, 12, 13], "low": [9, 10, 11, 12], "open": 0, "close": 0, "volume": 1})
     sar = ind.psar(d)
-    assert math.isnan(sar[0]) and sar[1] == 9
-    # bar2: s = 9 + 0.02*(10-9)?  EP starts at high[0]=10 -> 9.02, capped by min(low1, low0)=9 -> 9
-    assert sar[2] == pytest.approx(9.0)
-    # bar2 makes a new high 12 -> EP=12, AF=0.04; bar3: 9 + 0.04*(12-9)=9.12, cap min(low2,low1)=10 -> 9.12
-    assert sar[3] == pytest.approx(9.12)
+    assert math.isnan(sar[0])
+    assert sar[1] == pytest.approx(9.0)    # 9+0.02*(10-9)=9.02, capped by low0=9; new high 11 -> EP 11, AF .04
+    assert sar[2] == pytest.approx(9.0)    # 9+0.04*(11-9)=9.08, capped by min(low1,low0)=9; EP 12, AF .06
+    assert sar[3] == pytest.approx(9.18)   # 9+0.06*(12-9)=9.18, cap min(low2,low1)=10 -> 9.18
+
+
+def test_psar_reversal_is_never_inside_the_bar():
+    """Audit finding: on a reversal SAR jumped to the old EP even when that was inside the bar."""
+    d = pd.DataFrame({"high": [10, 12, 14, 15, 15.5, 13.0], "low": [9, 11, 13, 14, 14.5, 9.0],
+                      "open": 0, "close": 0, "volume": 1})
+    sar = ind.psar(d)
+    assert sar[5] >= d["high"][5]  # flipped to short on bar 5: SAR at/above that bar's high
+    d2 = pd.DataFrame({"high": [10, 9, 8, 7, 6], "low": [9, 5, 4, 3, 2], "open": 0, "close": 0, "volume": 1})
+    s2 = ind.psar(d2)
+    assert s2[1] >= d2["high"][1]  # first bar already reverses to short (warm-up handled)
+
+
+def test_psar_side_on_random_data(ohlcv):
+    sar = ind.psar(ohlcv).to_numpy()
+    h, l = ohlcv["high"].to_numpy(), ohlcv["low"].to_numpy()
+    inside = (sar[1:] > l[1:]) & (sar[1:] < h[1:])
+    assert not inside.any()
+
+
+def test_mfi_flat_window_is_neutral():
+    d = pd.DataFrame({"high": [10.0] * 20, "low": [10.0] * 20, "close": [10.0] * 20, "open": 10.0, "volume": 5.0})
+    assert ind.mfi(d).iloc[-1] == 50.0
+
+
+def test_rma_tolerates_a_gap():
+    s = pd.Series([1.0, 2, 3, np.nan, 5, 6])
+    r = ind.rma(s, 2)
+    assert not np.isnan(r.iloc[-1]) and r.iloc[3] == r.iloc[2]
 
 
 def test_indicators_have_no_lookahead(ohlcv):
