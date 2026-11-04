@@ -283,3 +283,17 @@ def test_direction_free_hints_ignore_direction():
         assert h[f"{tf}_vol_expand"].iloc[0] == h[f"{tf}_vol_expand"].iloc[1]
         # directional hints flip sign between long and short
         assert h[f"{tf}_supertrend"].iloc[0] == -h[f"{tf}_supertrend"].iloc[1]
+
+
+def test_level_hints_use_only_confirmed_swings():
+    from bot.study.levels import level_hints
+    eth = _synthetic_5m(days=200, seed=9)
+    trades = pd.DataFrame({"entry_time": pd.to_datetime(["2024-05-01", "2024-06-15"], utc=True),
+                           "direction": [-1, 1], "entry": [100.0, 100.0], "atr14": [3.0, 3.0]})
+    for col in ("entry",):
+        trades[col] = [float(eth.loc[eth["open_time"] == t, "open"].iloc[0]) for t in trades["entry_time"]]
+    full = level_hints(trades, eth)
+    for k in range(2):
+        cut = eth[eth["open_time"] < trades["entry_time"][k]]
+        one = trades.iloc[[k]].reset_index(drop=True)
+        assert level_hints(one, cut).iloc[0].tolist() == full.iloc[k].tolist()
