@@ -1,10 +1,13 @@
 """
 Weekly trend: Up / Down / Sideways, from completed weeks only (Mon-Sun UTC).
 
-  Up       weekly close > SMA20w, SMA20w > SMA50w, SMA20w rising vs 3 weeks ago
-  Down     weekly close < SMA20w, SMA20w < SMA50w, SMA20w falling vs 3 weeks ago
+  Up       weekly close above BOTH SMA20w and SMA50w, and SMA20w rising vs 3 weeks ago
+  Down     weekly close below BOTH SMA20w and SMA50w, and SMA20w falling vs 3 weeks ago
   Sideways anything else
-  Unknown  fewer than 53 completed weeks of history
+  Unknown  fewer than 50 completed weeks of history (SMA50w not available yet)
+
+(No SMA20w-vs-SMA50w crossover requirement: it lagged by months, e.g. ETH fell 60% from
+Nov 2025 to Feb 2026 while still "Sideways" because the 20w average was above the 50w.)
 
 A week becomes usable at its Sunday close (Monday 00:00 UTC), so on a Sunday the
 trend already includes the week that just ended, and never anything later.
@@ -32,8 +35,8 @@ def weekly_trend_table(daily: pd.DataFrame) -> pd.DataFrame:
     s50 = c.rolling(50, min_periods=50).mean()
     rising = s20 > s20.shift(SLOPE_WEEKS)
     falling = s20 < s20.shift(SLOPE_WEEKS)
-    up = (c > s20) & (s20 > s50) & rising
-    dn = (c < s20) & (s20 < s50) & falling
+    up = (c > s20) & (c > s50) & rising
+    dn = (c < s20) & (c < s50) & falling
     trend = np.where(up, "Up", np.where(dn, "Down", "Sideways"))
     trend = np.where(s50.isna() | s20.shift(SLOPE_WEEKS).isna(), "Unknown", trend)
     return pd.DataFrame({

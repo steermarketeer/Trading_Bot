@@ -74,9 +74,13 @@ def build_baseline(bars: pd.DataFrame, op: OutcomeParams, cost_frac: float) -> p
     return ev
 
 
-def _period(df: pd.DataFrame, holdout_start: str, which: str) -> pd.DataFrame:
+def _period(df: pd.DataFrame, holdout_start: str, which: str, max_days: int) -> pd.DataFrame:
+    """Research events must be finished before the holdout starts (signal day + max_days)."""
     done = df[df["outcome"] != "incomplete"]
-    return done[done["day"] < holdout_start] if which == "research" else done[done["day"] >= holdout_start]
+    if which == "holdout":
+        return done[done["day"] >= holdout_start]
+    cutoff = (pd.Timestamp(holdout_start) - pd.Timedelta(days=max_days)).strftime("%Y-%m-%d")
+    return done[done["day"] < cutoff]
 
 
 def summarize(ev: pd.DataFrame, base: pd.DataFrame) -> pd.DataFrame:
@@ -116,6 +120,16 @@ def alignment_summary(ev: pd.DataFrame) -> pd.DataFrame:
         "win_rate": g["outcome"].apply(lambda s: (s == "win").mean()),
         "avg_r": g["r"].mean(),
     }).reindex(["with", "sideways", "against"])
+
+
+def _episodes_line(base: pd.DataFrame) -> str:
+    """How many separate Up / Down stretches the sample really contains."""
+    d = base[base["direction"] == 1].sort_values("day")[["day", "weekly_trend"]]
+    runs = d["weekly_trend"].ne(d["weekly_trend"].shift(1)).cumsum()
+    ep = d.groupby(runs)["weekly_trend"].first().value_counts()
+    return (f"Separate trend stretches in this period: **{int(ep.get('Up', 0))} Up**, "
+            f"**{int(ep.get('Down', 0))} Down**, {int(ep.get('Sideways', 0))} Sideways. "
+            "Results per trend rest on only this many independent episodes, so treat them as indications, not laws.")
 
 
 def baseline_table(base: pd.DataFrame) -> pd.DataFrame:
@@ -161,8 +175,10 @@ def _table(df: pd.DataFrame, cols: list[tuple[str, str, callable]]) -> str:
 def write_report(out_dir: Path, ev: pd.DataFrame, base: pd.DataFrame, holdout_start: str,
                  op: OutcomeParams, pp: PatternParams, cost_frac: float, leverage: float = 1.0) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    res_ev, hold_ev = _period(ev, holdout_start, "research"), _period(ev, holdout_start, "holdout")
-    res_b, hold_b = _period(base, holdout_start, "research"), _period(base, holdout_start, "holdout")
+    md = op.max_days
+    res_ev, hold_ev = _period(ev, holdout_start, "research", md), _period(ev, holdout_start, "holdout", md)
+    res_b, hold_b = _period(base, holdout_start, "research", md), _period(base, holdout_start, "holdout", md)
+    atr_pct = float((res_ev["atr14"] / res_ev["entry"]).median())
     res = summarize(res_ev, res_b)
     hold = summarize(hold_ev, hold_b)
     res["verdict"] = res.apply(_verdict, axis=1)
@@ -176,8 +192,8 @@ def write_report(out_dir: Path, ev: pd.DataFrame, base: pd.DataFrame, holdout_st
     lines = [
         "# Signal study - ETHUSDT daily",
         "",
-        f"Research period **{s} -> {e}**. Holdout **{holdout_start} ->** is shown separately and "
-        "should only be looked at after choosing signals.",
+        f"Research period: signals **{s} -> {e}** (every trade finished before the holdout). "
+        f"Holdout: signals from **{holdout_start}** on, shown only in section 2. Look at it only after choosing signals.",
         "",
         "## How to read this",
         f"- Every time a signal fires, we enter at the **next day's open** with a target of "
@@ -191,8 +207,13 @@ def write_report(out_dir: Path, ev: pd.DataFrame, base: pd.DataFrame, holdout_st
         f"- Costs: *after costs* subtracts {cost_frac:.2%} round-trip fees and slippage. Funding is not included (it adds about 0.1-0.3% per 20 days in calm markets, more in strong trends).",
         "- If target and stop are both inside the same daily candle, it's counted as a loss.",
         f"- **At {leverage:g}x**: *margin %* = result as a % of the margin used, after fees and slippage. "
-        f"With ETH's daily ATR of about 4-5%, a full stop-out (-1 ATR) costs roughly **{leverage * 0.045:.0%} of the margin**, "
-        f"and a win (+2 ATR) makes roughly **{leverage * 0.09:.0%}**. Liquidation (about -{1 / leverage:.0%} price move) is counted as -100%.",
+        f"ETH's median daily ATR in this period is **{atr_pct:.1%}** of price, so a full stop-out (-{op.stop_atr:g} ATR) "
+        f"costs about **{leverage * op.stop_atr * atr_pct + leverage * cost_frac:.0%} of the margin** and a win (+{op.target_atr:g} ATR) "
+        f"makes about **{leverage * op.target_atr * atr_pct - leverage * cost_frac:.0%}**. Liquidation (about -{1 / leverage - 0.005:.1%} price move, "
+        f"isolated margin) is counted as -100%. In the March 2020 and May 2021 crashes ATR was above 20%, so a 1-ATR stop "
+        f"sat beyond the {leverage:g}x liquidation price.",
+        "- Events overlap (several signals often fire on the same day and share one outcome), so the "
+        "pooled tables and t-values are somewhat optimistic.",
         "",
         "## 1. Does the weekly trend matter?",
         "",
@@ -201,6 +222,8 @@ def write_report(out_dir: Path, ev: pd.DataFrame, base: pd.DataFrame, holdout_st
         _table(alignment_summary(res_ev).reset_index(), [
             ("alignment", "vs weekly trend", str), ("n", "events", str),
             ("win_rate", "win rate", _pct), ("avg_r", "avg R", _r)]),
+        "",
+        _episodes_line(res_b),
         "",
         "Baseline: entering on every day, by weekly trend and direction:",
         "",
@@ -240,8 +263,10 @@ def write_report(out_dir: Path, ev: pd.DataFrame, base: pd.DataFrame, holdout_st
     lines += ["## 4. Signal definitions", ""]
     lines += [f"- **{k}**: {v}" for k, v in info.items()]
     lines += ["", "## Settings", "", f"- outcome: `{asdict(op)}`", f"- patterns: `{asdict(pp)}`",
-              "- weekly trend: Up = weekly close > SMA20w > SMA50w and SMA20w rising over 3 weeks; Down = mirror; "
-              "else Sideways (first 53 weeks: Unknown, excluded from trend tables)",
+              "- weekly trend: Up = weekly close above SMA20w and SMA50w, SMA20w rising over 3 weeks; Down = mirror; "
+              "else Sideways (first 50 completed weeks: Unknown, excluded from trend tables)",
+              "- data: 5m bad-print wicks (>15% beyond body and neighbours) are clipped before building daily bars; "
+              "ATR is Wilder's 14-day ATR",
               "", "Raw data: `signal_events.csv` (every event with its outcome), `signal_summary_*.csv`."]
     path = out_dir / "signal_study.md"
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

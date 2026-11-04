@@ -21,12 +21,14 @@ class QualityReport:
     last: str
     dropped_bad_prints: int
     incomplete_days: list[str]   # days with fewer than 288 five-minute bars (kept, flagged)
+    clipped_wicks: list[str] = None  # 5m bars whose wick was a bad print (clipped)
 
     def summary(self) -> str:
         return (
             f"{self.symbol}: {self.n_5m_bars:,} 5m bars {self.first} -> {self.last}, "
             f"bad prints dropped {self.dropped_bad_prints}, "
-            f"days with gaps {len(self.incomplete_days)}"
+            f"days with gaps {len(self.incomplete_days)}, "
+            f"bad wicks clipped {len(self.clipped_wicks or [])}"
         )
 
 
@@ -43,6 +45,7 @@ def load_klines_5m(data_dir: Path, symbol: str) -> tuple[pd.DataFrame, QualityRe
         | (df["low"] > df[["open", "close"]].min(axis=1))
     )
     df = df[~bad].reset_index(drop=True)
+    df, clipped = clip_bad_wicks(df)
     counts = df.groupby(df["open_time"].dt.floor("D")).size()
     incomplete = [d.strftime("%Y-%m-%d") for d, n in counts.items() if n < BARS_PER_DAY]
     rep = QualityReport(
@@ -52,8 +55,31 @@ def load_klines_5m(data_dir: Path, symbol: str) -> tuple[pd.DataFrame, QualityRe
         last=str(df["open_time"].iloc[-1]),
         dropped_bad_prints=int(bad.sum()),
         incomplete_days=incomplete,
+        clipped_wicks=clipped,
     )
     return df, rep
+
+
+WICK_LIMIT = 0.15  # a 5m wick >15% beyond its body AND both neighbours is treated as a bad print
+
+
+def clip_bad_wicks(df: pd.DataFrame, limit: float = WICK_LIMIT) -> tuple[pd.DataFrame, list[str]]:
+    """
+    Clip single-bar spikes that the market never traded around (e.g. ETH 2020-03-13 02:35
+    high 323 while price was ~110). The reference is the bar's body plus the previous close
+    and the next open; real crash wicks are usually echoed by neighbouring bars and stay.
+    """
+    df = df.copy()
+    o, c = df["open"], df["close"]
+    prev_c, next_o = c.shift(1).fillna(o), o.shift(-1).fillna(c)
+    ref_hi = pd.concat([o, c, prev_c, next_o], axis=1).max(axis=1)
+    ref_lo = pd.concat([o, c, prev_c, next_o], axis=1).min(axis=1)
+    bad_hi = df["high"] > ref_hi * (1 + limit)
+    bad_lo = df["low"] < ref_lo * (1 - limit)
+    df.loc[bad_hi, "high"] = ref_hi[bad_hi]
+    df.loc[bad_lo, "low"] = ref_lo[bad_lo]
+    hit = df.loc[bad_hi | bad_lo, "open_time"]
+    return df, [str(t) for t in hit]
 
 
 def to_daily(df5: pd.DataFrame) -> pd.DataFrame:

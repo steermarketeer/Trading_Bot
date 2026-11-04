@@ -14,9 +14,17 @@ def ema(s: pd.Series, n: int) -> pd.Series:
 
 
 def atr(d: pd.DataFrame, n: int = 14) -> pd.Series:
+    """Wilder's ATR: seeded with the simple average of the first n true ranges, then
+    atr_t = (atr_{t-1} * (n-1) + tr_t) / n."""
     prev = d["close"].shift(1)
     tr = pd.concat([d["high"] - d["low"], (d["high"] - prev).abs(), (d["low"] - prev).abs()], axis=1).max(axis=1)
-    return tr.rolling(n, min_periods=n).mean()
+    tr = tr.to_numpy(float)
+    out = np.full(len(tr), np.nan)
+    if len(tr) >= n:
+        out[n - 1] = tr[:n].mean()
+        for i in range(n, len(tr)):
+            out[i] = (out[i - 1] * (n - 1) + tr[i]) / n
+    return pd.Series(out, index=d.index)
 
 
 def rsi(close: pd.Series, n: int = 14) -> pd.Series:

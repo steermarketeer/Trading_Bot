@@ -49,7 +49,7 @@ def swing_points(high: np.ndarray, low: np.ndarray, k: int):
     for i in range(k, n - k):
         hw = high[i - k:i + k + 1]
         lw = low[i - k:i + k + 1]
-        # strict on the right so a flat top is counted once (at its first bar)
+        # strict on the right so a flat top is counted once (at its last bar)
         if high[i] == hw.max() and (high[i + 1:i + k + 1] < high[i]).all():
             highs.append((i, float(high[i]), i + k))
         if low[i] == lw.min() and (low[i + 1:i + k + 1] > low[i]).all():
@@ -68,14 +68,20 @@ def detect_patterns(d: pd.DataFrame, p: PatternParams = PatternParams()) -> pd.D
     days = d["day"].to_numpy()
     n = len(d)
     sh, sl = swing_points(high, low, p.swing_k)
-    fired: set = set()
+    # A swing point can belong to at most one pattern: once a pattern fires, its swings are
+    # used up. This stops one breakout being counted as two patterns (e.g. a head & shoulders
+    # whose head/shoulder also look like a triangle's highs) and stops the same structure
+    # re-firing when a new swing appears next to it.
+    used_hi: set = set()
+    used_lo: set = set()
     events = []
 
-    def fire(t, name, direction, key, info):
-        k = (name, key)
-        if k in fired:
-            return
-        fired.add(k)
+    def free(his=(), los=()):
+        return not (set(his) & used_hi) and not (set(los) & used_lo)
+
+    def fire(t, name, direction, his, los, info):
+        used_hi.update(his)
+        used_lo.update(los)
         events.append({"day": days[t], "signal": name, "direction": direction, "kind": "pattern", **info})
 
     hi_ptr = lo_ptr = 0
@@ -93,29 +99,31 @@ def detect_patterns(d: pd.DataFrame, p: PatternParams = PatternParams()) -> pd.D
         # ---- double top / bottom
         if len(known_hi) >= 2:
             (i1, p1, _), (i2, p2, _) = known_hi[-2], known_hi[-1]
-            if p.double_min_gap <= i2 - i1 <= p.double_max_gap and t - i2 <= p.max_breakout_wait:
+            if (p.double_min_gap <= i2 - i1 <= p.double_max_gap and t - i2 <= p.max_breakout_wait
+                    and free(his=(i1, i2))):
                 if abs(p1 - p2) / max(p1, p2) <= p.double_tol:
                     neck = low[i1:i2 + 1].min()
                     deep = neck <= min(p1, p2) * (1 - p.double_min_depth)
                     intact = high[i2 + 1:t + 1].max(initial=-np.inf) <= max(p1, p2) * (1 + p.double_tol)
                     first = (close[i2 + 1:t] >= neck).all()
                     if deep and intact and first and c0 < neck <= c1:
-                        fire(t, "double_top", -1, (i1, i2), {"level": neck})
+                        fire(t, "double_top", -1, (i1, i2), (), {"level": neck})
         if len(known_lo) >= 2:
             (i1, p1, _), (i2, p2, _) = known_lo[-2], known_lo[-1]
-            if p.double_min_gap <= i2 - i1 <= p.double_max_gap and t - i2 <= p.max_breakout_wait:
+            if (p.double_min_gap <= i2 - i1 <= p.double_max_gap and t - i2 <= p.max_breakout_wait
+                    and free(los=(i1, i2))):
                 if abs(p1 - p2) / max(p1, p2) <= p.double_tol:
                     neck = high[i1:i2 + 1].max()
                     deep = neck >= max(p1, p2) * (1 + p.double_min_depth)
                     intact = low[i2 + 1:t + 1].min(initial=np.inf) >= min(p1, p2) * (1 - p.double_tol)
                     first = (close[i2 + 1:t] <= neck).all()
                     if deep and intact and first and c0 > neck >= c1:
-                        fire(t, "double_bottom", 1, (i1, i2), {"level": neck})
+                        fire(t, "double_bottom", 1, (), (i1, i2), {"level": neck})
 
         # ---- head & shoulders (tops) / inverse (bottoms)
         if len(known_hi) >= 3:
             (ia, pa, _), (ib, pb, _), (ic, pc, _) = known_hi[-3:]
-            if ic - ia <= p.hs_max_span and t - ic <= p.max_breakout_wait:
+            if ic - ia <= p.hs_max_span and t - ic <= p.max_breakout_wait and free(his=(ia, ib, ic)):
                 head = pb >= max(pa, pc) * (1 + p.hs_head_margin)
                 level = abs(pa - pc) / max(pa, pc) <= p.hs_shoulder_tol
                 if head and level:
@@ -126,10 +134,10 @@ def detect_patterns(d: pd.DataFrame, p: PatternParams = PatternParams()) -> pd.D
                         intact = high[ic + 1:t + 1].max(initial=-np.inf) < pb
                         first = all(close[s] >= _line(j1, low[j1], j2, low[j2], s) for s in range(ic + 1, t))
                         if intact and first and c0 < neck_t and c1 >= neck_p:
-                            fire(t, "head_shoulders", -1, (ia, ib, ic), {"level": neck_t})
+                            fire(t, "head_shoulders", -1, (ia, ib, ic), (j1, j2), {"level": neck_t})
         if len(known_lo) >= 3:
             (ia, pa, _), (ib, pb, _), (ic, pc, _) = known_lo[-3:]
-            if ic - ia <= p.hs_max_span and t - ic <= p.max_breakout_wait:
+            if ic - ia <= p.hs_max_span and t - ic <= p.max_breakout_wait and free(los=(ia, ib, ic)):
                 head = pb <= min(pa, pc) * (1 - p.hs_head_margin)
                 level = abs(pa - pc) / max(pa, pc) <= p.hs_shoulder_tol
                 if head and level:
@@ -140,14 +148,15 @@ def detect_patterns(d: pd.DataFrame, p: PatternParams = PatternParams()) -> pd.D
                         intact = low[ic + 1:t + 1].min(initial=np.inf) > pb
                         first = all(close[s] <= _line(j1, high[j1], j2, high[j2], s) for s in range(ic + 1, t))
                         if intact and first and c0 > neck_t and c1 <= neck_p:
-                            fire(t, "inv_head_shoulders", 1, (ia, ib, ic), {"level": neck_t})
+                            fire(t, "inv_head_shoulders", 1, (j1, j2), (ia, ib, ic), {"level": neck_t})
 
         # ---- triangles
         if len(known_hi) >= 2 and len(known_lo) >= 2:
             (h1, ph1, _), (h2, ph2, _) = known_hi[-2:]
             (l1, pl1, _), (l2, pl2, _) = known_lo[-2:]
             first_i, last_i = min(h1, l1), max(h2, l2)
-            if last_i - first_i <= p.tri_max_span and t - last_i <= p.max_breakout_wait:
+            if (last_i - first_i <= p.tri_max_span and t - last_i <= p.max_breakout_wait
+                    and free(his=(h1, h2), los=(l1, l2))):
                 hd, ld = (ph2 - ph1) / ph1, (pl2 - pl1) / pl1
                 kind = None
                 if abs(hd) <= p.tri_flat and ld >= p.tri_slope:
@@ -164,11 +173,10 @@ def detect_patterns(d: pd.DataFrame, p: PatternParams = PatternParams()) -> pd.D
                         return _line(l1, pl1, l2, pl2, s)
                     if up(t) > lo(t):  # lines have not crossed (before the apex)
                         inside = all(lo(s) <= close[s] <= up(s) for s in range(last_i + 1, t))
-                        key = (h1, h2, l1, l2)
                         if inside and c0 > up(t) and c1 <= up(t - 1):
-                            fire(t, kind, 1, key, {"level": up(t)})
+                            fire(t, kind, 1, (h1, h2), (l1, l2), {"level": up(t)})
                         elif inside and c0 < lo(t) and c1 >= lo(t - 1):
-                            fire(t, kind, -1, key, {"level": lo(t)})
+                            fire(t, kind, -1, (h1, h2), (l1, l2), {"level": lo(t)})
 
     cols = ["day", "signal", "direction", "kind", "level"]
     return pd.DataFrame(events, columns=cols) if events else pd.DataFrame(columns=cols)

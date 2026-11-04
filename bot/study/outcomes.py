@@ -41,10 +41,11 @@ def label_outcomes(bars: pd.DataFrame, events: pd.DataFrame, atr_col: str = "atr
         i = idx[ev.day]
         rec = {"outcome": None, "r": np.nan, "days_to_exit": np.nan, "entry": np.nan,
                "mfe_r": np.nan, "mae_r": np.nan}
-        if i + p.max_days >= n or not np.isfinite(a[i]) or a[i] <= 0:
+        if i + 1 >= n or not np.isfinite(a[i]) or a[i] <= 0:
             rec["outcome"] = "incomplete"
             rows.append(rec)
             continue
+        last_k = min(p.max_days, n - 1 - i)  # days of data available after the signal
         dr = int(ev.direction)
         entry = o[i + 1]
         unit = a[i]
@@ -52,7 +53,7 @@ def label_outcomes(bars: pd.DataFrame, events: pd.DataFrame, atr_col: str = "atr
         stp = entry - dr * p.stop_atr * unit
         out, r, k_exit = "timeout", None, p.max_days
         mfe = mae = 0.0
-        for k in range(1, p.max_days + 1):
+        for k in range(1, last_k + 1):
             j = i + k
             fav = ((h[j] - entry) if dr > 0 else (entry - l[j])) / unit
             adv = ((entry - l[j]) if dr > 0 else (h[j] - entry)) / unit
@@ -70,8 +71,7 @@ def label_outcomes(bars: pd.DataFrame, events: pd.DataFrame, atr_col: str = "atr
             if hit_stop:
                 # exit at the stop: price beyond it after the exit doesn't count
                 out, r, k_exit = "loss", -p.stop_atr, k
-                mae = max(mae, p.stop_atr)
-                mfe = max(mfe, min(fav, p.target_atr))
+                mae = max(mae, p.stop_atr)  # the day's favourable move may have come after the stop
                 break
             if hit_tgt:
                 out, r, k_exit = "win", p.target_atr, k
@@ -80,6 +80,10 @@ def label_outcomes(bars: pd.DataFrame, events: pd.DataFrame, atr_col: str = "atr
                 break
             mfe, mae = max(mfe, fav), max(mae, adv)
         if r is None:
+            if last_k < p.max_days:  # no exit yet and the data ends before the time limit
+                rec["outcome"] = "incomplete"
+                rows.append(rec)
+                continue
             r = dr * (c[i + p.max_days] - entry) / unit
         rec.update({"outcome": out, "r": float(r), "days_to_exit": k_exit, "entry": entry,
                     "mfe_r": mfe, "mae_r": mae})

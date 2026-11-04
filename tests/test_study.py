@@ -71,7 +71,7 @@ def test_mae_ignores_price_after_stop_exit():
 
 
 def test_incomplete_at_end_of_data():
-    b = bars_from([100, 101, 102])
+    b = bars_from([100])  # no next day to enter on
     assert label(b, 1).outcome == "incomplete"
 
 
@@ -182,3 +182,44 @@ def test_no_triangle_before_last_swing_is_confirmed():
     c = _path([(0, 90), (15, 100), (25, 90), (40, 100), (50, 95), (60, 108), (70, 108)])
     ev = detect_patterns(bars_from(c))
     assert (ev["signal"] == "triangle_ascending").sum() == 0
+
+
+def test_one_breakout_is_one_pattern():
+    """Audit finding: an H&S breakout was also counted as a triangle at the same level."""
+    c = _path([(0, 80), (15, 100), (25, 92), (40, 110), (55, 92), (70, 100), (85, 85), (95, 85)])
+    ev = detect_patterns(bars_from(c))
+    assert len(ev) == 1 and ev["signal"].iloc[0] == "head_shoulders"
+
+
+def test_pattern_swings_are_not_reused(random_daily):
+    from bot.study.patterns import PatternParams
+    ev = detect_patterns(random_daily)
+    # every breakout day + level is unique (no structure counted twice)
+    assert not ev.duplicated(["day", "level"]).any()
+
+
+def test_early_exit_near_data_end_is_labelled():
+    b = bars_from([100, 100, 100.5, 102.5, 103])  # target hit on day 3, only 4 days of data
+    r = label(b, 1)
+    assert r.outcome == "win"
+
+
+def test_open_trade_at_data_end_is_incomplete():
+    b = bars_from([100, 100, 100.2, 100.1])
+    assert label(b, 1).outcome == "incomplete"
+
+
+def test_bad_wick_is_clipped_but_real_crash_kept():
+    from bot.data import clip_bad_wicks
+    ts = pd.date_range("2020-03-13", periods=5, freq="5min", tz="UTC")
+    df = pd.DataFrame({"open_time": ts, "open": [104, 103, 103, 117, 117], "close": [103, 103, 117, 117, 116],
+                       "high": [105, 104, 323, 118, 118], "low": [102, 102, 101, 116, 80], "volume": 1.0})
+    out, hits = clip_bad_wicks(df)
+    assert out["high"].iloc[2] == 117  # 323 spike removed (body/neighbours max is 117)
+    assert out["low"].iloc[4] == 116  # isolated -31% wick also removed
+    assert len(hits) == 2
+    real = df.copy()
+    real.loc[2, ["open", "close", "high", "low"]] = [103, 90, 104, 88]  # real move: echoed by the close
+    real.loc[3, "open"] = 90
+    out2, hits2 = clip_bad_wicks(real.iloc[:4])
+    assert hits2 == []
