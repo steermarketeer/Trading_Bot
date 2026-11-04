@@ -151,3 +151,75 @@ def chart_pack(df5: pd.DataFrame, trade: pd.Series, out_dir: Path) -> list[Path]
         plot_tf(df5, trade, tf, rule, p)
         files.append(p)
     return files
+
+
+def plot_levels(df5: pd.DataFrame, tf: str, rule: str, entry_time: pd.Timestamp, exit_time: pd.Timestamp,
+                direction: int, entry: float, stop: float, target: float, title: str, path: Path,
+                ref_level: float | None = None, before: int | None = None) -> None:
+    """Chart one trade with explicit entry / stop / target on one timeframe (same indicator panels)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    b = resample(df5, rule).reset_index(drop=True)
+    e20, e50 = ema(b["close"], 20), ema(b["close"], 50)
+    _, bu, bl = bollinger(b["close"])
+    _, _, ctop, cbot, _, _ = ichimoku(b)
+    line, sig = macd(b["close"])
+    hist = line - sig
+    r = rsi(b["close"])
+    et, xt = pd.Timestamp(entry_time), pd.Timestamp(exit_time)
+    i_entry = int((b["close_time"] <= et).sum())
+    i_exit = int((b["open_time"] < xt).sum()) - 1
+    nb = before or BEFORE.get(tf, DEFAULT_BEFORE)
+    lo_i = max(0, i_entry - nb)
+    hi_i = min(len(b), max(i_exit + 15, i_entry + 15), i_entry + MAX_AFTER)
+    s = slice(lo_i, hi_i)
+    seg = b.iloc[s]
+    x = np.arange(len(seg))
+    k_entry, k_exit = i_entry - lo_i, i_exit - lo_i
+    fig, (ax, axv, axm, axr) = plt.subplots(4, 1, figsize=(15, 9), sharex=True,
+                                            gridspec_kw={"height_ratios": [5, 1, 1.4, 1.4]})
+    up = (seg["close"] >= seg["open"]).to_numpy()
+    ax.vlines(x, seg["low"], seg["high"], color="#666", linewidth=0.7, zorder=2)
+    ax.bar(x[up], (seg["close"] - seg["open"]).to_numpy()[up], bottom=seg["open"].to_numpy()[up], color="#26a69a", width=0.7, zorder=3)
+    ax.bar(x[~up], (seg["close"] - seg["open"]).to_numpy()[~up], bottom=seg["open"].to_numpy()[~up], color="#ef5350", width=0.7, zorder=3)
+    ax.plot(x, e20.iloc[s], color="#ff9800", linewidth=1.1, label="EMA20")
+    ax.plot(x, e50.iloc[s], color="#3f51b5", linewidth=1.3, label="EMA50")
+    ax.plot(x, bu.iloc[s], color="#9e9e9e", linewidth=0.7, linestyle="--", label="Bollinger 20,2")
+    ax.plot(x, bl.iloc[s], color="#9e9e9e", linewidth=0.7, linestyle="--")
+    ax.fill_between(x, cbot.iloc[s].to_numpy(), ctop.iloc[s].to_numpy(), color="#80cbc4", alpha=0.25, label="Ichimoku cloud", zorder=1)
+    ax.axhline(entry, color="#1e88e5", linewidth=1, label=f"entry {entry:,.2f}")
+    ax.axhline(target, color="#2e7d32", linestyle=":", linewidth=1.4, label=f"target 2:1 {target:,.2f}")
+    ax.axhline(stop, color="#c62828", linestyle=":", linewidth=1.4, label=f"stop {stop:,.2f}")
+    if ref_level is not None:
+        ax.axhline(ref_level, color="#8e24aa", linestyle="-.", linewidth=1, label=f"broken level {ref_level:,.2f}")
+    for axx in (ax, axv, axm, axr):
+        axx.axvline(k_entry - 0.5, color="black", linestyle="--", linewidth=1.2)
+        if 0 <= k_exit < len(seg):
+            axx.axvline(k_exit, color="#757575", linestyle="--", linewidth=1)
+    ax.legend(loc="upper left", fontsize=7, ncol=4)
+    span = [seg["low"].min(), seg["high"].max(), stop, target]
+    pad = (max(span) - min(span)) * 0.04
+    ax.set_ylim(min(span) - pad, max(span) + pad)
+    axv.bar(x, seg["volume"], color=np.where(up, "#26a69a", "#ef5350"), width=0.7)
+    axv.set_ylabel("vol", fontsize=8)
+    hs = hist.iloc[s].to_numpy()
+    axm.bar(x, hs, color=np.where(hs >= 0, "#26a69a", "#ef5350"), width=0.7)
+    axm.plot(x, line.iloc[s], color="#1e88e5", linewidth=0.9)
+    axm.plot(x, sig.iloc[s], color="#ff9800", linewidth=0.9)
+    axm.set_ylabel("MACD", fontsize=8)
+    axr.plot(x, r.iloc[s], color="#7e57c2", linewidth=1)
+    axr.axhline(70, color="#c62828", linewidth=0.6, linestyle="--")
+    axr.axhline(30, color="#2e7d32", linewidth=0.6, linestyle="--")
+    axr.set_ylim(0, 100)
+    axr.set_ylabel("RSI", fontsize=8)
+    idx = np.linspace(0, len(seg) - 1, 8).astype(int)
+    fmt = "%Y-%m-%d" if tf in ("1D", "1W") else "%m-%d %H:%M"
+    axr.set_xticks(idx)
+    axr.set_xticklabels([seg["open_time"].iloc[i].strftime(fmt) for i in idx], fontsize=8)
+    fig.suptitle(f"{tf}  |  {title}", fontsize=10)
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
