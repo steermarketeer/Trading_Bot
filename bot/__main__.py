@@ -131,6 +131,13 @@ def cmd_failures(args, cfg):
     print(f"report: {path}")
 
 
+def cmd_indicators(args, cfg):
+    from .study.indicator_search import run_indicator_search
+
+    path = run_indicator_search(cfg, Path(args.out), holdout_start=args.holdout_start)
+    print(f"report: {path}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -168,9 +175,13 @@ def main(argv=None):
     fa.add_argument("--holdout-start", default="2025-11-01")
     fa.add_argument("--leverage", type=float, default=5.0)
 
+    ind = sub.add_parser("indicators", help="which indicators catch failures (run `study` and `failures` first)")
+    ind.add_argument("--out", default="reports")
+    ind.add_argument("--holdout-start", default="2025-11-01")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

@@ -242,3 +242,44 @@ def test_mtf_hints_use_only_closed_candles():
         cut = df5[df5["open_time"] < trades["entry_time"][k]]
         part = hints_at(cut, trades.iloc[[k]])
         assert part[hint_columns()].iloc[0].tolist() == full[hint_columns()].iloc[k].tolist()
+
+
+def _synthetic_5m(days=150, seed=5, start="2024-01-01"):
+    rng = np.random.default_rng(seed)
+    n = 288 * days
+    ts = pd.date_range(start, periods=n, freq="5min", tz="UTC")
+    c = 100 * np.exp(np.cumsum(rng.normal(0, 0.002, n)))
+    o = np.r_[c[0], c[:-1]]
+    return pd.DataFrame({"open_time": ts, "open": o, "close": c, "high": np.maximum(o, c) * 1.001,
+                         "low": np.minimum(o, c) * 0.999, "volume": rng.uniform(1, 10, n)})
+
+
+def test_new_hints_use_only_closed_candles():
+    from bot.study.mtf2 import context_hints, tf_hints2
+    eth, btc = _synthetic_5m(seed=5), _synthetic_5m(seed=6)
+    btc[["open", "close", "high", "low"]] *= 300
+    fund = pd.DataFrame({"time": pd.date_range("2024-01-01", periods=150 * 3, freq="8h", tz="UTC"),
+                         "rate": np.random.default_rng(1).normal(0.0001, 0.0002, 450)})
+    trades = pd.DataFrame({"entry_time": pd.to_datetime(["2024-04-20", "2024-05-11"], utc=True),
+                           "direction": [1, -1], "entry": [100.0, 100.0], "atr14": [3.0, 3.0]})
+    full_tf = tf_hints2(eth, trades)
+    full_ctx = context_hints(trades, eth, btc, fund)
+    for k in range(2):
+        t = trades["entry_time"][k]
+        e_cut, b_cut = eth[eth["open_time"] < t], btc[btc["open_time"] < t]
+        f_cut = fund[fund["time"] <= t]
+        one = trades.iloc[[k]].reset_index(drop=True)
+        assert tf_hints2(e_cut, one).iloc[0].tolist() == full_tf.iloc[k].tolist()
+        assert context_hints(one, e_cut, b_cut, f_cut).iloc[0].tolist() == full_ctx.iloc[k].tolist()
+
+
+def test_direction_free_hints_ignore_direction():
+    from bot.study.mtf2 import tf_hints2
+    eth = _synthetic_5m()
+    t = pd.DataFrame({"entry_time": pd.to_datetime(["2024-04-20", "2024-04-20"], utc=True), "direction": [1, -1]})
+    h = tf_hints2(eth, t)
+    for tf in ("1h", "1D"):
+        assert h[f"{tf}_adx_weak"].iloc[0] == h[f"{tf}_adx_weak"].iloc[1]
+        assert h[f"{tf}_vol_expand"].iloc[0] == h[f"{tf}_vol_expand"].iloc[1]
+        # directional hints flip sign between long and short
+        assert h[f"{tf}_supertrend"].iloc[0] == -h[f"{tf}_supertrend"].iloc[1]
