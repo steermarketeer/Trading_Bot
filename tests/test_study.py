@@ -1,0 +1,184 @@
+"""Signal study: outcome labelling, no-lookahead for signals/patterns/trend, pattern detection."""
+import numpy as np
+import pandas as pd
+import pytest
+
+from bot.study.outcomes import OutcomeParams, label_outcomes
+from bot.study.patterns import detect_patterns, swing_points
+from bot.study.run import add_leverage, wilson
+from bot.study.signals import compute_signals
+from bot.study.trend import add_weekly_trend, alignment
+
+
+def bars_from(closes, atr=1.0, start="2024-01-01"):
+    ts = pd.date_range(start, periods=len(closes), freq="D", tz="UTC")
+    c = np.asarray(closes, float)
+    o = np.r_[c[0], c[:-1]]
+    return pd.DataFrame({"ts": ts, "day": ts.strftime("%Y-%m-%d"), "open": o,
+                         "high": np.maximum(o, c), "low": np.minimum(o, c), "close": c,
+                         "volume": 1.0, "atr14": atr})
+
+
+def label(b, direction, p=OutcomeParams(target_atr=2, stop_atr=1, max_days=5)):
+    ev = pd.DataFrame({"day": [b["day"][0]], "direction": [direction], "signal": ["x"]})
+    return label_outcomes(b, ev, p=p).iloc[0]
+
+
+# ---------------------------------------------------------------- outcomes
+def test_win_when_target_first():
+    b = bars_from([100, 100, 100.5, 102.5, 103, 103, 103, 103])
+    r = label(b, 1)
+    assert r.outcome == "win" and r.r == 2 and r.entry == 100
+
+
+def test_loss_when_stop_first():
+    b = bars_from([100, 100, 99.5, 98.5, 103, 103, 103, 103])
+    r = label(b, 1)
+    assert r.outcome == "loss" and r.r == -1
+
+
+def test_same_day_both_hit_counts_as_loss():
+    b = bars_from([100] * 8)
+    b.loc[2, ["high", "low"]] = [103, 98.5]
+    assert label(b, 1).outcome == "loss"
+
+
+def test_short_mirror():
+    b = bars_from([100, 100, 99.5, 97.5, 97, 97, 97, 97])
+    r = label(b, -1)
+    assert r.outcome == "win" and r.r == 2
+
+
+def test_timeout_uses_close_after_max_days():
+    b = bars_from([100, 100, 100.3, 100.6, 100.9, 100.5, 100.4, 100])
+    r = label(b, 1)
+    assert r.outcome == "timeout" and r.r == pytest.approx(0.5)  # close[5] - entry(100)
+
+
+def test_gap_through_stop_fills_at_open():
+    b = bars_from([100, 100, 100, 100, 100, 100, 100, 100])
+    b.loc[2, ["open", "high", "low", "close"]] = [97, 97.5, 96.5, 97]
+    r = label(b, 1)
+    assert r.outcome == "loss" and r.r == pytest.approx(-3)
+    assert r.mae_r == pytest.approx(3)
+
+
+def test_mae_ignores_price_after_stop_exit():
+    b = bars_from([100] * 8)
+    b.loc[2, "low"] = 90  # stop at 99 hit; the rest of the wick happened after the exit
+    r = label(b, 1)
+    assert r.outcome == "loss" and r.mae_r == pytest.approx(1)
+
+
+def test_incomplete_at_end_of_data():
+    b = bars_from([100, 101, 102])
+    assert label(b, 1).outcome == "incomplete"
+
+
+def test_leverage_and_liquidation():
+    ev = pd.DataFrame({"r": [2.0, -1.0, -1.0], "mae_r": [0.5, 1.0, 1.0],
+                       "atr14": [4.0, 4.0, 25.0], "entry": [100.0, 100.0, 100.0]})
+    out = add_leverage(ev, leverage=5, cost_frac=0.0, mmr=0.005)
+    assert out["margin_ret"].tolist()[:2] == pytest.approx([0.40, -0.20])
+    assert out["liquidated"].tolist() == [False, False, True]  # 25% stop beyond ~19.5% liq distance
+    assert out["margin_ret"].iloc[2] == -1.0
+
+
+# ---------------------------------------------------------------- trend
+def test_alignment():
+    assert alignment(1, "Up") == "with" and alignment(-1, "Down") == "with"
+    assert alignment(-1, "Up") == "against" and alignment(1, "Sideways") == "sideways"
+    assert alignment(1, "Unknown") == "unknown"
+
+
+def test_weekly_trend_up_in_steady_rise():
+    b = bars_from(np.linspace(100, 400, 600))
+    t = add_weekly_trend(b)
+    assert t["weekly_trend"].iloc[-1] == "Up"
+    assert t["weekly_trend"].iloc[0] == "Unknown"
+
+
+def test_weekly_trend_no_lookahead(random_daily):
+    full = add_weekly_trend(random_daily).set_index("day")["weekly_trend"]
+    for cut in range(500, 515):  # every weekday, incl. Sunday/Monday boundaries
+        part = add_weekly_trend(random_daily.iloc[:cut]).set_index("day")["weekly_trend"]
+        pd.testing.assert_series_equal(part, full.loc[part.index])
+
+
+def test_weekly_trend_changes_only_on_mondays(random_daily):
+    t = add_weekly_trend(random_daily)
+    changed = t["weekly_trend"].ne(t["weekly_trend"].shift(1)) & t.index.to_series().gt(0)
+    # the trend switches at the Sunday close, i.e. it is first visible on a Sunday row
+    assert set(t.loc[changed, "ts"].dt.dayofweek) <= {6}
+
+
+# ---------------------------------------------------------------- no lookahead: signals & patterns
+def _events_up_to(df, cut, fn):
+    ev = fn(df.iloc[:cut].reset_index(drop=True))
+    last = df["day"].iloc[cut - 1]
+    return ev[ev["day"] <= last].sort_values(["day", "signal", "direction"]).reset_index(drop=True)
+
+
+def test_signals_no_lookahead(random_daily):
+    full = compute_signals(random_daily)
+    for cut in (300, 450, 777):
+        part = _events_up_to(random_daily, cut, compute_signals)
+        exp = full[full["day"] <= random_daily["day"].iloc[cut - 1]].sort_values(
+            ["day", "signal", "direction"]).reset_index(drop=True)
+        pd.testing.assert_frame_equal(part, exp)
+
+
+def test_patterns_no_lookahead(random_daily):
+    full = detect_patterns(random_daily)
+    assert len(full) > 0
+    for cut in (300, 450, 777):
+        part = _events_up_to(random_daily, cut, detect_patterns)
+        exp = full[full["day"] <= random_daily["day"].iloc[cut - 1]].sort_values(
+            ["day", "signal", "direction"]).reset_index(drop=True)
+        pd.testing.assert_frame_equal(part, exp, check_dtype=False)
+
+
+def test_swing_confirmed_k_bars_later():
+    h = np.array([1, 2, 3, 9, 3, 2, 1, 1, 1, 1, 1], float)
+    highs, _ = swing_points(h, h - 0.5, k=3)
+    assert highs == [(3, 9.0, 6)]
+
+
+def _path(points):
+    """Piecewise-linear closes through (index, price) points."""
+    xs, ys = zip(*points)
+    return np.interp(np.arange(xs[-1] + 1), xs, ys)
+
+
+def test_detects_double_top():
+    c = _path([(0, 80), (20, 100), (35, 90), (50, 100), (65, 85), (80, 85)])
+    ev = detect_patterns(bars_from(c))
+    dt = ev[ev["signal"] == "double_top"]
+    assert len(dt) == 1 and dt["direction"].iloc[0] == -1
+    assert dt["day"].iloc[0] > bars_from(c)["day"].iloc[50]
+
+
+def test_detects_head_and_shoulders():
+    c = _path([(0, 80), (15, 100), (25, 92), (40, 110), (55, 92), (70, 100), (85, 85), (95, 85)])
+    ev = detect_patterns(bars_from(c))
+    assert (ev["signal"] == "head_shoulders").sum() == 1
+
+
+def test_detects_ascending_triangle_breakout_up():
+    # breakout comes after the last swing low (bar 50) is confirmed at bar 55
+    c = _path([(0, 90), (15, 100), (25, 90), (40, 100), (50, 95), (62, 99), (70, 104), (80, 104)])
+    ev = detect_patterns(bars_from(c))
+    tri = ev[ev["signal"] == "triangle_ascending"]
+    assert len(tri) == 1 and tri["direction"].iloc[0] == 1
+
+
+def test_wilson_interval():
+    lo, hi = wilson(50, 100)
+    assert lo == pytest.approx(0.404, abs=0.002) and hi == pytest.approx(0.596, abs=0.002)
+
+
+def test_no_triangle_before_last_swing_is_confirmed():
+    # same shape, but price breaks out before the swing low at bar 50 is confirmed -> not knowable
+    c = _path([(0, 90), (15, 100), (25, 90), (40, 100), (50, 95), (60, 108), (70, 108)])
+    ev = detect_patterns(bars_from(c))
+    assert (ev["signal"] == "triangle_ascending").sum() == 0

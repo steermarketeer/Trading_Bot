@@ -60,7 +60,8 @@ def cmd_backtest(args, cfg):
     rows = []
     for p in paths:
         spec = load_strategy_spec(p)
-        res = run_backtest(spec, bars, costs, start=args.start, end=args.end)
+        risk = replace(spec.risk, leverage=args.leverage) if args.leverage else None
+        res = run_backtest(spec, bars, costs, start=args.start, end=args.end, risk=risk)
         m = res.metrics
         rows.append({"strategy": spec.name, **m})
         if args.save:
@@ -74,6 +75,8 @@ def cmd_backtest(args, cfg):
 
     print(f"\ncosts: fee {costs.taker_fee:.4%}/side, slippage {costs.slippage_bps}bps, "
           f"funding {'on' if costs.funding else 'OFF'}")
+    if args.leverage:
+        print(f"leverage override: {args.leverage:g}x")
     hdr = f"{'strategy':22s} {'trades':>6s} {'return':>8s} {'CAGR':>7s} {'maxDD':>7s} {'win':>6s} {'PF':>5s} {'sharpe':>6s} {'funding':>8s}"
     print(hdr)
     print("-" * len(hdr))
@@ -110,6 +113,15 @@ def cmd_shadow(args, cfg):
     print(f"details: {cfg.shadow_dir / 'latest.json'}")
 
 
+def cmd_study(args, cfg):
+    from .study.outcomes import OutcomeParams
+    from .study.run import run_study
+
+    op = OutcomeParams(target_atr=args.target_atr, stop_atr=args.stop_atr, max_days=args.max_days)
+    path = run_study(cfg, Path(args.out), holdout_start=args.holdout_start, op=op, leverage=args.leverage)
+    print(f"report: {path}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -125,6 +137,7 @@ def main(argv=None):
     b.add_argument("--slippage-bps", type=float)
     b.add_argument("--fee", type=float)
     b.add_argument("--save", help="directory for trades/days/metrics per strategy")
+    b.add_argument("--leverage", type=float, help="override every strategy's risk.leverage")
 
     s = sub.add_parser("shadow", help="daily paper-trading run")
     s.add_argument("--reset", action="store_true", help="start the shadow fresh (deletes shadow_v2 state)")
@@ -133,9 +146,17 @@ def main(argv=None):
     s.add_argument("--refresh-days", type=int, default=10)
     s.add_argument("--only", nargs="*", help="strategy names")
 
+    st = sub.add_parser("study", help="signal & pattern study vs the weekly trend")
+    st.add_argument("--out", default="reports")
+    st.add_argument("--holdout-start", default="2025-11-01")
+    st.add_argument("--target-atr", type=float, default=2.0)
+    st.add_argument("--stop-atr", type=float, default=1.0)
+    st.add_argument("--max-days", type=int, default=20)
+    st.add_argument("--leverage", type=float, default=5.0)
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
-    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow}[args.cmd](args, cfg)
+    {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
