@@ -36,18 +36,28 @@ def _table(df, cols):
     return "\n".join([head, sep, *body])
 
 
+COST_FRAC = 0.0018  # round-trip taker fee 0.04% x2 + slippage 5 bps x2, as a fraction of price
+
+
 def winrates(x: pd.DataFrame) -> dict:
+    """Win rates (before costs) + average R AFTER fees/slippage + the after-cost break-even win rate at 1R."""
     out = {"n": len(x)}
+    cost_r = COST_FRAC * x["entry"] / x["risk"] if len(x) else pd.Series(dtype=float)
     for rr in RRS:
         col = f"out_{rr:g}"
-        done = x[x[col].isin(["win", "loss", "timeout"])]
+        ok = x[col].isin(["win", "loss", "timeout"])
+        done = x[ok]
         out[f"win_{rr:g}"] = (done[col] == "win").mean() if len(done) else math.nan
-        out[f"r_{rr:g}"] = done[f"r_{rr:g}"].mean() if len(done) else math.nan
+        out[f"r_{rr:g}"] = (done[f"r_{rr:g}"] - cost_r[ok]).mean() if len(done) else math.nan
+    c = cost_r.median() if len(x) else math.nan
+    out["cost_r"] = c
+    out["be_1"] = (1 + c) / 2 if not pd.isna(c) else math.nan  # win rate needed at 1R after costs
     return out
 
 
-WIN_COLS = [("n", "trades", str), ("win_1", "win @1R (b/e 50%)", _pct), ("win_1.5", "win @1.5R (b/e 40%)", _pct),
-            ("win_2", "win @2R (b/e 33%)", _pct), ("r_1", "avg R @1R", _r), ("r_2", "avg R @2R", _r)]
+WIN_COLS = [("n", "trades", str), ("win_1", "win @1R", _pct), ("be_1", "needed @1R after costs", _pct),
+            ("win_1.5", "win @1.5R (b/e 40%+)", _pct), ("win_2", "win @2R (b/e 33%+)", _pct),
+            ("r_1", "avg R @1R after costs", _r), ("r_2", "avg R @2R after costs", _r)]
 
 
 def split(ev: pd.DataFrame, bar: pd.Timedelta):
@@ -154,8 +164,10 @@ def run_sr2(cfg: Config, out_dir: Path, timeframes=("1h", "4h", "1D")) -> Path:
     cache = ROOT / "results"
     cache.mkdir(exist_ok=True)
     L = ["# Support / resistance v2: bounce candle, retests, breakouts, 1h / 4h / 1D, and a machine-learning filter", "",
-         "**Read the win rates against their break-even:** a 1R target (same size as the stop) needs **>50%**, "
-         "1.5R needs >40%, 2R needs >33%. Research = before 2025-11-01; holdout = from 2025-11-01 (never used to choose).",
+         "**Read the win rates against their break-even:** before costs a 1R target needs >50%, 1.5R >40%, 2R >33%. "
+         "Fees + slippage (0.18% round trip) cost a fixed share of each R, so the real 1R break-even is higher: "
+         "it's shown as *needed @1R after costs*. **avg R columns are after costs.** "
+         "Research = before 2025-11-01; holdout = from 2025-11-01 (never used to choose).",
          ""]
     summary = []
     for tf in timeframes:
@@ -239,11 +251,12 @@ def run_sr2(cfg: Config, out_dir: Path, timeframes=("1h", "4h", "1D")) -> Path:
                                 **{f"h_{k}": v for k, v in hres["sel"].items()}})
             L += ["Most important features:", "", ", ".join(imp["feature"].head(20)), ""]
     s = pd.DataFrame(summary)
-    head = ["## Summary: win % at a 1R target (break-even 50%)", "",
+    head = ["## Summary: win % at a 1R target (break-even 50% before costs; see 'needed after costs')", "",
             _table(s, [("tf", "TF", str), ("what", "trade", str), ("r_n", "research trades", lambda x: str(int(x))),
-                       ("r_win_1", "research win @1R", _pct), ("r_win_2", "research win @2R", _pct),
+                       ("r_win_1", "research win @1R", _pct), ("r_be_1", "needed after costs", _pct),
+                       ("r_r_1", "research avg R after costs", _r),
                        ("h_n", "holdout trades", lambda x: "-" if pd.isna(x) else str(int(x))),
-                       ("h_win_1", "holdout win @1R", _pct), ("h_win_2", "holdout win @2R", _pct)]), ""]
+                       ("h_win_1", "holdout win @1R", _pct), ("h_r_1", "holdout avg R after costs", _r)]), ""]
     L = L[:4] + head + L[4:]
     path = out_dir / "sr2_study.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")

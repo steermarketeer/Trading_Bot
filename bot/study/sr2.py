@@ -185,7 +185,11 @@ def build_events(df5: pd.DataFrame, rule: str, resample_fn) -> pd.DataFrame:
                 if lab:
                     fb = c[j + 1:j + 7]
                     failed = bool(((fb > L) if d > 0 else (fb < L)).any())  # back on the old side within 6 candles
-                    rows.append({**base, "event": "breakout", "direction": db, "decision_time": ct.iloc[j],
+                    # trend/momentum features re-signed to the BREAK direction (zone-geometry ones stay zone-relative)
+                    flip = {k: -base[k] for k in ("f_di", "f_d_e20", "f_d_e50", "f_d_e200", "f_macd",
+                                                  "f_ret_20", "f_structure")}
+                    flip["f_macd_turn"] = 1.0 - base["f_macd_turn"]
+                    rows.append({**base, **flip, "event": "breakout", "direction": db, "decision_time": ct.iloc[j],
                                  "false_break_6": failed, **lab})
     return pd.DataFrame(rows)
 
