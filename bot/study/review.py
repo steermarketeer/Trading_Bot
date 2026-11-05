@@ -232,6 +232,43 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
                 ax.text(i, p, f" liq {p:,.0f}", fontsize=8, color="#424242",
                         va="bottom" if side > 0 else "top")
                 liq.append((side, p))
+    # Fibonacci: the last leg in the trade direction inside the window, using only candles closed before entry.
+    # Long: lowest low of the window -> highest high after it; retracements measured down from that high,
+    # extensions up from the low (short: mirrored).
+    dirn = int(t.get("direction", 1))
+    pre_h, pre_l = b.h[lo:i_e], b.l[lo:i_e]
+    fib = {}
+    if len(pre_h) > 5:
+        if dirn > 0:
+            k0 = int(np.argmin(pre_l)); k1 = k0 + int(np.argmax(pre_h[k0:]))
+            f_lo, f_hi = pre_l[k0], pre_h[k1]
+            start, end_ = lo + k0, lo + k1
+            lv_of = lambda r: f_hi - r * (f_hi - f_lo)  # noqa: E731
+            ext_of = lambda r: f_lo + r * (f_hi - f_lo)  # noqa: E731
+        else:
+            k0 = int(np.argmax(pre_h)); k1 = k0 + int(np.argmin(pre_l[k0:]))
+            f_hi, f_lo = pre_h[k0], pre_l[k1]
+            start, end_ = lo + k0, lo + k1
+            lv_of = lambda r: f_lo + r * (f_hi - f_lo)  # noqa: E731
+            ext_of = lambda r: f_hi - r * (f_hi - f_lo)  # noqa: E731
+        ax.plot([start, end_], [f_lo, f_hi] if dirn > 0 else [f_hi, f_lo], color="#f9a825", linewidth=1.2,
+                linestyle=(0, (1, 1)), label="Fibonacci leg")
+        for r_ in (0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0):
+            v = lv_of(r_)
+            fib[f"ret_{r_:g}"] = float(v)
+            ax.hlines(v, start, hi - 1, color="#f9a825", linewidth=1.0 if r_ in (0.5, 0.618) else 0.7,
+                      linestyle="-" if r_ in (0.5, 0.618) else "--", alpha=0.9, zorder=1.5)
+            ax.text(hi - 12, v, f"Fib {r_:g}  {v:,.0f}", fontsize=8.5, color="#e65100", va="bottom",
+                    bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
+        for r_ in (1.272, 1.618):
+            v = ext_of(r_)
+            fib[f"ext_{r_:g}"] = float(v)
+            if ymin - pad <= v <= ymax + pad:
+                ax.hlines(v, end_, hi - 1, color="#f57f17", linewidth=0.9, linestyle="-.")
+                ax.text(hi - 12, v, f"Fib ext {r_:g}  {v:,.0f}", fontsize=8.5, color="#e65100", va="bottom",
+                        bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
+        fib["leg"] = (float(f_lo), float(f_hi), pd.Timestamp(d.ot[start]).strftime("%d %b %Y %H:%M"),
+                      pd.Timestamp(d.ot[end_]).strftime("%d %b %Y %H:%M"))
     for lv, col, name in ((e, "#1565c0", "entry"), (s, "#c62828", "stop"), (g, "#2e7d32", "target")):
         ax.axhline(lv, color=col, linewidth=1.3, linestyle="-" if name == "entry" else (0, (4, 2)))
         ax.text(lo + 1, lv, f" {name} {lv:,.2f} ", ha="left", va="center", fontsize=9, color=col, fontweight="bold",
@@ -245,7 +282,7 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
     if i_x < hi:
         ax.text(i_x, ymin - pad * 0.6, " EXIT (stop)", fontsize=9, color="#616161", fontweight="bold")
     ax.set_ylim(ymin - pad, ymax + pad)
-    ax.legend(loc="upper center", fontsize=9, ncol=6, framealpha=0.85)
+    ax.legend(loc="upper center", fontsize=9, ncol=7, framealpha=0.85)
     off = "" if i_x < hi else "   (exit is later, beyond the right edge)"
     ax.set_title(f"{tf} chart{off}", fontsize=14, loc="left", fontweight="bold")
     axv.bar(x, b.v[lo:hi], color=np.where(up, "#26a69a", "#ef5350"), width=0.72)
@@ -275,4 +312,4 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
             "bb_up": float(bu[j]), "bb_lo": float(bl[j]), "rsi": float(b.r[j]), "macd_hist": float((d.ml - d.ms)[j]),
             "vol_vs_avg": float(b.v[j] / vavg[j]) if vavg[j] > 0 else None,
             "liq_below": sorted([p for sd, p in liq if sd < 0 and p < e], reverse=True)[:3],
-            "liq_above": sorted([p for sd, p in liq if sd > 0 and p > e])[:3]}
+            "liq_above": sorted([p for sd, p in liq if sd > 0 and p > e])[:3], "fib": fib}

@@ -128,6 +128,7 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
   <p class="key">On every chart: black dashed line = entry, dotted grey = stop-out. Blue = entry price, red dashed = stop, green dashed = target.
     Purple bands = support / resistance zones known at entry (price on the right). Dashed grey lines with triangles = untaken liquidity
     (swing highs / lows not yet traded through, with their price). Orange / teal = trendlines through the last two swing highs / lows.
+    Yellow lines = Fibonacci retracements of the last leg (0.5 and 0.618 solid), orange dash-dot = Fibonacci extensions 1.272 / 1.618.
     Averages: EMA 20 orange, EMA 50 blue, EMA 200 purple; grey band = Bollinger 20,2. Below: volume with its 20-candle average, MACD, RSI 14.</p>
 
   <section class="card">
@@ -139,20 +140,55 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
     </ul>
   </section>
 
-  <section class="card mine">
-    <h2>What I think went wrong</h2>
+  <section class="card">
+    <span class="step">Liquidity at entry (untaken swing highs and lows, known before 16:00 UTC on 11 July)</span>
+    <div class="grid2">
+      <dl class="kv">
+        <dt>Above (buy-side, fuel for our long)</dt><dd></dd>
+        <dt>1h / 4h high</dt><dd>1,833</dd>
+        <dt>Daily high</dt><dd>1,849</dd>
+        <dt>Daily highs</dt><dd>2,423 · 2,464</dd>
+      </dl>
+      <dl class="kv">
+        <dt>Below (sell-side, where stops sit)</dt><dd></dd>
+        <dt>15m equal lows</dt><dd>1,794 · 1,794</dd>
+        <dt>15m / 1h lows</dt><dd>1,785 · 1,779 · 1,775 · 1,768</dd>
+        <dt>1h lows</dt><dd>1,737 · 1,731 · 1,721 · 1,712</dd>
+        <dt>4h / daily lows</dt><dd>1,549 · 1,547 · 1,511 · 1,504</dd>
+      </dl>
+    </div>
+    <p>Fibonacci at entry (last leg up, swings known before entry): <b>15m</b> 1,737 → 1,828: 0.382 = 1,793, 0.5 = 1,782, 0.618 = 1,771.
+      <b>1h</b> 1,712 → 1,828: 0.382 = 1,784, 0.5 = 1,770, 0.618 = 1,757, 0.786 = 1,737; extensions 1.272 = 1,859, 1.618 = 1,899.</p>
+  </section>
+
+  <section class="card">
+    <span class="step">What price did next, liquidity side by side</span>
     <ol>
-      <li><b>The stop sat right on top of a liquidity pool.</b> On the 15m chart there were untaken lows at 1,794, 1,794 and 1,785,
-        with the 1,785 support just under them. At 23:20 price dropped straight into that pool (low 1,778), took our stop on the way, and turned.
-        The bot's "clean risk zone" check only looks between the entry and the stop, so it missed liquidity 5 to 15 points below the stop.</li>
-      <li><b>We chased the move.</b> At entry the 1h RSI was about 70, 1h volume was 5 times its average and price was at the upper
-        Bollinger band on 15m and 1h. We bought after the push, not on a retest of 1,809.</li>
-      <li><b>The daily chart was still in repair.</b> Price sat on the daily EMA 50 (about 1,800), far below the EMA 200 (about 2,236), inside
-        the 1,785–1,809 zone, with 1,840 resistance overhead.</li>
-      <li><b>The idea was right.</b> About 24 hours after stopping us out, on 13 July at 00:10 UTC, price reached our target. It later went to 1,900.</li>
+      <li><b>11 Jul 23:20 – 12 Jul 00:30:</b> down to 1,778. It took the equal lows 1,794 / 1,794 and the lows at 1,785 and 1,779 (our stop at 1,799 went with them)
+        and turned at the 15m Fib 0.5 (1,782), 1h Fib 0.382 (1,784) and the 1,785 support.</li>
+      <li><b>13 Jul 00:10:</b> up to 1,848. It took the 1,833 high (and passed our target 1,843), stopping one dollar under the daily high at 1,849.</li>
+      <li><b>13 Jul 18:15:</b> down to 1,748. It took the deeper lows 1,775 and 1,768 and went just below the 1h Fib 0.618 (1,757), above the 0.786 (1,737).</li>
+      <li><b>14 Jul 12:45 – 22:30:</b> it took the daily high 1,849 and ran to 1,897, almost exactly the 1h Fibonacci 1.618 extension (1,899). It reached 1,959 on 22 July.</li>
     </ol>
-    <p>My suggestion for trades like this: put the stop below the pool and the 1,785 support (around 1,775), or wait for a retest of 1,809
-      and enter there. Both keep the same idea with a stop the market is less likely to hunt.</p>
+  </section>
+
+  <section class="card mine">
+    <h2>What I think of this trade, with Fibonacci and liquidity</h2>
+    <ol>
+      <li><b>The direction was right; the stop was in the most obvious place.</b> Our stop (1,799) sat just above equal lows at 1,794 / 1,794:
+        the clearest sell-side liquidity on the chart, and only a 1h Fib 0.236 pullback away. A normal 0.382–0.5 pullback had to take it.</li>
+      <li><b>Price moves from one pool of liquidity to the next.</b> First the lows under our stop, then the 1,833 high, then the deeper lows
+        at 1,775 / 1,768, then the daily high 1,849 and the 1.618 extension. The bot only read "breakout, go", not where the liquidity sat on both sides.</li>
+      <li><b>We chased.</b> Entry came after the push: 1h RSI about 70, volume 5 times average, price at the upper Bollinger band. Bigger players
+        sell into that and buy back lower, at liquidity.</li>
+      <li><b>A Fibonacci pullback alone would also have lost.</b> A limit buy at the 0.382 / support confluence (1,784, filled 12 Jul 00:05)
+        with a stop under the 1h Fib 0.618 (1,755) was stopped on 13 Jul at 17:55 (low 1,748), a day before the run to 1,897.
+        The level that held was below the next liquidity: the 1,737 low, which is also the 1h Fib 0.786. A stop under 1,737, entry 1,784 and target at the
+        1.618 extension (1,899) would have worked (+2.1R), but I'm reading that off the chart afterwards. It has to be tested on all trades before we trust it.</li>
+    </ol>
+    <p><b>Rule idea to test:</b> for a breakout long, enter on a pullback into Fibonacci 0.382–0.5 that lines up with support or liquidity;
+      put the stop below the next untaken liquidity pool beyond the 0.618 (not just above the nearest one); take profit at the next buy-side
+      liquidity or the 1.272 / 1.618 extension.</p>
   </section>
 
   <section class="card">
