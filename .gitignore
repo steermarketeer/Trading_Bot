@@ -14,3 +14,4 @@ data/processed/train_5m_h48.parquet
 # New engine outputs
 results/
 shadow_v2/run.log
+data/metrics/*.csv
