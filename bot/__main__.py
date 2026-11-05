@@ -233,10 +233,20 @@ def cmd_decision_map(args, cfg):
     print(f"report: {run_decision_map(cfg, Path(args.out))}")
 
 
+def cmd_coin_search(args, cfg):
+    from .study.coin_search import run_coin_search
+    Path(args.out).mkdir(parents=True, exist_ok=True)
+    print(f"report: {run_coin_search(cfg, Path(args.out))}")
+
+
 def cmd_coins(args, cfg):
     from .study.coins import run_coins
     Path(args.out).mkdir(parents=True, exist_ok=True)
-    print(f"report: {run_coins(cfg, Path(args.out))}")
+    if args.tuned:
+        from .study.coins import run_coins_tuned
+        print(f"report: {run_coins_tuned(cfg, Path(args.out))}")
+    else:
+        print(f"report: {run_coins(cfg, Path(args.out))}")
 
 
 def cmd_liq_fail(args, cfg):
@@ -375,8 +385,11 @@ def main(argv=None):
     dm = sub.add_parser("decision-map", help="factor map (concepts + indicators) with points per setup")
     dm.add_argument("--out", default="reports")
 
+    csr = sub.add_parser("coin-search", help="each coin's own best main-rule combination, chosen pre-holdout")
+    csr.add_argument("--out", default="reports")
     cns = sub.add_parser("coins", help="frozen v3.1 rules on BTC / SOL / BNB / XRP / DOGE (+ ETH), win % per coin")
     cns.add_argument("--out", default="reports")
+    cns.add_argument("--tuned", action="store_true", help="re-derive thresholds per coin on pre-holdout data")
     lqf = sub.add_parser("liquidation-failures", help="why v3.1 trades fail: liquidation map + thin volume")
     lqf.add_argument("--out", default="reports")
     lqf.add_argument("--map", default="oi", choices=["oi", "volume"])
@@ -401,7 +414,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "entry15": cmd_entry15, "liquidation-failures": cmd_liq_fail, "coins": cmd_coins, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "entry15": cmd_entry15, "liquidation-failures": cmd_liq_fail, "coins": cmd_coins, "coin-search": cmd_coin_search, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

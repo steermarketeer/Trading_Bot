@@ -38,9 +38,25 @@ def bounce_volume_ratio(sig: pd.DataFrame, df5u: pd.DataFrame) -> pd.Series:
     return pd.Series(v.reindex(conf).to_numpy() / v.reindex(conf - pd.Timedelta(days=1)).to_numpy(), index=sig.index)
 
 
-def coin_trades(cfg: Config, sym: str) -> pd.DataFrame:
+def coin_thresholds(cfg: Config, sym: str) -> dict:
+    """Same definitions as the ETH freeze (bot/live/v3.freeze), on this coin's data BEFORE the holdout only:
+    atr_q20 = 20th percentile of ATR% of certainty >= 7 breakouts per timeframe;
+    lvn_median = median low-volume-path share of those breakouts that pass F1 (stop >= 0.6%) + F2."""
+    from .flow import flow_features, load_flow
     c = replace(cfg, symbol=sym)
-    sig = generate_signals(c)
+    br = generate_signals(c, return_stage="breakouts")
+    br = br[br["entry"].notna() & (br["risk"] > 0) & (br["entry_time"] < HOLDOUT)].copy()
+    q20 = br.groupby("tf")["atr_pct"].quantile(0.2).to_dict()
+    A = br[(br["stop_pct"] >= 0.006) & (br["atr_pct"] >= br["tf"].map(q20))].copy()
+    A["atr_ref"] = A["f_atr_pct"] * A["entry"]
+    lvn = flow_features(A, load_flow(c.data_dir, sym))["n_vp_lvn_share"]
+    return {"atr_q20": {k: float(v) for k, v in q20.items()}, "lvn_median": float(lvn.median()),
+            "n_breakouts": int(len(br))}
+
+
+def coin_trades(cfg: Config, sym: str, override: dict | None = None) -> pd.DataFrame:
+    c = replace(cfg, symbol=sym)
+    sig = generate_signals(c, params_override=override)
     sig = sig[~sig["pending_entry"].astype(bool) & sig["setup"].isin(list(TGT))].copy()
     sig["entry_time"] = pd.to_datetime(sig["entry_time"])
     df5u, _ = load_klines_5m(c.data_dir, sym)
@@ -120,5 +136,94 @@ def run_coins(cfg: Config, out_dir: Path, coins=COINS) -> Path:
     yr = yr.reset_index().rename(columns={"index": "year"})
     L += ["## Win % by year (trades)", "", _table(yr.fillna("-"), [(c, c, str) for c in yr.columns]), ""]
     path = out_dir / "coins_v31.md"
+    path.write_text("\n".join(L) + "\n", encoding="utf-8")
+    return path
+
+
+def run_coins_tuned(cfg: Config, out_dir: Path, coins=COINS) -> Path:
+    """Per-coin thresholds (pre-holdout data only) vs the frozen ETH thresholds."""
+    import json
+    frozen = pd.read_pickle(ROOT / "results" / "coins_v31.pkl")
+    th, parts = {}, []
+    for s in coins:
+        print("coin", s, flush=True)
+        th[s] = coin_thresholds(cfg, s)
+        parts.append(coin_trades(cfg, s, {k: th[s][k] for k in ("atr_q20", "lvn_median")}))
+    T = pd.concat(parts, ignore_index=True)
+    T.to_pickle(ROOT / "results" / "coins_v31_tuned.pkl")
+    (ROOT / "results" / "coin_thresholds.json").write_text(json.dumps(th, indent=2))
+    wk = {False: (HOLDOUT - START).days / 7, True: (T["entry_time"].max() - HOLDOUT).days / 7}
+    L = ["# v3.1 with thresholds re-tuned per coin", "",
+         "Only two thresholds change, each re-derived by the SAME definition used for ETH, on the coin's own data "
+         "before the holdout: 'not the quietest 20%' (ATR% 20th percentile per timeframe) and the A+ low-volume-path "
+         "cut-off (median). Rules, models and everything else unchanged. The holdout (Nov 2025 on) was not used to "
+         "choose anything. **win % = profit after all costs.**", ""]
+    rows = []
+    for s, t in th.items():
+        rows.append({"coin": s.replace("USDT", ""), **{f"q_{k}": v for k, v in t["atr_q20"].items()},
+                     "lvn": t["lvn_median"]})
+    L += ["## Thresholds", "", _table(pd.DataFrame(rows), [
+        ("coin", "coin", str), ("q_2h", "quietest-20% cut 2h (ATR%)", lambda v: f"{v:.2%}"),
+        ("q_4h", "4h", lambda v: f"{v:.2%}"), ("q_1D", "1D", lambda v: f"{v:.2%}"),
+        ("lvn", "A+ low-volume cut-off", lambda v: f"{v:.3f}")]), ""]
+    rows = []
+    for coin in T["coin"].unique():
+        for hold, per in ((False, "2022 - Oct 2025"), (True, "holdout")):
+            r = {"coin": coin, "period": per}
+            for k, D in (("f", frozen), ("t", T)):
+                x = D[(D["coin"] == coin) & (D["hold"] == hold)].reset_index(drop=True)
+                s_ = stats(x["net"].to_numpy())
+                eq, _ = account(x, "net", "exit_time", RISK) if len(x) else (math.nan, 0)
+                r.update({f"n_{k}": s_["n"], f"w_{k}": s_["win"], f"a_{k}": s_["avg"], f"e_{k}": eq,
+                          f"pw_{k}": s_["n"] / wk[hold]})
+            rows.append(r)
+    for hold, per in ((False, "2022 - Oct 2025"), (True, "holdout")):
+        r = {"coin": "5 NEW COINS", "period": per}
+        for k, D in (("f", frozen), ("t", T)):
+            x = D[(D["coin"] != "ETH") & (D["hold"] == hold)]
+            s_ = stats(x["net"].to_numpy())
+            r.update({f"n_{k}": s_["n"], f"w_{k}": s_["win"], f"a_{k}": s_["avg"], f"e_{k}": math.nan,
+                      f"pw_{k}": s_["n"] / wk[hold]})
+        rows.append(r)
+    f2 = lambda v: f"{v:+.2f}"  # noqa: E731
+    fx = lambda v: "" if v != v else f"{v:.2f}x"  # noqa: E731
+    L += ["## Win % per coin: ETH thresholds vs the coin's own thresholds", "", _table(pd.DataFrame(rows), [
+        ("coin", "coin", str), ("period", "period", str),
+        ("n_f", "trades (ETH thresholds)", str), ("w_f", "win %", _pct), ("a_f", "avg R", f2), ("e_f", "account", fx),
+        ("n_t", "trades (own thresholds)", str), ("pw_t", "per week", lambda v: f"{v:.2f}"), ("w_t", "win %", _pct),
+        ("a_t", "avg R", f2), ("e_t", "account", fx)]), ""]
+    rows = []
+    for hold, per in ((False, "2022 - Oct 2025"), (True, "holdout")):
+        for setup in TGT:
+            r = {"period": per, "setup": setup}
+            for coin in T["coin"].unique():
+                x = T[(T["hold"] == hold) & (T["setup"] == setup) & (T["coin"] == coin)]
+                r[coin] = f"{(x['net'] > 0).mean():.0%} ({len(x)})" if len(x) else "-"
+            x = T[(T["hold"] == hold) & (T["setup"] == setup) & (T["coin"] != "ETH")]
+            r["new"] = f"{(x['net'] > 0).mean():.0%} ({len(x)}), {x['net'].mean():+.2f}R" if len(x) else "-"
+            rows.append(r)
+    L += ["## Own thresholds: win % per setup (trades)", "", _table(pd.DataFrame(rows), [
+        ("period", "period", str), ("setup", "setup", str)] + [(c, c, str) for c in T["coin"].unique()] +
+        [("new", "5 new coins: win % (n), avg R", str)]), ""]
+    rows = []
+    for name, sel in (("ETH only", T["coin"] == "ETH"), ("all 6 coins together", T["coin"].notna()),
+                      ("ETH + coins with an edge before the holdout", None)):
+        if sel is None:
+            pre = T[~T["hold"]].groupby("coin")["net"].mean()
+            good = [c for c in pre.index if pre[c] > 0.2]
+            sel = T["coin"].isin(good)
+            name = f"{name}: {', '.join(good)}"
+        for hold, per in ((False, "2022 - Oct 2025"), (True, "holdout")):
+            x = T[sel & (T["hold"] == hold)].reset_index(drop=True)
+            s_ = stats(x["net"].to_numpy())
+            eq, mdd = account(x, "net", "exit_time", RISK)
+            rows.append({"p": name, "period": per, **s_, "pw": s_["n"] / wk[hold], "eq": eq, "mdd": mdd})
+    L += ["## One account (A+ 4%, others 2%, max 5x)", "",
+          "The third portfolio picks coins by avg R >= +0.2 BEFORE the holdout; its holdout row is the honest test.", "",
+          _table(pd.DataFrame(rows), [("p", "portfolio", str), ("period", "period", str), ("n", "trades", str),
+                                      ("pw", "per week", lambda v: f"{v:.2f}"), ("win", "win %", _pct),
+                                      ("avg", "avg R", f2), ("eq", "account", fx),
+                                      ("mdd", "worst drop", lambda v: f"-{v:.0%}")]), ""]
+    path = out_dir / "coins_v31_tuned.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

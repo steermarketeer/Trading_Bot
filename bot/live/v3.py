@@ -93,9 +93,13 @@ def load_frozen():
 
 
 # ----------------------------------------------------------------------------- signals
-def generate_signals(cfg: Config, since: pd.Timestamp | None = None) -> pd.DataFrame:
-    """All v3 trades (entry_time, setup, direction, entry, stop, ...) from the full data, frozen rules."""
+def generate_signals(cfg: Config, since: pd.Timestamp | None = None, params_override: dict | None = None,
+                     return_stage: str | None = None) -> pd.DataFrame:
+    """All v3 trades (entry_time, setup, direction, entry, stop, ...) from the full data, frozen rules.
+    params_override: replace frozen thresholds (e.g. per-coin atr_q20 / lvn_median) - research use only.
+    return_stage="breakouts": return certainty >= 7 breakouts with F1 / F2 columns, before any filter."""
     models, params, _ = load_frozen()
+    params = {**params, **(params_override or {})}
     df5u, _ = load_klines_5m(cfg.data_dir, cfg.symbol)
     btc5, _ = load_klines_5m(cfg.data_dir, cfg.btc_symbol)
     df5n = df5u.assign(open_time=pd.to_datetime(df5u["open_time"], utc=True).dt.tz_convert(None))
@@ -122,7 +126,7 @@ def generate_signals(cfg: Config, since: pd.Timestamp | None = None) -> pd.DataF
         m = models["2h"] if tf == "2h" else models["4h_1D"]
         ev["p"] = m.predict(ev)
         ev["certainty"] = np.clip(np.round(ev["p"] * 10), 1, 10).astype(int)
-        ev = ev[ev["certainty"] >= 7].copy()
+        ev = ev[ev["certainty"] >= params.get("min_certainty", 7)].copy()
         ev["entry"] = [e if np.isfinite(e) else entry_px(t) for e, t in zip(ev["entry"], ev["decision_time"])]
         ev["risk"] = (ev["entry"] - ev["stop"]) * ev["direction"]
         ev["family"] = "breakout"
@@ -146,6 +150,8 @@ def generate_signals(cfg: Config, since: pd.Timestamp | None = None) -> pd.DataF
         br["btc_4h"] = mm["side"].to_numpy() * br["direction"].to_numpy()
         br["macd_6h"] = br["m_6h_macd"]
         br["pending_entry"] = br["entry"].isna()
+        if return_stage == "breakouts":
+            return br
         keep = br["pending_entry"] | (ok & br["F1"].astype(bool) & br["F2"].astype(bool))
         keep &= (br["btc_4h"] > 0) & (br["macd_6h"] > 0)
         br = br[keep].copy()
