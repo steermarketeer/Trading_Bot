@@ -63,5 +63,5 @@
 | 6 | holdout | 2 | 50% | +0.45 |
 | 7 | 2022 - Oct 2025 | 2 | 50% | +0.16 |
 
-Losers that were hunted (stopped, then the target was reached within 20 days): 23% (2022-25: 22%, holdout: 28%).
+Losers that were hunted (stopped, then the target was reached within 20 days): 28% (2022-25: 28%, holdout: 31%).
 

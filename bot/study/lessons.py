@@ -102,7 +102,10 @@ def replay(sig, ctx, mode: str):
     else:
         R, kind, i = (c[end - 1] - e) / risk, "time", end - 1
     sp = risk / abs(e)
-    legs.append({"net": R - _cost(kind == "target", fund_frac(st, i, d)) / sp, "exit_time": pd.Timestamp(t5[i]) + FIVE,
+    mkt_open = kind == "15m failure exit"                 # filled at the OPEN of candle i
+    i_f = i - 1 if mkt_open else i
+    legs.append({"net": R - _cost(kind == "target", fund_frac(st, i_f, d)) / sp,
+                 "exit_time": pd.Timestamp(t5[i]) if mkt_open else pd.Timestamp(t5[i]) + FIVE,
                  "kind": kind, "R_gross": R})
     if mode == "L1F" and kind == "15m failure exit":
         # opposite trade from the exit: stop just beyond the peak, target = nearest untaken liquidity the other way
@@ -211,18 +214,23 @@ def run_lessons(cfg: Config, out_dir: Path) -> Path:
     S["net_L1"], S["exit_L1"], S["kind_L1"] = l1["net"], l1["exit_time"], l1["kind"]
     l1b = out["L1b"].groupby("sig").first()
     S["net_L1b"], S["exit_L1b"], S["kind_L1b"] = l1b["net"], l1b["exit_time"], l1b["kind"]
-    # L4: a same-direction LOSS (closed before this entry) within 7 days and 1% of price
-    skip4 = []
-    for k, r in S.iterrows():
-        prev = S[(S.index < k) & (S["direction"] == r["direction"]) & (S["exit_base"] < r["entry_time"]) &
-                 (S["entry_time"] >= r["entry_time"] - pd.Timedelta(days=7)) & (S["net_base"] <= 0) &
-                 ((S["px"] - r["px"]).abs() / r["px"] <= 0.01)]
-        skip4.append(len(prev) > 0)
-    S["second_try"] = skip4
+    # L4: a same-direction LOSS (closed before this entry) within 7 days and 1% of price, judged on the outcomes of the
+    # scenario it is combined with (base, L1 or L1b exits)
+    def second_try(ncol, xcol):
+        out_ = []
+        for k, r in S.iterrows():
+            prev = S[(S.index < k) & (S["direction"] == r["direction"]) & (S[xcol] < r["entry_time"]) &
+                     (S["entry_time"] >= r["entry_time"] - pd.Timedelta(days=7)) & (S[ncol] <= 0) &
+                     ((S["px"] - r["px"]).abs() / r["px"] <= 0.01)]
+            out_.append(len(prev) > 0)
+        return out_
+    S["second_try"] = second_try("net_base", "exit_base")
+    S["second_try_L1"] = second_try("net_L1", "exit_L1")
+    S["second_try_L1b"] = second_try("net_L1b", "exit_L1b")
     S["stop_pct"] = S["risk"] / S["px"]
     S["hold"] = S["entry_time"] >= HOLDOUT
     S["decision_time"] = S["entry_time"]
-    flips = out["L1F"][out["L1F"]["kind"].str.startswith("flip")].set_index("sig")
+    flips = out["L1F"][out["L1F"]["kind"].str.startswith("flip")].drop_duplicates("exit_time").set_index("sig")
     S.to_pickle(ROOT / "results" / "lessons.pkl")
     flips.to_pickle(ROOT / "results" / "lessons_flips.pkl")
 
@@ -231,11 +239,11 @@ def run_lessons(cfg: Config, out_dir: Path) -> Path:
         "v3.1 now (one position per move)": (pd.Series(True, index=S.index), "net_base", "exit_base"),
         "L1 15m failure exit": (pd.Series(True, index=S.index), "net_L1", "exit_L1"),
         "L1b 15m double top in the first 24h, before +1R": (pd.Series(True, index=S.index), "net_L1b", "exit_L1b"),
-        "L1b + L4": (~S["second_try"], "net_L1b", "exit_L1b"),
+        "L1b + L4": (~S["second_try_L1b"], "net_L1b", "exit_L1b"),
         "L2 skip breakouts under daily EMA200 with a ceiling before target": (~(brk & S["d1_wrong_side"] & S["ceiling"]), "net_base", "exit_base"),
         "L3 skip breakouts against falling 4h highs": (~(brk & S["falling_highs"]), "net_base", "exit_base"),
         "L4 skip the second try at a failed level": (~S["second_try"], "net_base", "exit_base"),
-        "L1 + L2 + L3 + L4": (~(brk & S["d1_wrong_side"] & S["ceiling"]) & ~(brk & S["falling_highs"]) & ~S["second_try"],
+        "L1 + L2 + L3 + L4": (~(brk & S["d1_wrong_side"] & S["ceiling"]) & ~(brk & S["falling_highs"]) & ~S["second_try_L1"],
                               "net_L1", "exit_L1"),
     }
     wk = {False: (HOLDOUT - pd.Timestamp("2022-01-01")).days / 7, True: (S["entry_time"].max() - HOLDOUT).days / 7}

@@ -12,8 +12,8 @@ One position per move. **win % = profit after all costs.** The idea came from ho
 | step 1: close on a 4h band failure (any trend) | holdout | 71 | 1.46 | 49% | +0.33 | 1.97 | 1.98x | -23% |
 | step 1b: close on a band failure only in a bearish trend | 2022 - Oct 2025 (clean test) | 296 | 1.48 | 45% | +0.40 | 1.83 | 19.24x | -36% |
 | step 1b: close on a band failure only in a bearish trend | holdout | 71 | 1.46 | 49% | +0.49 | 2.15 | 2.29x | -24% |
-| step 1b + confirmed shorts (steps 2-3) | 2022 - Oct 2025 (clean test) | 343 | 1.72 | 42% | +0.30 | 1.58 | 13.48x | -45% |
-| step 1b + confirmed shorts (steps 2-3) | holdout | 79 | 1.63 | 48% | +0.45 | 1.99 | 2.27x | -26% |
+| step 1b + confirmed shorts (steps 2-3) | 2022 - Oct 2025 (clean test) | 327 | 1.64 | 43% | +0.32 | 1.63 | 14.33x | -43% |
+| step 1b + confirmed shorts (steps 2-3) | holdout | 78 | 1.61 | 47% | +0.45 | 1.97 | 2.24x | -26% |
 
 ## Step 1 in detail: longs the band failure would close early
 
@@ -28,6 +28,6 @@ One position per move. **win % = profit after all costs.** The idea came from ho
 
 | period | shorts | win % | avg R | profit factor | avg reward:risk |
 |---|---|---|---|---|---|
-| 2022 - Oct 2025 | 47 | 19% | -0.32 | 0.58 | 3.32 |
-| holdout | 8 | 38% | +0.06 | 1.10 | 3.02 |
+| 2022 - Oct 2025 | 31 | 16% | -0.44 | 0.46 | 3.15 |
+| holdout | 7 | 29% | -0.04 | 0.95 | 2.87 |
 

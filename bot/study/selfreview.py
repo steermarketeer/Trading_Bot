@@ -120,12 +120,13 @@ def run_selfreview(cfg: Config, out_dir: Path) -> Path:
         vert = (d1c[kd] - d1o[kd]) * d > 2 * d1atr[kd]
         j4 = int(np.searchsorted(t4 + np.timedelta64(4, "h"), np.datetime64(et), side="right"))  # first 4h candle CLOSING after entry
         unconf = (c4[j4] - e) * d < 0 if j4 < len(c4) else False
-        w = df[(df["t"] > et) & (df["t"] < et + pd.Timedelta(days=20))]
+        xt = pd.Timestamp(r["exit_base"])                       # only AFTER the stop-out
+        w = df[(df["t"] >= xt) & (df["t"] < xt + pd.Timedelta(days=20))]
         hit = ((w["high"] >= tg) if d > 0 else (w["low"] <= tg)).any()
         rows.append({"stretched": bool(rsi_ok and band_ok), "macd_div_1h": bool(div),
                      "liq_under_stop": bool(((beyond > 0) & (beyond <= 0.5 * rk)).any()), "ema200_near": bool(ema_near),
                      "vertical_day": bool(vert), "unconfirmed_4h": bool(unconf),
-                     "hunted": bool(r["net_base"] <= 0 and hit)})
+                     "hunted": bool(r["net_base"] <= -0.9 and hit)})
     F = pd.DataFrame(rows, index=T.index)
     T = pd.concat([T.drop(columns=[c for c in F.columns if c in T.columns]), F], axis=1)
     T["loss"] = T["net_base"] <= 0

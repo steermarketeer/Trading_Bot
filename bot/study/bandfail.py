@@ -107,7 +107,7 @@ def run_bandfail(cfg: Config, out_dir: Path) -> Path:
         # base outcome
         Rb, xb, kb = run_5m(st, end, d, sg * e, sg * s, sg * tg)
         # scan 4h candles after entry for step 1, stopping at the base exit
-        j0 = int(np.searchsorted(t4, t5[st]))
+        j0 = int(np.searchsorted(t4 + np.timedelta64(4, "h"), t5[st], side="right"))   # first 4h candle closing after entry
         poked, close_at, close_j = False, None, None
         j = j0
         while j < len(t4) - 1:
@@ -133,11 +133,14 @@ def run_bandfail(cfg: Config, out_dir: Path) -> Path:
             row["net_close"] = R1 - (2 * C_MKT + fund(st, close_at, d)) / (risk / abs(e))
             row["exit_close"] = pd.Timestamp(t5[close_at])
             # step 2: failed retest of the middle band within CONFIRM_BARS 4h candles (only in a bearish trend)
-            if bear:
+            if True:
                 for jj in range(close_j + 1, min(len(t4) - 1, close_j + 1 + CONFIRM_BARS)):
                     hh, cc = (H4[jj], C4[jj]) if d > 0 else (-L4[jj], -C4[jj])
                     md = mid4[jj] if d > 0 else -mid4[jj]
                     if hh >= md and cc < md:
+                        kr = daily_at(pd.Timestamp(t4[jj]) + pd.Timedelta(hours=4))
+                        if not ((D1c[kr] - e200[kr]) * d < 0):          # daily trend at the retest must be bearish for this long
+                            break
                         i0 = int(np.searchsorted(t5, t4[jj] + np.timedelta64(4, "h")))
                         if i0 >= len(O) - 1:
                             break
@@ -169,7 +172,7 @@ def run_bandfail(cfg: Config, out_dir: Path) -> Path:
                         R2, x2, k2s = run_5m(i0, end2, -d, -sg * ent, -sg * stop, -sg * tgt2)
                         sp2 = r2 / abs(ent)
                         net2 = R2 - (C_MKT + (C_LMT if k2s == "target" else C_MKT) + fund(i0, x2, -d)) / sp2
-                        shorts.append({"sig": k, "setup": "short (confirmed)", "hold": row["hold"], "net": net2, "rr": rr,
+                        shorts.append({"sig": k, "setup": "short (confirmed)", "hold": bool(t_now >= HOLDOUT), "net": net2, "rr": rr,
                                        "stop_pct": sp2, "decision_time": t_now, "exit_time": pd.Timestamp(t5[x2]) + FIVE,
                                        "kind": k2s})
                         break
@@ -178,6 +181,8 @@ def run_bandfail(cfg: Config, out_dir: Path) -> Path:
         rows.append(row)
     X = pd.DataFrame(rows)
     Sh = pd.DataFrame(shorts)
+    if len(Sh):   # several longs of one move can lead to the same short: count it once
+        Sh = Sh.sort_values("decision_time").drop_duplicates(["decision_time"]).reset_index(drop=True)
     X.to_pickle(ROOT / "results" / "bandfail.pkl")
     Sh.to_pickle(ROOT / "results" / "bandfail_shorts.pkl")
     X["net_close_bear"] = np.where(X["bear"], X["net_close"], X["net_base"])

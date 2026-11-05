@@ -91,7 +91,7 @@ def run_bbmid(cfg: Config, out_dir: Path) -> Path:
                         R, kind, xi = (o[i + 1] - e) / risk, "middle-band exit", i + 1; break
             if kind is None:
                 R, kind, xi = (c[end - 1] - e) / risk, "time", end - 1
-            x_t = pd.Timestamp(t5[xi]) + FIVE
+            x_t = pd.Timestamp(t5[xi]) + (pd.Timedelta(0) if kind == "middle-band exit" else FIVE)   # market exit at the open
             a_ = np.searchsorted(ft, t5[i0], side="right"); b_ = np.searchsorted(ft, x_t.to_datetime64(), side="left")
             sp = risk / abs(e)
             cost = C_MKT + (C_LMT if kind == "target" else C_MKT) + ((fc[b_] - fc[a_]) * d if b_ > a_ else 0.0)

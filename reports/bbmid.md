@@ -8,7 +8,7 @@ Every v3.1 ETH trade, one position per move. **win % = profit after all costs.**
 |---|---|---|---|---|---|---|---|---|---|
 | v3.1 now (one position per move) | 2022 - Oct 2025 (clean test) | 296 | 1.48 | 45% | +0.45 | 1.77 | 2.65 | 25.13x | -36% |
 | v3.1 now (one position per move) | holdout | 71 | 1.46 | 49% | +0.56 | 2.04 | 2.61 | 2.49x | -23% |
-| X · exit on a 1h close through the middle band (before +1R) | 2022 - Oct 2025 (clean test) | 296 | 1.48 | 34% | +0.22 | 2.12 | 2.65 | 7.37x | -27% |
+| X · exit on a 1h close through the middle band (before +1R) | 2022 - Oct 2025 (clean test) | 296 | 1.48 | 34% | +0.22 | 2.13 | 2.65 | 7.38x | -27% |
 | X · exit on a 1h close through the middle band (before +1R) | holdout | 71 | 1.46 | 32% | +0.18 | 1.73 | 2.61 | 1.68x | -16% |
 | E · enter only after the 1h middle band is defended | 2022 - Oct 2025 (clean test) | 206 | 1.03 | 38% | +0.32 | 1.50 | 2.90 | 3.39x | -28% |
 | E · enter only after the 1h middle band is defended | holdout | 46 | 0.95 | 43% | +0.41 | 1.71 | 2.86 | 1.46x | -18% |
