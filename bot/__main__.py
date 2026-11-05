@@ -233,6 +233,12 @@ def cmd_decision_map(args, cfg):
     print(f"report: {run_decision_map(cfg, Path(args.out))}")
 
 
+def cmd_entry15(args, cfg):
+    from .ml.entry15 import run_entry15
+    Path(args.out).mkdir(parents=True, exist_ok=True)
+    print(f"report: {run_entry15(cfg, Path(args.out))}")
+
+
 def cmd_meta(args, cfg):
     from .ml.meta import run_meta
     Path(args.out).mkdir(parents=True, exist_ok=True)
@@ -357,6 +363,8 @@ def main(argv=None):
     dm = sub.add_parser("decision-map", help="factor map (concepts + indicators) with points per setup")
     dm.add_argument("--out", default="reports")
 
+    e15 = sub.add_parser("entry15", help="15m entries (limit / confirmation) for the v3.1 signals")
+    e15.add_argument("--out", default="reports")
     mta = sub.add_parser("meta-label", help="meta-labeling: model may only veto v3.1 trades, walk-forward")
     mta.add_argument("--out", default="reports")
     mlt = sub.add_parser("ml-targets", help="ML profit-taking: target per trade from the liquidity map, walk-forward")
@@ -376,7 +384,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "entry15": cmd_entry15, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
