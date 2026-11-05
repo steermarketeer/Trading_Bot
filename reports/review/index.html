@@ -129,7 +129,8 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
     Purple bands = support / resistance zones known at entry (price on the right). Dashed grey lines with triangles = untaken liquidity
     (swing highs / lows not yet traded through, with their price). Orange / teal = trendlines through the last two swing highs / lows.
     Yellow lines = Fibonacci retracements of the last leg (0.5 and 0.618 solid), orange dash-dot = Fibonacci extensions 1.272 / 1.618.
-    Averages: EMA 20 orange, EMA 50 blue, EMA 200 purple; grey band = Bollinger 20,2. Below: volume with its 20-candle average, MACD, RSI 14.</p>
+    Yellow bands = equal highs / lows, where stops rest. Right panel = estimated liquidations (red = longs, green = shorts).
+    Averages: EMA 20 orange, EMA 50 blue, EMA 200 purple. Bollinger 20,2: upper and lower = solid grey lines, middle = dashed grey. Below: volume with its 20-candle average, MACD, RSI 14.</p>
 
   <section class="card">
     <span class="step">What the bot saw (why it took the trade)</span>
@@ -162,6 +163,28 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
   </section>
 
   <section class="card">
+    <span class="step">Where traders would be liquidated (estimated from real Binance open interest at entry)</span>
+    <p>The panel on the right of each chart shows it. New positions opened in the last 30 days, at 10x to 100x leverage, and not yet liquidated:</p>
+    <div class="grid2">
+      <dl class="kv">
+        <dt>Shorts liquidated above</dt><dd></dd>
+        <dt>1,830 – 1,850</dt><dd>1.1% of open interest</dd>
+        <dt>1,850 – 1,870</dt><dd>2.0% (the biggest cluster)</dd>
+        <dt>1,870 – 1,940</dt><dd>3.5% in total</dd>
+      </dl>
+      <dl class="kv">
+        <dt>Longs liquidated below</dt><dd></dd>
+        <dt>1,780 – 1,790</dt><dd>0.2%</dd>
+        <dt>1,760 – 1,770</dt><dd>0.4%</dd>
+        <dt>1,690 – 1,750</dt><dd>3.0% in total</dd>
+      </dl>
+    </div>
+    <p>Far more short liquidations sat above (about 6.6%) than long liquidations close below. The dips to 1,778 and 1,748 only reached the top of the
+      long clusters; the run on 14 July went through the short clusters from 1,830 to 1,900. This is an estimate: I don't have the exchanges'
+      actual position data, only open interest changes and who was buying.</p>
+  </section>
+
+  <section class="card">
     <span class="step">What price did next, liquidity side by side</span>
     <ol>
       <li><b>11 Jul 23:20 – 12 Jul 00:30:</b> down to 1,778. It took the equal lows 1,794 / 1,794 and the lows at 1,785 and 1,779 (our stop at 1,799 went with them)
@@ -177,6 +200,8 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
     <ol>
       <li><b>The direction was right; the stop was in the most obvious place.</b> Our stop (1,799) sat just above equal lows at 1,794 / 1,794:
         the clearest sell-side liquidity on the chart, and only a 1h Fib 0.236 pullback away. A normal 0.382–0.5 pullback had to take it.</li>
+      <li><b>The bigger liquidation pool was above us.</b> About 6.6% of open interest in short liquidations sat between 1,830 and 1,940,
+        against little long liquidation just under our stop. Price took the small pool under us first, then went for the big one above.</li>
       <li><b>Price moves from one pool of liquidity to the next.</b> First the lows under our stop, then the 1,833 high, then the deeper lows
         at 1,775 / 1,768, then the daily high 1,849 and the 1.618 extension. The bot only read "breakout, go", not where the liquidity sat on both sides.</li>
       <li><b>We chased.</b> Entry came after the push: 1h RSI about 70, volume 5 times average, price at the upper Bollinger band. Bigger players

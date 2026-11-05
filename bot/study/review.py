@@ -174,7 +174,7 @@ def build_review(cfg: Config, out_dir: Path, which: str = "holdout") -> Path:
 BIG_BEFORE = {"15m": 160, "1h": 150, "4h": 150, "1D": 150}
 
 
-def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path) -> dict:
+def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path, liqmap=None) -> dict:
     """One timeframe, full width, readable. Returns the indicator readings at the entry (last closed candle)."""
     import matplotlib
     matplotlib.use("Agg")
@@ -193,14 +193,17 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
     lo = max(0, i_e - BIG_BEFORE[tf])
     hi = min(b.n, max(i_x + 20, i_e + 20), i_e + 80)
     x = np.arange(lo, hi)
-    fig = plt.figure(figsize=(17, 10))
-    gs = fig.add_gridspec(4, 1, height_ratios=[6, 1.2, 1.5, 1.5], hspace=0.06)
-    ax = fig.add_subplot(gs[0])
-    axv, axm, axr = (fig.add_subplot(gs[k], sharex=ax) for k in (1, 2, 3))
+    fig = plt.figure(figsize=(18, 10))
+    gs = fig.add_gridspec(4, 2, height_ratios=[6, 1.2, 1.5, 1.5], width_ratios=[11, 1.7], hspace=0.06, wspace=0.02)
+    ax = fig.add_subplot(gs[0, 0])
+    axv, axm, axr = (fig.add_subplot(gs[k, 0], sharex=ax) for k in (1, 2, 3))
+    axl = fig.add_subplot(gs[0, 1], sharey=ax) if liqmap is not None else None
     o, h, l, c = b.o[lo:hi], b.h[lo:hi], b.l[lo:hi], b.c[lo:hi]
     up = c >= o
-    ax.fill_between(x, bl[lo:hi], bu[lo:hi], color="#90a4ae", alpha=0.15, label="Bollinger 20,2", zorder=0)
-    ax.plot(x, bm[lo:hi], color="#90a4ae", linewidth=0.8, linestyle="--")
+    ax.fill_between(x, bl[lo:hi], bu[lo:hi], color="#90a4ae", alpha=0.08, zorder=0)
+    ax.plot(x, bu[lo:hi], color="#546e7a", linewidth=1.3, label="Bollinger upper")
+    ax.plot(x, bm[lo:hi], color="#546e7a", linewidth=1.1, linestyle="--", label="Bollinger middle (SMA 20)")
+    ax.plot(x, bl[lo:hi], color="#546e7a", linewidth=1.3, label="Bollinger lower")
     ax.vlines(x, l, h, color="#555", linewidth=0.8, zorder=2)
     ax.bar(x[up], (c - o)[up], bottom=o[up], color="#26a69a", width=0.72, zorder=3)
     ax.bar(x[~up], (c - o)[~up], bottom=o[~up], color="#ef5350", width=0.72, zorder=3)
@@ -232,6 +235,33 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
                 ax.text(i, p, f" liq {p:,.0f}", fontsize=8, color="#424242",
                         va="bottom" if side > 0 else "top")
                 liq.append((side, p))
+    # equal highs / lows: two untaken swings within 0.15% = stops resting there
+    for side in (1, -1):
+        ps = sorted(p for sd, p in liq if sd == side)
+        for p1, p2 in zip(ps, ps[1:]):
+            if abs(p2 - p1) / p1 <= 0.0015:
+                m_ = (p1 + p2) / 2
+                ax.axhspan(m_ * 0.9993, m_ * 1.0007, color="#ffca28", alpha=0.45, zorder=1.4)
+                ax.text(i_e - 1, m_, f"EQUAL {'HIGHS' if side > 0 else 'LOWS'} {m_:,.0f}: stops rest here ",
+                        ha="right", va="bottom" if side > 0 else "top", fontsize=9, fontweight="bold", color="#bf360c")
+    # estimated liquidation levels (real open interest), in their own panel on the right (same price scale)
+    if axl is not None:
+        (lp, lw), (sp_, sw_) = liqmap
+        edges = np.linspace(ymin - pad, ymax + pad, 80)
+        hl, _ = np.histogram(lp, bins=edges, weights=lw)
+        hs, _ = np.histogram(sp_, bins=edges, weights=sw_)
+        mids = (edges[:-1] + edges[1:]) / 2
+        hgt = (edges[1] - edges[0]) * 0.9
+        axl.barh(mids, hl * 100, height=hgt, color="#e53935", alpha=0.7, label="longs liquidated")
+        axl.barh(mids, hs * 100, height=hgt, color="#43a047", alpha=0.7, label="shorts liquidated")
+        axl.axhline(e, color="#1565c0", linewidth=1.1)
+        axl.axhline(s, color="#c62828", linewidth=1.1, linestyle=(0, (4, 2)))
+        axl.axhline(g, color="#2e7d32", linewidth=1.1, linestyle=(0, (4, 2)))
+        axl.set_title("liquidations at entry\n(est. from open interest)", fontsize=9)
+        axl.tick_params(labelleft=False, labelsize=7)
+        axl.set_xlabel("% of open interest", fontsize=8)
+        axl.legend(loc="upper right", fontsize=7)
+        axl.grid(alpha=0.15)
     # Fibonacci: the last leg in the trade direction inside the window, using only candles closed before entry.
     # Long: lowest low of the window -> highest high after it; retracements measured down from that high,
     # extensions up from the low (short: mirrored).
@@ -282,7 +312,7 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
     if i_x < hi:
         ax.text(i_x, ymin - pad * 0.6, " EXIT (stop)", fontsize=9, color="#616161", fontweight="bold")
     ax.set_ylim(ymin - pad, ymax + pad)
-    ax.legend(loc="upper center", fontsize=9, ncol=7, framealpha=0.85)
+    ax.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=8.5, ncol=6, frameon=False)
     off = "" if i_x < hi else "   (exit is later, beyond the right edge)"
     ax.set_title(f"{tf} chart{off}", fontsize=14, loc="left", fontweight="bold")
     axv.bar(x, b.v[lo:hi], color=np.where(up, "#26a69a", "#ef5350"), width=0.72)
