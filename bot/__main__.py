@@ -233,6 +233,12 @@ def cmd_decision_map(args, cfg):
     print(f"report: {run_decision_map(cfg, Path(args.out))}")
 
 
+def cmd_ml_targets(args, cfg):
+    from .ml.targets import run_targets
+    Path(args.out).mkdir(parents=True, exist_ok=True)
+    print(f"report: {run_targets(cfg, Path(args.out))}")
+
+
 def cmd_two_layer(args, cfg):
     from .ml.two_layer import run_two_layer
 
@@ -345,6 +351,8 @@ def main(argv=None):
     dm = sub.add_parser("decision-map", help="factor map (concepts + indicators) with points per setup")
     dm.add_argument("--out", default="reports")
 
+    mlt = sub.add_parser("ml-targets", help="ML profit-taking: target per trade from the liquidity map, walk-forward")
+    mlt.add_argument("--out", default="reports")
     tl2 = sub.add_parser("two-layer", help="layer 1 main-rules model + layer 2 indicator veto, walk-forward")
     tl2.add_argument("--out", default="reports")
 
@@ -360,7 +368,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

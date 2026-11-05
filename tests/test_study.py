@@ -465,3 +465,41 @@ def test_ml_context_no_lookahead():
                 continue  # depends on the other candidate in the shared event list
             va, vb = a[col], b[col]
             assert (pd.isna(va) and pd.isna(vb)) or abs(float(va) - float(vb)) < 1e-9, col
+
+
+def test_ml_liquidity_map_no_lookahead():
+    from bot.ml.targets import liquidity_map
+    eth = _synthetic_5m(days=420, seed=52)
+    times = pd.to_datetime(["2024-09-10 08:00", "2024-12-02 00:00"])
+    cand = pd.DataFrame({"decision_time": times, "tf": ["4h", "1D"], "direction": [1, -1],
+                         "entry": [100.0, 100.0], "risk": [1.5, 3.0]})
+    for k in range(2):
+        cand.loc[k, "entry"] = float(eth.loc[eth["open_time"] == times[k].tz_localize("UTC"), "open"].iloc[0])
+    full = liquidity_map(cand, eth)
+    for k in range(2):
+        part = liquidity_map(cand.iloc[[k]].reset_index(drop=True), eth[eth["open_time"] < times[k].tz_localize("UTC")])
+        np.testing.assert_allclose(full.iloc[k].to_numpy(float), part.iloc[0].to_numpy(float), equal_nan=True)
+
+
+def test_ml_target_labels_match_replay():
+    """Target labels agree with the verified strategy_eval replay (fill buffer off, before costs)."""
+    import bot.ml.targets as T
+    from bot.study.strategy_eval import replay_one
+    eth = _synthetic_5m(days=200, seed=53)
+    df5n = eth.assign(open_time=pd.to_datetime(eth["open_time"], utc=True).dt.tz_convert(None))
+    times = pd.to_datetime(["2024-02-10 08:00", "2024-03-02 00:00", "2024-03-20 12:00", "2024-04-01 04:00"])
+    tr = pd.DataFrame({"decision_time": times, "tf": ["4h", "1D", "2h", "4h"], "direction": [1, -1, 1, -1],
+                       "risk": [0.8, 2.5, 0.5, 1.2]})
+    old = T.LIMIT_BUFFER
+    T.LIMIT_BUFFER = 0.0
+    try:
+        lab = T.label_paths(tr, df5n, (np.array([], dtype="datetime64[ns]"), np.array([0.0])))
+    finally:
+        T.LIMIT_BUFFER = old
+    t5 = df5n["open_time"].to_numpy()
+    O, H, L, C = (df5n[x].to_numpy(float) for x in ("open", "high", "low", "close"))
+    for k in range(len(tr)):
+        ref, _ = replay_one(O, H, L, C, t5, times[k], tr["tf"][k], tr["direction"][k], tr["risk"][k], T.GRID)
+        for g in T.GRID:
+            assert abs(lab.iloc[k][f"R_{g:g}"] - ref[f"{g:g}:1"][0]) < 1e-9
+            assert lab.iloc[k][f"exit_{g:g}"] == ref[f"{g:g}:1"][1]
