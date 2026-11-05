@@ -233,6 +233,12 @@ def cmd_decision_map(args, cfg):
     print(f"report: {run_decision_map(cfg, Path(args.out))}")
 
 
+def cmd_bandfail(args, cfg):
+    from .study.bandfail import run_bandfail
+    Path(args.out).mkdir(parents=True, exist_ok=True)
+    print(f"report: {run_bandfail(cfg, Path(args.out))}")
+
+
 def cmd_lessons(args, cfg):
     from .study.lessons import run_lessons
     Path(args.out).mkdir(parents=True, exist_ok=True)
@@ -397,6 +403,8 @@ def main(argv=None):
     dm = sub.add_parser("decision-map", help="factor map (concepts + indicators) with points per setup")
     dm.add_argument("--out", default="reports")
 
+    bfl = sub.add_parser("bandfail", help="close the long on a 4h Bollinger failure, confirm, then short")
+    bfl.add_argument("--out", default="reports")
     lsn = sub.add_parser("lessons", help="the trader's journal lessons as rules, tested on all v3.1 ETH trades")
     lsn.add_argument("--out", default="reports")
     fbl = sub.add_parser("fibliq", help="liquidity + Fibonacci entry / stop / target for the v3.1 signals")
@@ -430,7 +438,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "entry15": cmd_entry15, "liquidation-failures": cmd_liq_fail, "coins": cmd_coins, "coin-search": cmd_coin_search, "fibliq": cmd_fibliq, "lessons": cmd_lessons, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "ml-targets": cmd_ml_targets, "meta-label": cmd_meta, "entry15": cmd_entry15, "liquidation-failures": cmd_liq_fail, "coins": cmd_coins, "coin-search": cmd_coin_search, "fibliq": cmd_fibliq, "lessons": cmd_lessons, "bandfail": cmd_bandfail, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
