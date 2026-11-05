@@ -1,0 +1,248 @@
+<title>Losing Trades Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+/* Layout: one review desk column; each losing trade is a "ticket" with its 4-timeframe chart, facts, and the trader's verdict form. */
+:root {
+  --bg: #f3f4f1; --panel: #ffffff; --ink: #1c2422; --muted: #5d6965; --line: #d9ded9;
+  --accent: #0f6e63; --accent-soft: #dcefeb; --loss: #b3261e; --loss-soft: #f7e1df; --win: #2e7d32;
+  --chip: #eef1ee; --chip-on: #0f6e63; --chip-on-ink: #ffffff;
+  --f-display: "Fraunces", Georgia, serif; --f-body: "IBM Plex Sans", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121715; --panel: #1a211f; --ink: #e5ebe8; --muted: #9aa8a3; --line: #2c3633;
+  --accent: #4fc0ad; --accent-soft: #1d3632; --loss: #ff8a80; --loss-soft: #3a2221; --win: #81c784;
+  --chip: #232c29; --chip-on: #4fc0ad; --chip-on-ink: #0d1412; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121715; --panel: #1a211f; --ink: #e5ebe8; --muted: #9aa8a3; --line: #2c3633;
+  --accent: #4fc0ad; --accent-soft: #1d3632; --loss: #ff8a80; --loss-soft: #3a2221; --win: #81c784;
+  --chip: #232c29; --chip-on: #4fc0ad; --chip-on-ink: #0d1412; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 22px; }
+header { display: grid; gap: 10px; }
+h1 { font-family: var(--f-display); font-weight: 600; font-size: clamp(26px, 4vw, 38px); margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 70ch; margin: 0; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+.progress { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.progress b { color: var(--accent); font-weight: 500; }
+.track { height: 6px; width: 180px; background: var(--chip); border-radius: 3px; overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.fbtn { font: 500 13px var(--f-body); border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.fbtn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.key { font-size: 13px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; max-width: 90ch; }
+.ticket { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: grid; }
+.thead { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.tid { font-family: var(--f-mono); font-weight: 500; font-size: 15px; }
+.side { font: 600 11px var(--f-body); letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.side.LONG { background: var(--accent-soft); color: var(--accent); }
+.side.SHORT { background: var(--loss-soft); color: var(--loss); }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.facts span b { color: var(--ink); font-weight: 500; }
+.r { color: var(--loss); font-family: var(--f-mono); font-weight: 500; margin-left: auto; }
+.done { font: 600 11px var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.chart { display: block; background: #fff; }
+.chart img { width: 100%; height: auto; display: block; }
+.after { padding: 8px 18px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); }
+.after.hit { color: var(--loss); font-weight: 500; }
+form { display: grid; gap: 12px; padding: 14px 18px 18px; border-top: 1px solid var(--line); }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 6px; min-width: 0; }
+legend { font: 600 12px var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 0; margin-bottom: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips label { cursor: pointer; }
+.chips input { position: absolute; opacity: 0; pointer-events: none; }
+.chips span { display: inline-block; font-size: 13px; padding: 4px 10px; border-radius: 6px; background: var(--chip); border: 1px solid transparent; }
+.chips input:checked + span { background: var(--chip-on); color: var(--chip-on-ink); }
+.chips input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+textarea { font: 14px/1.5 var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; min-height: 84px; resize: vertical; width: 100%; box-sizing: border-box; }
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.save { font: 600 14px var(--f-body); background: var(--accent); color: var(--chip-on-ink); border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; }
+.save:disabled { opacity: .5; cursor: default; }
+.status { font-size: 13px; color: var(--muted); }
+.gintro { padding: 14px 18px; display: grid; gap: 6px; border-bottom: 1px solid var(--line); }
+.gintro h2 { font-family: var(--f-display); font-weight: 600; font-size: 22px; margin: 0; text-wrap: balance; }
+.gintro p { margin: 0; color: var(--muted); max-width: 80ch; }
+.count { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+details.tr { border-top: 1px solid var(--line); }
+details.tr > summary { cursor: pointer; padding: 10px 18px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; list-style: none; }
+details.tr > summary::-webkit-details-marker { display: none; }
+details.tr > summary::before { content: "▸"; color: var(--muted); }
+details.tr[open] > summary::before { content: "▾"; }
+details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.empty { color: var(--muted); padding: 30px; text-align: center; }
+.offline { background: var(--loss-soft); color: var(--loss); padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .track i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Losing trades, Nov 2025 – Oct 2026</h1>
+    <p class="lede">The 44 v3.1 ETH trades that lost in the holdout year, grouped into similar trades: same setup and the same thing happening
+      after the stop. Review one group at a time. Open each trade's charts (15m, 1h, 4h, 1D at entry), then tell the bot what the group has in
+      common, what it should have done, and mention any trade that is different. Your answers are saved for Claude to read.</p>
+    <div class="bar">
+      <div class="progress" id="progress">Loading groups…</div>
+      <div class="track" aria-hidden="true"><i id="track"></i></div>
+      <div class="filters" id="filters" role="group" aria-label="Filter trades"></div>
+    </div>
+    <p class="key">Black dashed line = entry, grey dashed = exit. Blue = entry price, red dotted = stop, green dotted = target.
+      Purple bands = support/resistance zones known at entry. Orange / teal lines = trendlines through the last two swing highs / lows.
+      Grey dashes with triangles = untaken liquidity (swing highs / lows not yet traded through). EMA20 orange, EMA50 blue. Below: volume, MACD, RSI.</p>
+    <div id="offline" class="offline" hidden>Saving is unavailable in this view (sign in to claude.ai to save). You can still look through the charts.</div>
+  </header>
+  <main id="list" style="display:grid;gap:22px"><div class="empty">Loading the trade groups…</div></main>
+</div>
+
+<script>
+const TAGS = ["Fake breakout", "Stop hunt / liquidity grab", "Resistance / support ahead on a higher timeframe",
+  "Against the weekly / daily trend", "Weak volume on the breakout", "RSI / MACD divergence", "Pattern against us (double top, H&S…)",
+  "Entered too late (move already done)", "Stop too tight", "Target too far", "News / event", "No clear reason", "Good trade, just lost"];
+const ACTIONS = ["Skip this trade", "Take it, wider stop", "Take it, wait for a retest", "Take it, closer target", "Take it as it was"];
+let trades = [], reviews = {}, db = null, filter = "all";
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }
+  for (const k of kids) if (k) e.append(k);
+  return e;
+}
+
+const KIND = {
+  "hunted": "After stopping us out, price went on to reach our original target. We were right on direction; the stop was in the wrong place.",
+  "came back": "After stopping us out, price came back to our entry within 30 days, but did not reach the target.",
+  "real reversal": "After stopping us out, price kept going against us. The trade idea itself was wrong."
+};
+let groups = [];
+const slug = g => g.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function renderProgress() {
+  const n = groups.length, d = groups.filter(g => reviews[slug(g.name)]).length;
+  document.getElementById("progress").innerHTML = `<b>${d}</b> of ${n} groups reviewed · ${trades.length} trades`;
+  document.getElementById("track").style.width = n ? (100 * d / n) + "%" : "0";
+  for (const g of groups) { const b = document.getElementById("done-" + slug(g.name)); if (b) b.hidden = !reviews[slug(g.name)]; }
+}
+
+function renderFilters() {
+  const f = document.getElementById("filters"); f.innerHTML = "";
+  const opts = [["all", "All groups"], ["todo", "Not reviewed"], ["A+ breakout", "A+ breakouts"], ["breakout", "Breakouts"], ["1D bounce", "1D bounces"]];
+  for (const [k, label] of opts) {
+    const b = el("button", { class: "fbtn", type: "button", "aria-pressed": String(filter === k), text: label });
+    b.onclick = () => { filter = k; renderFilters(); applyFilter(); };
+    f.append(b);
+  }
+}
+function applyFilter() {
+  for (const g of groups) {
+    const node = document.getElementById("g-" + slug(g.name));
+    node.hidden = !(filter === "all" || (filter === "todo" ? !reviews[slug(g.name)] : g.setup === filter));
+  }
+}
+
+function tradeRow(t, open) {
+  const sum = el("summary", {},
+    el("span", { class: "tid", text: t.id }), el("span", { class: "side " + t.side, text: t.side }),
+    el("div", { class: "facts" },
+      ...[["entry", t.entry_time + " UTC"], ["price", t.entry.toLocaleString()], ["stop", t.stop.toLocaleString()],
+          ["target", t.target.toLocaleString()], ["exit", t.exit_time + " UTC"]]
+        .map(([k, v]) => { const s = el("span"); s.append(k + " "); s.append(el("b", { text: v })); return s; })),
+    el("span", { class: "r", text: (t.result_r > 0 ? "+" : "") + t.result_r.toFixed(2) + "R" }));
+  const d = el("details", { class: "tr" }, sum);
+  if (open) d.open = true;
+  const img = el("a", { class: "chart", href: t.img, target: "_blank", rel: "noopener", "aria-label": `Open the ${t.id} chart full size` },
+    el("img", { src: t.img, alt: `${t.id}: 15m, 1h, 4h and 1D charts around the entry`, loading: "lazy", width: "1300", height: "800" }));
+  d.append(img);
+  return d;
+}
+
+function groupCard(g) {
+  const gid = slug(g.name), fid = "f-" + gid;
+  const intro = el("div", { class: "gintro" },
+    el("div", { class: "row" }, el("h2", { text: `${g.setup}: ${g.kind}` }),
+      el("span", { class: "count", text: `${g.trades.length} trade${g.trades.length > 1 ? "s" : ""}` }),
+      el("span", { class: "done", id: "done-" + gid, text: "Reviewed", hidden: "" })),
+    el("p", { text: KIND[g.kind] }));
+  const rows = g.trades.map((t, i) => tradeRow(t, i === 0));
+  const r = reviews[gid] || {};
+  const tagSet = new Set(r.tags || []);
+  const tags = el("fieldset", {}, el("legend", { text: "What do these trades have in common?" }),
+    el("div", { class: "chips" }, ...TAGS.map((name, i) => {
+      const id = `${fid}-tag${i}`;
+      const inp = el("input", { type: "checkbox", id, name: "tags", value: name });
+      if (tagSet.has(name)) inp.checked = true;
+      return el("label", { for: id }, inp, el("span", { text: name }));
+    })));
+  const acts = el("fieldset", {}, el("legend", { text: "What should the bot have done?" }),
+    el("div", { class: "chips" }, ...ACTIONS.map((name, i) => {
+      const id = `${fid}-act${i}`;
+      const inp = el("input", { type: "radio", id, name: "action", value: name });
+      if (r.action === name) inp.checked = true;
+      return el("label", { for: id }, inp, el("span", { text: name }));
+    })));
+  const note = el("textarea", { id: `${fid}-note`, name: "note",
+    placeholder: "What do you see? Which level, trendline, candle or indicator mattered? Name any trade that is different (e.g. h012)." });
+  note.value = r.note || "";
+  const status = el("span", { class: "status", id: `${fid}-status` });
+  const save = el("button", { class: "save", type: "submit", text: "Save group review" });
+  if (!db) save.disabled = true;
+  const form = el("form", { id: fid }, tags, acts,
+    el("fieldset", {}, el("legend", { text: "Your note" }), note), el("div", { class: "row" }, save, status));
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    if (!db) return;
+    const data = { group: g.name, trades: g.trades.map(t => t.id),
+      tags: [...form.querySelectorAll('input[name="tags"]:checked')].map(x => x.value),
+      action: (form.querySelector('input[name="action"]:checked') || {}).value || "", note: note.value.trim(),
+      updated: new Date().toISOString() };
+    save.disabled = true; status.textContent = "Saving…";
+    try { await db.doc("reviews/" + gid).set(data); status.textContent = "Saved"; }
+    catch (e) { status.textContent = "Not saved: " + (e && e.message ? e.message : "try again"); }
+    finally { save.disabled = false; }
+  });
+  return el("article", { class: "ticket", id: "g-" + gid }, intro, ...rows, form);
+}
+
+function renderList() {
+  const list = document.getElementById("list"); list.innerHTML = "";
+  if (!groups.length) { list.append(el("div", { class: "empty", text: "No trades found." })); return; }
+  for (const g of groups) list.append(groupCard(g));
+  applyFilter(); renderProgress();
+}
+
+function fillForms() {
+  for (const g of groups) {
+    const gid = slug(g.name), r = reviews[gid], form = document.getElementById("f-" + gid);
+    if (!r || !form || form.contains(document.activeElement)) continue;
+    form.querySelectorAll('input[name="tags"]').forEach(x => { x.checked = (r.tags || []).includes(x.value); });
+    form.querySelectorAll('input[name="action"]').forEach(x => { x.checked = r.action === x.value; });
+    form.querySelector("textarea").value = r.note || "";
+  }
+}
+
+async function start() {
+  try { trades = await (await fetch("trades.json")).json(); } catch (e) { trades = []; }
+  const m = new Map();
+  for (const t of trades) {
+    if (!m.has(t.group)) m.set(t.group, { name: t.group, setup: t.setup, kind: t.after_kind, trades: [] });
+    m.get(t.group).trades.push(t);
+  }
+  groups = [...m.values()].sort((a, b) => b.trades.length - a.trades.length);
+  renderFilters(); renderList();
+  db = window.claude ? await window.claude.use("db") : null;
+  if (!db) { document.getElementById("offline").hidden = false; return; }
+  document.querySelectorAll(".save").forEach(b => b.disabled = false);
+  const timer = setTimeout(() => { document.getElementById("progress").textContent = "Saved reviews are taking long to load."; }, 10000);
+  db.collection("reviews").onSnapshot(snap => {
+    clearTimeout(timer);
+    reviews = {}; snap.docs.forEach(d => { reviews[d.id] = d.data(); });
+    fillForms(); renderProgress(); applyFilter();
+  }, () => { clearTimeout(timer); document.getElementById("offline").hidden = false; });
+}
+start();
+</script>
