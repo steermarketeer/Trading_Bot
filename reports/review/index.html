@@ -98,81 +98,100 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
 
 <div class="wrap">
   <header>
-    <span class="step">Trade journal · testing your fixes</span>
-    <h1>Your lessons, tested on every trade</h1>
-    <p class="lede">Each lesson became an exact rule and ran on all v3.1 ETH trades, one position per move. Win % is after costs.
-      The lessons came from holdout trades, so the clean test is 2022 – Oct 2025.</p>
-  </header>
-
-  <section class="card">
-    <span class="step">Results, 2022 – Oct 2025 (clean test)</span>
-    <div class="scroll" style="overflow-x:auto">
-    <table style="border-collapse:collapse;font-size:14px;min-width:620px">
-      <thead><tr style="text-align:left;border-bottom:1px solid var(--line)"><th style="padding:6px 10px">Rule</th><th>Trades</th><th>Win %</th><th>Avg R</th><th>Account</th><th>Worst drop</th></tr></thead>
-      <tbody style="font-family:var(--f-mono)">
-        <tr><td style="padding:6px 10px;font-family:var(--f-body)">v3.1 now</td><td>296</td><td>45%</td><td>+0.45</td><td>25.1x</td><td>−36%</td></tr>
-        <tr><td style="padding:6px 10px;font-family:var(--f-body)">1 · 15m double top / lower high → exit</td><td>296</td><td>41%</td><td>+0.17</td><td>4.6x</td><td>−17%</td></tr>
-        <tr><td style="padding:6px 10px;font-family:var(--f-body)">1b · same, only true double tops in the first 24h</td><td>296</td><td>43%</td><td>+0.35</td><td>13.2x</td><td>−37%</td></tr>
-        <tr><td style="padding:6px 10px;font-family:var(--f-body)">2 · no breakout under daily EMA 200 with a ceiling before target</td><td>258</td><td>43%</td><td>+0.43</td><td>11.4x</td><td>−37%</td></tr>
-        <tr><td style="padding:6px 10px;font-family:var(--f-body)">3 · no long against falling 4h highs</td><td>273</td><td>44%</td><td>+0.46</td><td>18.9x</td><td>−37%</td></tr>
-        <tr style="color:var(--accent)"><td style="padding:6px 10px;font-family:var(--f-body)"><b>4 · no second try at a failed level</b></td><td>282</td><td><b>45%</b></td><td><b>+0.47</b></td><td><b>25.9x</b></td><td><b>−30%</b></td></tr>
-      </tbody>
-    </table></div>
-    <ul>
-      <li><b>Lesson 4 works</b> in both periods: the trades it removes won only 29% (2022–25) and 33% (holdout). I'd adopt it.</li>
-      <li><b>Lesson 1 saved h039</b> (−0.31R instead of −1.22R), but on all trades the 15m pattern also shows up in winners: it closed 94 trades
-        that went on to win. In total it cost 82R (30R for the tighter version). Splitting by the daily trend didn't fix it.</li>
-      <li>Lessons 2 and 3 didn't help: in 2022–25 the trades they removed won 55% and 48%.</li>
-    </ul>
-    <p>So your eye sees something on the 15m that my rule doesn't. Below is a <b>winner</b> where the same rule would have closed the trade.
-      Tell me what's different from h039, h030 and h029.</p>
-  </section>
-
-  <section class="card">
-    <span class="step">The counter-example: a winner the 15m exit would have closed</span>
-    <h2>Long breakout, Monday 29 September 2025</h2>
+    <span class="step">Trade journal · trade 4 · the fourth-biggest loss</span>
+    <h1>h013 · Long A+ breakout, 5 January 2026</h1>
     <div class="grid2">
       <dl class="kv">
-        <dt>Signal</dt><dd>4h breakout</dd>
-        <dt>Entry</dt><dd>Mon 29 Sep 2025, 00:00 UTC</dd>
-        <dt>Entry price</dt><dd>4,139.54</dd>
+        <dt>Signal</dt><dd>2h zone breakout</dd>
+        <dt>Entry</dt><dd>Mon 5 Jan 2026, 02:00 UTC</dd>
+        <dt>Entry price</dt><dd>3,196.50</dd>
+        <dt>Certainty</dt><dd>7 / 10</dd>
       </dl>
       <dl class="kv">
-        <dt>Stop / target</dt><dd>4,040.24 / 4,338.15 (2 : 1)</dd>
-        <dt>The 15m exit</dt><dd style="color:var(--loss)">29 Sep 07:30 UTC at about 4,092 · −0.55R</dd>
-        <dt>Without it</dt><dd style="color:var(--win)">target hit 1 Oct 15:20 UTC · +1.95R</dd>
+        <dt>Stop</dt><dd>3,143.75 (−1.7%)</dd>
+        <dt>Target</dt><dd>3,302.00 (2 : 1)</dd>
+        <dt>Stopped</dt><dd>Mon 5 Jan 2026, about 06:25 UTC</dd>
+        <dt>Result</dt><dd style="color:var(--loss)">−1.11R · −4.4% of the account</dd>
       </dl>
     </div>
+  </header>
+
+  <section class="tf"><h3>1 · 15-minute <small>early January 2026 · click to open full size</small></h3>
+    <div class="scroll"><a href="h013_1_15m.png" target="_blank" rel="noopener"><img src="h013_1_15m.png" alt="h013 15-minute chart" width="1640" height="960"></a></div></section>
+  <section class="tf"><h3>2 · 1-hour</h3>
+    <div class="scroll"><a href="h013_2_1h.png" target="_blank" rel="noopener"><img src="h013_2_1h.png" alt="h013 1-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
+  <section class="tf"><h3>3 · 4-hour</h3>
+    <div class="scroll"><a href="h013_3_4h.png" target="_blank" rel="noopener"><img src="h013_3_4h.png" alt="h013 4-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
+  <section class="tf"><h3>4 · Daily</h3>
+    <div class="scroll"><a href="h013_4_1D.png" target="_blank" rel="noopener"><img src="h013_4_1D.png" alt="h013 daily chart" width="1640" height="960" loading="lazy"></a></div></section>
+
+  <p class="key">Black dashed line = entry, dotted grey = stop-out. Blue = entry price, red dashed = stop, green dashed = target.
+    Purple bands = support / resistance known at entry. Dashed grey lines with triangles = untaken liquidity; yellow bands = equal highs / lows
+    (stops rest there). Orange / teal = trendlines. Yellow lines = Fibonacci retracements, orange dash-dot = extensions.
+    EMA 20 orange, EMA 50 blue, EMA 200 purple. Bollinger: upper and lower solid grey, middle dashed. MACD panel: blue line, orange signal,
+    bars = histogram. Right panel = estimated liquidations (red = longs, green = shorts) from real open interest.</p>
+
+  <section class="card">
+    <span class="step">Liquidity at entry</span>
+    <div class="grid2">
+      <dl class="kv">
+        <dt>Above (fuel for the long)</dt><dd></dd>
+        <dt>Resistance</dt><dd>3,238 · 3,399 · 3,446</dd>
+        <dt>Daily untaken high</dt><dd>3,446</dd>
+        <dt>Shorts liquidated</dt><dd>3,220 – 3,350: about 4.8%, evenly stacked</dd>
+      </dl>
+      <dl class="kv">
+        <dt>Below (where stops sit)</dt><dd></dd>
+        <dt>15m untaken lows</dt><dd><b>3,133</b> (just under our stop) · 3,117 · 3,115</dd>
+        <dt>1h untaken lows</dt><dd>3,115 · 3,075 · 3,018</dd>
+        <dt>Longs liquidated</dt><dd>far below: 2,870 – 3,010</dd>
+      </dl>
+    </div>
+    <p>Fibonacci: 15m leg 3,091 → 3,221: 0.5 = 3,156, 0.618 = 3,140. Daily leg 2,620 → 3,446: <b>0.382 = 3,131</b>.</p>
   </section>
 
-  <section class="tf"><h3>1 · 15-minute <small>27 – 29 Sep 2025 · pink line = where the 15m exit would close</small></h3>
-    <div class="scroll"><a href="w282_1_15m.png" target="_blank" rel="noopener"><img src="w282_1_15m.png" alt="Winner 15-minute chart" width="1640" height="960"></a></div></section>
-  <section class="tf"><h3>2 · 1-hour</h3>
-    <div class="scroll"><a href="w282_2_1h.png" target="_blank" rel="noopener"><img src="w282_2_1h.png" alt="Winner 1-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
-  <section class="tf"><h3>3 · 4-hour</h3>
-    <div class="scroll"><a href="w282_3_4h.png" target="_blank" rel="noopener"><img src="w282_3_4h.png" alt="Winner 4-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
-  <section class="tf"><h3>4 · Daily</h3>
-    <div class="scroll"><a href="w282_4_1D.png" target="_blank" rel="noopener"><img src="w282_4_1D.png" alt="Winner daily chart" width="1640" height="960" loading="lazy"></a></div></section>
+  <section class="card">
+    <span class="step">MACD and Bollinger at entry</span>
+    <ul>
+      <li><b>MACD:</b> above its signal line on 15m, 1h, 4h and daily. On the <b>1h there was a bearish divergence</b>: price made a higher high
+        but MACD made a lower one (the same as h039). The 4h histogram was almost flat (0.22): the 4h push was losing steam.</li>
+      <li><b>Bollinger:</b> price was above the upper band on 15m (3,199) and 1h (3,171). After entry the 15m never held its middle band:
+        10 closes below it and no defence before the stop.</li>
+      <li><b>Stretched:</b> 1h RSI 78, 1h volume 4.3 times average.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <span class="step">What price did next</span>
+    <ol>
+      <li><b>5 Jan 02:00:</b> the entry candle was the top (3,203.7).</li>
+      <li><b>5 Jan 02:00 – 06:30:</b> down to 3,131.47. It took the untaken 15m low at 3,133 and our stop with it, and turned exactly at the
+        <b>daily Fibonacci 0.382 (3,131)</b>. It did not reach the lows at 3,117 / 3,115.</li>
+      <li><b>5 Jan afternoon – 6 Jan 14:20:</b> up through the short-liquidation stack and hit our target 3,302 (high 3,308).</li>
+      <li><b>7 – 9 Jan:</b> back down to about 3,052.</li>
+    </ol>
+  </section>
 
   <section class="card mine">
-    <h2>What I see as different (my guess)</h2>
+    <h2>What I think went wrong</h2>
     <ol>
-      <li><b>The pullback was quiet.</b> After the top at 4,144 the 15m drifted down on falling volume. In h039 the drop came on a big red volume candle;
-        in h029 one 5-minute candle had more than 10 times normal volume.</li>
-      <li><b>It held support.</b> The dips (lows 4,086 and 4,080) stayed inside the 4,071 – 4,110 support zones and between Fib 0.236 and 0.382 (4,101 – 4,074), above the rising 15m EMA 200.</li>
-      <li><b>The daily trend was up.</b> Price was far above the daily EMA 200 (about 3,409). h039, h030 and h029 were all below it. (Alone this
-        didn't fix the rule, but together with 1 and 2 it might.)</li>
-      <li><b>The bigger liquidity was above.</b> Large short-liquidation clusters from 4,150 to 4,350, little long liquidation close below.</li>
+      <li><b>The same as h039: the stop sat just above liquidity.</b> The untaken 15m low at 3,133 was 11 dollars under our stop. Price took it,
+        took us, and turned. The idea was right; the target was hit a day and a half later.</li>
+      <li><b>The level that held was on a higher timeframe.</b> The low (3,131.47) was the daily Fib 0.382 (3,131). A stop under that level and
+        the 15m low (around 3,110) would have survived.</li>
+      <li><b>We bought the top candle,</b> stretched above the upper Bollinger band, with a 1h MACD bearish divergence and a flat 4h MACD.</li>
+      <li><b>The liquidity told the story:</b> the nearest pool was the low just under our stop; the big pool (short liquidations at
+        3,220 – 3,350) was above. Price took the small pool first, then the big one.</li>
     </ol>
-    <p>If you agree, the next version of the rule would be: exit on the 15m double top only when the neckline breaks <b>on high volume</b>
-      and price loses the support zone. Tell me what you see, then I'll test it.</p>
+    <p><b>Pattern across the journal so far:</b> h039 and h013 both had the stop a few dollars above an untaken 15m low, a 1h MACD bearish divergence,
+      and an entry stretched above the Bollinger bands. Both hit the target later. h030 and h029 were different: real reversals at the top of a range.</p>
   </section>
 
   <section class="card">
     <h2>What do you think?</h2>
     <div id="offline" class="offline" hidden>Saving is unavailable in this view (sign in to claude.ai to save).</div>
-    <form id="f-lesson1">
-      <fieldset><legend>Which is closer to what you see?</legend>
+    <form id="f-h013">
+      <fieldset><legend>What should the bot have done here?</legend>
         <div class="chips" id="acts"></div></fieldset>
       <fieldset><legend>Your view</legend>
         <textarea id="note" placeholder="What do you see on these charts? Which level, trendline, candle or indicator mattered? Do you agree with my points?"></textarea></fieldset>
@@ -182,8 +201,8 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
 </div>
 
 <script>
-const ID = "lesson1-counter";
-const ACTIONS = ["Quiet pullback = hold, loud breakdown = exit", "It held support, so hold", "Daily trend decides", "Something else (write below)"];
+const ID = "h013";
+const ACTIONS = ["Skip this trade", "Take it, stop below the liquidity", "Wait for the sweep, then enter", "Take it, closer target", "Take it as it was"];
 const acts = document.getElementById("acts");
 ACTIONS.forEach((name, i) => {
   const lab = document.createElement("label"); lab.setAttribute("for", "act" + i);
@@ -191,7 +210,7 @@ ACTIONS.forEach((name, i) => {
   const sp = document.createElement("span"); sp.textContent = name;
   lab.append(inp, sp); acts.append(lab);
 });
-const form = document.getElementById("f-lesson1"), note = document.getElementById("note"),
+const form = document.getElementById("f-h013"), note = document.getElementById("note"),
   save = document.getElementById("save"), status = document.getElementById("status");
 let db = null;
 function fill(r) {
