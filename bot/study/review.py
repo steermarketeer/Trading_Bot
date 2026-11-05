@@ -168,3 +168,111 @@ def build_review(cfg: Config, out_dir: Path, which: str = "holdout") -> Path:
         print(tid, flush=True)
     (out / "trades.json").write_text(json.dumps(meta, indent=1))
     return out
+
+
+# ----------------------------------------------------------------------------- one trade, large charts
+BIG_BEFORE = {"15m": 160, "1h": 150, "4h": 150, "1D": 150}
+
+
+def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path) -> dict:
+    """One timeframe, full width, readable. Returns the indicator readings at the entry (last closed candle)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from .indicators import bollinger, ema
+
+    d = TFData(df5u, rule)
+    b = d.bars
+    close = pd.Series(b.c)
+    e20, e50, e200 = ema(close, 20).to_numpy(), ema(close, 50).to_numpy(), ema(close, 200).to_numpy()
+    bm, bu, bl = (x.to_numpy() for x in bollinger(close))
+    vavg = pd.Series(b.v).rolling(20).mean().to_numpy()
+    et, xt = pd.Timestamp(t["entry_time"]).to_datetime64(), pd.Timestamp(t["exit_time"]).to_datetime64()
+    i_e = int(np.searchsorted(d.ct, et, side="right"))
+    i_x = max(i_e, int(np.searchsorted(d.ot, xt, side="right")) - 1)
+    lo = max(0, i_e - BIG_BEFORE[tf])
+    hi = min(b.n, max(i_x + 20, i_e + 20), i_e + 80)
+    x = np.arange(lo, hi)
+    fig = plt.figure(figsize=(17, 10))
+    gs = fig.add_gridspec(4, 1, height_ratios=[6, 1.2, 1.5, 1.5], hspace=0.06)
+    ax = fig.add_subplot(gs[0])
+    axv, axm, axr = (fig.add_subplot(gs[k], sharex=ax) for k in (1, 2, 3))
+    o, h, l, c = b.o[lo:hi], b.h[lo:hi], b.l[lo:hi], b.c[lo:hi]
+    up = c >= o
+    ax.fill_between(x, bl[lo:hi], bu[lo:hi], color="#90a4ae", alpha=0.15, label="Bollinger 20,2", zorder=0)
+    ax.plot(x, bm[lo:hi], color="#90a4ae", linewidth=0.8, linestyle="--")
+    ax.vlines(x, l, h, color="#555", linewidth=0.8, zorder=2)
+    ax.bar(x[up], (c - o)[up], bottom=o[up], color="#26a69a", width=0.72, zorder=3)
+    ax.bar(x[~up], (c - o)[~up], bottom=o[~up], color="#ef5350", width=0.72, zorder=3)
+    ax.plot(x, e20[lo:hi], color="#fb8c00", linewidth=1.4, label="EMA 20")
+    ax.plot(x, e50[lo:hi], color="#1e88e5", linewidth=1.6, label="EMA 50")
+    ax.plot(x, e200[lo:hi], color="#8e24aa", linewidth=1.8, label="EMA 200")
+    e, s, g = t["entry"], t["stop"], t["target"]
+    ymin, ymax = min(l.min(), s, g), max(h.max(), s, g)
+    pad = (ymax - ymin) * 0.05
+    for z in zones:
+        if ymin - pad <= z <= ymax + pad:
+            ax.axhspan(z * 0.998, z * 1.002, color="#ab47bc", alpha=0.16, zorder=1)
+            ax.text(hi - 0.5, z, f" S/R {z:,.0f}", va="center", fontsize=9, color="#7b1fa2")
+    sh = [(i, p) for i, p, cf in b.sh if cf < i_e and i >= lo - 80]
+    sl = [(i, p) for i, p, cf in b.sl if cf < i_e and i >= lo - 80]
+    for pts, col, name in ((sh, "#e65100", "trendline (highs)"), (sl, "#00796b", "trendline (lows)")):
+        if len(pts) >= 2:
+            (i1, p1), (i2, p2) = pts[-2], pts[-1]
+            xs = np.array([max(i1, lo), hi - 1])
+            ax.plot(xs, p1 + (p2 - p1) / (i2 - i1) * (xs - i1), color=col, linewidth=1.5, label=name)
+    liq = []
+    for pts, side in ((sh, 1), (sl, -1)):
+        for i, p in pts[-10:]:
+            seg = h[max(0, i + 1 - lo):i_e - lo] if side > 0 else l[max(0, i + 1 - lo):i_e - lo]
+            taken = len(seg) and ((seg.max() > p) if side > 0 else (seg.min() < p))
+            if not taken and i >= lo:
+                ax.hlines(p, i, i_e - 0.5, color="#424242", linestyle=(0, (3, 2)), linewidth=1)
+                ax.plot(i, p, marker="v" if side > 0 else "^", color="#424242", markersize=6)
+                ax.text(i, p, f" liq {p:,.0f}", fontsize=8, color="#424242",
+                        va="bottom" if side > 0 else "top")
+                liq.append((side, p))
+    for lv, col, name in ((e, "#1565c0", "entry"), (s, "#c62828", "stop"), (g, "#2e7d32", "target")):
+        ax.axhline(lv, color=col, linewidth=1.3, linestyle="-" if name == "entry" else (0, (4, 2)))
+        ax.text(lo + 1, lv, f" {name} {lv:,.2f} ", ha="left", va="center", fontsize=9, color=col, fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.15", fc="white", ec=col, lw=0.8, alpha=0.9), zorder=6)
+    for a_ in (ax, axv, axm, axr):
+        a_.axvline(i_e - 0.5, color="black", linestyle="--", linewidth=1.3)
+        if i_x < hi:
+            a_.axvline(i_x, color="#616161", linestyle=":", linewidth=1.3)
+        a_.grid(alpha=0.15)
+    ax.text(i_e - 0.5, ymax + pad * 0.6, " ENTRY", fontsize=9, fontweight="bold")
+    if i_x < hi:
+        ax.text(i_x, ymin - pad * 0.6, " EXIT (stop)", fontsize=9, color="#616161", fontweight="bold")
+    ax.set_ylim(ymin - pad, ymax + pad)
+    ax.legend(loc="upper center", fontsize=9, ncol=6, framealpha=0.85)
+    off = "" if i_x < hi else "   (exit is later, beyond the right edge)"
+    ax.set_title(f"{tf} chart{off}", fontsize=14, loc="left", fontweight="bold")
+    axv.bar(x, b.v[lo:hi], color=np.where(up, "#26a69a", "#ef5350"), width=0.72)
+    axv.plot(x, vavg[lo:hi], color="#424242", linewidth=1, label="20-candle average")
+    axv.legend(loc="upper left", fontsize=8)
+    hist = (d.ml - d.ms)[lo:hi]
+    axm.bar(x, hist, color=np.where(hist >= 0, "#26a69a", "#ef5350"), width=0.72)
+    axm.plot(x, d.ml[lo:hi], color="#1e88e5", linewidth=1, label="MACD 12,26")
+    axm.plot(x, d.ms[lo:hi], color="#fb8c00", linewidth=1, label="signal 9")
+    axm.legend(loc="upper left", fontsize=8)
+    axr.plot(x, b.r[lo:hi], color="#6a1b9a", linewidth=1.2)
+    for lv in (70, 50, 30):
+        axr.axhline(lv, color="#9e9e9e", linewidth=0.7, linestyle="--")
+    axr.set_ylim(0, 100)
+    for a_, lab in ((axv, "Volume"), (axm, "MACD"), (axr, "RSI 14")):
+        a_.set_ylabel(lab, fontsize=10)
+    for a_ in (ax, axv, axm):
+        a_.tick_params(labelbottom=False)
+    idx = np.linspace(lo, hi - 1, 9).astype(int)
+    fmt = "%d %b %Y" if tf == "1D" else "%d %b %Y\n%H:%M"
+    axr.set_xticks(idx)
+    axr.set_xticklabels([pd.Timestamp(d.ot[i]).strftime(fmt) for i in idx], fontsize=9)
+    fig.savefig(path, dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    j = i_e - 1                                                     # last candle closed at entry
+    return {"tf": tf, "close": float(b.c[j]), "ema20": float(e20[j]), "ema50": float(e50[j]), "ema200": float(e200[j]),
+            "bb_up": float(bu[j]), "bb_lo": float(bl[j]), "rsi": float(b.r[j]), "macd_hist": float((d.ml - d.ms)[j]),
+            "vol_vs_avg": float(b.v[j] / vavg[j]) if vavg[j] > 0 else None,
+            "liq_below": sorted([p for sd, p in liq if sd < 0 and p < e], reverse=True)[:3],
+            "liq_above": sorted([p for sd, p in liq if sd > 0 and p > e])[:3]}

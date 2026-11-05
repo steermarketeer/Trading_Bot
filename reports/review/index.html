@@ -79,170 +79,127 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
 .empty { color: var(--muted); padding: 30px; text-align: center; }
 .offline { background: var(--loss-soft); color: var(--loss); padding: 10px 14px; border-radius: 8px; font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .track i { transition: none; } }
+
+.tf { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.tf h3 { margin: 0; padding: 10px 16px; font: 600 15px var(--f-body); border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.tf h3 small { font: 400 13px var(--f-body); color: var(--muted); }
+.tf .scroll { overflow-x: auto; background: #fff; }
+.tf img { display: block; width: 100%; min-width: 760px; height: auto; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 12px; }
+.card h2 { font-family: var(--f-display); font-weight: 600; font-size: 22px; margin: 0; }
+.card ol, .card ul { margin: 0; padding-left: 22px; display: grid; gap: 6px; max-width: 85ch; }
+.card p { margin: 0; max-width: 85ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 24px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 14px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.step { font: 600 12px var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.mine { border-left: 3px solid var(--accent); padding-left: 14px; }
 </style>
 
 <div class="wrap">
   <header>
-    <h1>Losing trades, Nov 2025 – Oct 2026</h1>
-    <p class="lede">The 44 v3.1 ETH trades that lost in the holdout year, grouped into similar trades: same setup and the same thing happening
-      after the stop. Review one group at a time. Open each trade's charts (15m, 1h, 4h, 1D at entry), then tell the bot what the group has in
-      common, what it should have done, and mention any trade that is different. Your answers are saved for Claude to read.</p>
-    <div class="bar">
-      <div class="progress" id="progress">Loading groups…</div>
-      <div class="track" aria-hidden="true"><i id="track"></i></div>
-      <div class="filters" id="filters" role="group" aria-label="Filter trades"></div>
+    <span class="step">Trade journal · trade 1 of 44 · the biggest loss first</span>
+    <h1>h039 · Long A+ breakout, 11 July 2026</h1>
+    <div class="grid2">
+      <dl class="kv">
+        <dt>Signal</dt><dd>4h liquidity run (A+ breakout)</dd>
+        <dt>Entry</dt><dd>Sat 11 Jul 2026, 16:00 UTC</dd>
+        <dt>Entry price</dt><dd>1,814.11</dd>
+        <dt>Certainty</dt><dd>7 / 10</dd>
+      </dl>
+      <dl class="kv">
+        <dt>Stop</dt><dd>1,799.45 (−0.8%)</dd>
+        <dt>Target</dt><dd>1,843.43 (2 : 1)</dd>
+        <dt>Stopped</dt><dd>Sat 11 Jul 2026, 23:20 UTC</dd>
+        <dt>Result</dt><dd style="color:var(--loss)">−1.22R · −4.9% of the account</dd>
+      </dl>
     </div>
-    <p class="key">Black dashed line = entry, grey dashed = exit. Blue = entry price, red dotted = stop, green dotted = target.
-      Purple bands = support/resistance zones known at entry. Orange / teal lines = trendlines through the last two swing highs / lows.
-      Grey dashes with triangles = untaken liquidity (swing highs / lows not yet traded through). EMA20 orange, EMA50 blue. Below: volume, MACD, RSI.</p>
-    <div id="offline" class="offline" hidden>Saving is unavailable in this view (sign in to claude.ai to save). You can still look through the charts.</div>
   </header>
-  <main id="list" style="display:grid;gap:22px"><div class="empty">Loading the trade groups…</div></main>
+
+  <section class="tf"><h3>1 · 15-minute <small>10 Jul 00:00 – 12 Jul 04:00, 2026 · click to open full size</small></h3>
+    <div class="scroll"><a href="h039_1_15m.png" target="_blank" rel="noopener"><img src="h039_1_15m.png" alt="h039 15-minute chart" width="1560" height="940"></a></div></section>
+  <section class="tf"><h3>2 · 1-hour <small>5 Jul – 12 Jul 2026</small></h3>
+    <div class="scroll"><a href="h039_2_1h.png" target="_blank" rel="noopener"><img src="h039_2_1h.png" alt="h039 1-hour chart" width="1560" height="940" loading="lazy"></a></div></section>
+  <section class="tf"><h3>3 · 4-hour <small>16 Jun – 15 Jul 2026</small></h3>
+    <div class="scroll"><a href="h039_3_4h.png" target="_blank" rel="noopener"><img src="h039_3_4h.png" alt="h039 4-hour chart" width="1560" height="940" loading="lazy"></a></div></section>
+  <section class="tf"><h3>4 · Daily <small>11 Feb – 30 Jul 2026</small></h3>
+    <div class="scroll"><a href="h039_4_1D.png" target="_blank" rel="noopener"><img src="h039_4_1D.png" alt="h039 daily chart" width="1560" height="940" loading="lazy"></a></div></section>
+
+  <p class="key">On every chart: black dashed line = entry, dotted grey = stop-out. Blue = entry price, red dashed = stop, green dashed = target.
+    Purple bands = support / resistance zones known at entry (price on the right). Dashed grey lines with triangles = untaken liquidity
+    (swing highs / lows not yet traded through, with their price). Orange / teal = trendlines through the last two swing highs / lows.
+    Averages: EMA 20 orange, EMA 50 blue, EMA 200 purple; grey band = Bollinger 20,2. Below: volume with its 20-candle average, MACD, RSI 14.</p>
+
+  <section class="card">
+    <span class="step">What the bot saw (why it took the trade)</span>
+    <ul>
+      <li>On the 4h chart, price ran above the recent highs and the 1,809 resistance: a liquidity-run breakout, scored 7 out of 10.</li>
+      <li>BTC's 4h trend was up and the 6h MACD was up. The path to the target had little volume in the way (the A+ condition).</li>
+      <li>The stop went 0.8% below entry, at 1,799.45, and the target at 2 : 1, 1,843.43, just under the 1,840 resistance.</li>
+    </ul>
+  </section>
+
+  <section class="card mine">
+    <h2>What I think went wrong</h2>
+    <ol>
+      <li><b>The stop sat right on top of a liquidity pool.</b> On the 15m chart there were untaken lows at 1,794, 1,794 and 1,785,
+        with the 1,785 support just under them. At 23:20 price dropped straight into that pool (low 1,778), took our stop on the way, and turned.
+        The bot's "clean risk zone" check only looks between the entry and the stop, so it missed liquidity 5 to 15 points below the stop.</li>
+      <li><b>We chased the move.</b> At entry the 1h RSI was about 70, 1h volume was 5 times its average and price was at the upper
+        Bollinger band on 15m and 1h. We bought after the push, not on a retest of 1,809.</li>
+      <li><b>The daily chart was still in repair.</b> Price sat on the daily EMA 50 (about 1,800), far below the EMA 200 (about 2,236), inside
+        the 1,785–1,809 zone, with 1,840 resistance overhead.</li>
+      <li><b>The idea was right.</b> About 24 hours after stopping us out, on 13 July at 00:10 UTC, price reached our target. It later went to 1,900.</li>
+    </ol>
+    <p>My suggestion for trades like this: put the stop below the pool and the 1,785 support (around 1,775), or wait for a retest of 1,809
+      and enter there. Both keep the same idea with a stop the market is less likely to hunt.</p>
+  </section>
+
+  <section class="card">
+    <h2>What do you think?</h2>
+    <div id="offline" class="offline" hidden>Saving is unavailable in this view (sign in to claude.ai to save).</div>
+    <form id="f-h039">
+      <fieldset><legend>What should the bot have done here?</legend>
+        <div class="chips" id="acts"></div></fieldset>
+      <fieldset><legend>Your view</legend>
+        <textarea id="note" placeholder="What do you see on these charts? Which level, trendline, candle or indicator mattered? Do you agree with my points?"></textarea></fieldset>
+      <div class="row"><button class="save" type="submit" id="save" disabled>Save my view</button><span class="status" id="status"></span></div>
+    </form>
+  </section>
 </div>
 
 <script>
-const TAGS = ["Fake breakout", "Stop hunt / liquidity grab", "Resistance / support ahead on a higher timeframe",
-  "Against the weekly / daily trend", "Weak volume on the breakout", "RSI / MACD divergence", "Pattern against us (double top, H&S…)",
-  "Entered too late (move already done)", "Stop too tight", "Target too far", "News / event", "No clear reason", "Good trade, just lost"];
-const ACTIONS = ["Skip this trade", "Take it, wider stop", "Take it, wait for a retest", "Take it, closer target", "Take it as it was"];
-let trades = [], reviews = {}, db = null, filter = "all";
-
-function el(tag, attrs = {}, ...kids) {
-  const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }
-  for (const k of kids) if (k) e.append(k);
-  return e;
-}
-
-const KIND = {
-  "hunted": "After stopping us out, price went on to reach our original target. We were right on direction; the stop was in the wrong place.",
-  "came back": "After stopping us out, price came back to our entry within 30 days, but did not reach the target.",
-  "real reversal": "After stopping us out, price kept going against us. The trade idea itself was wrong."
-};
-let groups = [];
-const slug = g => g.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-function renderProgress() {
-  const n = groups.length, d = groups.filter(g => reviews[slug(g.name)]).length;
-  document.getElementById("progress").innerHTML = `<b>${d}</b> of ${n} groups reviewed · ${trades.length} trades`;
-  document.getElementById("track").style.width = n ? (100 * d / n) + "%" : "0";
-  for (const g of groups) { const b = document.getElementById("done-" + slug(g.name)); if (b) b.hidden = !reviews[slug(g.name)]; }
-}
-
-function renderFilters() {
-  const f = document.getElementById("filters"); f.innerHTML = "";
-  const opts = [["all", "All groups"], ["todo", "Not reviewed"], ["A+ breakout", "A+ breakouts"], ["breakout", "Breakouts"], ["1D bounce", "1D bounces"]];
-  for (const [k, label] of opts) {
-    const b = el("button", { class: "fbtn", type: "button", "aria-pressed": String(filter === k), text: label });
-    b.onclick = () => { filter = k; renderFilters(); applyFilter(); };
-    f.append(b);
-  }
-}
-function applyFilter() {
-  for (const g of groups) {
-    const node = document.getElementById("g-" + slug(g.name));
-    node.hidden = !(filter === "all" || (filter === "todo" ? !reviews[slug(g.name)] : g.setup === filter));
-  }
-}
-
-function tradeRow(t, open) {
-  const sum = el("summary", {},
-    el("span", { class: "tid", text: t.id }), el("span", { class: "side " + t.side, text: t.side }),
-    el("div", { class: "facts" },
-      ...[["entry", t.entry_time + " UTC"], ["price", t.entry.toLocaleString()], ["stop", t.stop.toLocaleString()],
-          ["target", t.target.toLocaleString()], ["exit", t.exit_time + " UTC"]]
-        .map(([k, v]) => { const s = el("span"); s.append(k + " "); s.append(el("b", { text: v })); return s; })),
-    el("span", { class: "r", text: (t.result_r > 0 ? "+" : "") + t.result_r.toFixed(2) + "R" }));
-  const d = el("details", { class: "tr" }, sum);
-  if (open) d.open = true;
-  const img = el("a", { class: "chart", href: t.img, target: "_blank", rel: "noopener", "aria-label": `Open the ${t.id} chart full size` },
-    el("img", { src: t.img, alt: `${t.id}: 15m, 1h, 4h and 1D charts around the entry`, loading: "lazy", width: "1300", height: "800" }));
-  d.append(img);
-  return d;
-}
-
-function groupCard(g) {
-  const gid = slug(g.name), fid = "f-" + gid;
-  const intro = el("div", { class: "gintro" },
-    el("div", { class: "row" }, el("h2", { text: `${g.setup}: ${g.kind}` }),
-      el("span", { class: "count", text: `${g.trades.length} trade${g.trades.length > 1 ? "s" : ""}` }),
-      el("span", { class: "done", id: "done-" + gid, text: "Reviewed", hidden: "" })),
-    el("p", { text: KIND[g.kind] }));
-  const rows = g.trades.map((t, i) => tradeRow(t, i === 0));
-  const r = reviews[gid] || {};
-  const tagSet = new Set(r.tags || []);
-  const tags = el("fieldset", {}, el("legend", { text: "What do these trades have in common?" }),
-    el("div", { class: "chips" }, ...TAGS.map((name, i) => {
-      const id = `${fid}-tag${i}`;
-      const inp = el("input", { type: "checkbox", id, name: "tags", value: name });
-      if (tagSet.has(name)) inp.checked = true;
-      return el("label", { for: id }, inp, el("span", { text: name }));
-    })));
-  const acts = el("fieldset", {}, el("legend", { text: "What should the bot have done?" }),
-    el("div", { class: "chips" }, ...ACTIONS.map((name, i) => {
-      const id = `${fid}-act${i}`;
-      const inp = el("input", { type: "radio", id, name: "action", value: name });
-      if (r.action === name) inp.checked = true;
-      return el("label", { for: id }, inp, el("span", { text: name }));
-    })));
-  const note = el("textarea", { id: `${fid}-note`, name: "note",
-    placeholder: "What do you see? Which level, trendline, candle or indicator mattered? Name any trade that is different (e.g. h012)." });
+const ID = "h039";
+const ACTIONS = ["Skip this trade", "Take it, stop below the liquidity", "Wait for a retest, then enter", "Take it, closer target", "Take it as it was"];
+const acts = document.getElementById("acts");
+ACTIONS.forEach((name, i) => {
+  const lab = document.createElement("label"); lab.setAttribute("for", "act" + i);
+  const inp = document.createElement("input"); inp.type = "radio"; inp.name = "action"; inp.id = "act" + i; inp.value = name;
+  const sp = document.createElement("span"); sp.textContent = name;
+  lab.append(inp, sp); acts.append(lab);
+});
+const form = document.getElementById("f-h039"), note = document.getElementById("note"),
+  save = document.getElementById("save"), status = document.getElementById("status");
+let db = null;
+function fill(r) {
+  if (!r || form.contains(document.activeElement)) return;
   note.value = r.note || "";
-  const status = el("span", { class: "status", id: `${fid}-status` });
-  const save = el("button", { class: "save", type: "submit", text: "Save group review" });
-  if (!db) save.disabled = true;
-  const form = el("form", { id: fid }, tags, acts,
-    el("fieldset", {}, el("legend", { text: "Your note" }), note), el("div", { class: "row" }, save, status));
-  form.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    if (!db) return;
-    const data = { group: g.name, trades: g.trades.map(t => t.id),
-      tags: [...form.querySelectorAll('input[name="tags"]:checked')].map(x => x.value),
-      action: (form.querySelector('input[name="action"]:checked') || {}).value || "", note: note.value.trim(),
-      updated: new Date().toISOString() };
-    save.disabled = true; status.textContent = "Saving…";
-    try { await db.doc("reviews/" + gid).set(data); status.textContent = "Saved"; }
-    catch (e) { status.textContent = "Not saved: " + (e && e.message ? e.message : "try again"); }
-    finally { save.disabled = false; }
-  });
-  return el("article", { class: "ticket", id: "g-" + gid }, intro, ...rows, form);
+  form.querySelectorAll('input[name="action"]').forEach(x => { x.checked = r.action === x.value; });
+  status.textContent = r.updated ? "Saved " + new Date(r.updated).toLocaleString() : "";
 }
-
-function renderList() {
-  const list = document.getElementById("list"); list.innerHTML = "";
-  if (!groups.length) { list.append(el("div", { class: "empty", text: "No trades found." })); return; }
-  for (const g of groups) list.append(groupCard(g));
-  applyFilter(); renderProgress();
-}
-
-function fillForms() {
-  for (const g of groups) {
-    const gid = slug(g.name), r = reviews[gid], form = document.getElementById("f-" + gid);
-    if (!r || !form || form.contains(document.activeElement)) continue;
-    form.querySelectorAll('input[name="tags"]').forEach(x => { x.checked = (r.tags || []).includes(x.value); });
-    form.querySelectorAll('input[name="action"]').forEach(x => { x.checked = r.action === x.value; });
-    form.querySelector("textarea").value = r.note || "";
-  }
-}
-
-async function start() {
-  try { trades = await (await fetch("trades.json")).json(); } catch (e) { trades = []; }
-  const m = new Map();
-  for (const t of trades) {
-    if (!m.has(t.group)) m.set(t.group, { name: t.group, setup: t.setup, kind: t.after_kind, trades: [] });
-    m.get(t.group).trades.push(t);
-  }
-  groups = [...m.values()].sort((a, b) => b.trades.length - a.trades.length);
-  renderFilters(); renderList();
+form.addEventListener("submit", async ev => {
+  ev.preventDefault(); if (!db) return;
+  const data = { trade: ID, action: (form.querySelector('input[name="action"]:checked') || {}).value || "",
+    note: note.value.trim(), updated: new Date().toISOString() };
+  save.disabled = true; status.textContent = "Saving…";
+  try { await db.doc("reviews/" + ID).set(data); status.textContent = "Saved. Tell Claude in the chat when you're done, and the next trade comes up."; }
+  catch (e) { status.textContent = "Not saved: " + (e && e.message ? e.message : "try again"); }
+  finally { save.disabled = false; }
+});
+(async () => {
   db = window.claude ? await window.claude.use("db") : null;
   if (!db) { document.getElementById("offline").hidden = false; return; }
-  document.querySelectorAll(".save").forEach(b => b.disabled = false);
-  const timer = setTimeout(() => { document.getElementById("progress").textContent = "Saved reviews are taking long to load."; }, 10000);
-  db.collection("reviews").onSnapshot(snap => {
-    clearTimeout(timer);
-    reviews = {}; snap.docs.forEach(d => { reviews[d.id] = d.data(); });
-    fillForms(); renderProgress(); applyFilter();
-  }, () => { clearTimeout(timer); document.getElementById("offline").hidden = false; });
-}
-start();
+  save.disabled = false;
+  db.doc("reviews/" + ID).onSnapshot(snap => fill(snap.exists ? snap.data() : null), () => {});
+})();
 </script>
