@@ -98,101 +98,81 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
 
 <div class="wrap">
   <header>
-    <span class="step">Trade journal · trade 3 · the third-biggest loss</span>
-    <h1>h029 · Long A+ breakout, 4 May 2026</h1>
-    <div class="grid2">
-      <dl class="kv">
-        <dt>Signal</dt><dd>2h zone breakout</dd>
-        <dt>Entry</dt><dd>Mon 4 May 2026, 04:00 UTC</dd>
-        <dt>Entry price</dt><dd>2,384.07</dd>
-        <dt>Certainty</dt><dd>8 / 10</dd>
-      </dl>
-      <dl class="kv">
-        <dt>Stop</dt><dd>2,345.42 (−1.6%)</dd>
-        <dt>Target</dt><dd>2,461.37 (2 : 1)</dd>
-        <dt>Stopped</dt><dd>Mon 4 May 2026, 10:00 UTC</dd>
-        <dt>Result</dt><dd style="color:var(--loss)">−1.12R · −4.5% of the account</dd>
-      </dl>
-    </div>
+    <span class="step">Trade journal · testing your fixes</span>
+    <h1>Your lessons, tested on every trade</h1>
+    <p class="lede">Each lesson became an exact rule and ran on all v3.1 ETH trades, one position per move. Win % is after costs.
+      The lessons came from holdout trades, so the clean test is 2022 – Oct 2025.</p>
   </header>
 
-  <section class="tf"><h3>1 · 15-minute <small>2 May 12:00 – 4 May 14:45, 2026 · click to open full size</small></h3>
-    <div class="scroll"><a href="h029_1_15m.png" target="_blank" rel="noopener"><img src="h029_1_15m.png" alt="h029 15-minute chart" width="1640" height="960"></a></div></section>
-  <section class="tf"><h3>2 · 1-hour <small>late April – 5 May 2026</small></h3>
-    <div class="scroll"><a href="h029_2_1h.png" target="_blank" rel="noopener"><img src="h029_2_1h.png" alt="h029 1-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
-  <section class="tf"><h3>3 · 4-hour <small>9 Apr – 7 May 2026</small></h3>
-    <div class="scroll"><a href="h029_3_4h.png" target="_blank" rel="noopener"><img src="h029_3_4h.png" alt="h029 4-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
-  <section class="tf"><h3>4 · Daily <small>December 2025 – May 2026</small></h3>
-    <div class="scroll"><a href="h029_4_1D.png" target="_blank" rel="noopener"><img src="h029_4_1D.png" alt="h029 daily chart" width="1640" height="960" loading="lazy"></a></div></section>
-
-  <p class="key">Black dashed line = entry, dotted grey = stop-out. Blue = entry price, red dashed = stop, green dashed = target.
-    Purple bands = support / resistance known at entry. Dashed grey lines with triangles = untaken liquidity; yellow bands = equal highs / lows
-    (stops rest there). Orange / teal = trendlines. Yellow lines = Fibonacci retracements, orange dash-dot = extensions.
-    EMA 20 orange, EMA 50 blue, EMA 200 purple. Bollinger: upper and lower solid grey, middle dashed. Right panel = estimated liquidations
-    (red = longs, green = shorts) from real open interest.</p>
-
   <section class="card">
-    <span class="step">What the bot saw (why it took the trade)</span>
+    <span class="step">Results, 2022 – Oct 2025 (clean test)</span>
+    <div class="scroll" style="overflow-x:auto">
+    <table style="border-collapse:collapse;font-size:14px;min-width:620px">
+      <thead><tr style="text-align:left;border-bottom:1px solid var(--line)"><th style="padding:6px 10px">Rule</th><th>Trades</th><th>Win %</th><th>Avg R</th><th>Account</th><th>Worst drop</th></tr></thead>
+      <tbody style="font-family:var(--f-mono)">
+        <tr><td style="padding:6px 10px;font-family:var(--f-body)">v3.1 now</td><td>296</td><td>45%</td><td>+0.45</td><td>25.1x</td><td>−36%</td></tr>
+        <tr><td style="padding:6px 10px;font-family:var(--f-body)">1 · 15m double top / lower high → exit</td><td>296</td><td>41%</td><td>+0.17</td><td>4.6x</td><td>−17%</td></tr>
+        <tr><td style="padding:6px 10px;font-family:var(--f-body)">1b · same, only true double tops in the first 24h</td><td>296</td><td>43%</td><td>+0.35</td><td>13.2x</td><td>−37%</td></tr>
+        <tr><td style="padding:6px 10px;font-family:var(--f-body)">2 · no breakout under daily EMA 200 with a ceiling before target</td><td>258</td><td>43%</td><td>+0.43</td><td>11.4x</td><td>−37%</td></tr>
+        <tr><td style="padding:6px 10px;font-family:var(--f-body)">3 · no long against falling 4h highs</td><td>273</td><td>44%</td><td>+0.46</td><td>18.9x</td><td>−37%</td></tr>
+        <tr style="color:var(--accent)"><td style="padding:6px 10px;font-family:var(--f-body)"><b>4 · no second try at a failed level</b></td><td>282</td><td><b>45%</b></td><td><b>+0.47</b></td><td><b>25.9x</b></td><td><b>−30%</b></td></tr>
+      </tbody>
+    </table></div>
     <ul>
-      <li>A 2h candle broke the zone at about 2,356 with strong volume (4h volume 3.3 times average), scored 8 out of 10.</li>
-      <li>BTC 4h up, 6h MACD up, thin volume on the way to the target (A+).</li>
+      <li><b>Lesson 4 works</b> in both periods: the trades it removes won only 29% (2022–25) and 33% (holdout). I'd adopt it.</li>
+      <li><b>Lesson 1 saved h039</b> (−0.31R instead of −1.22R), but on all trades the 15m pattern also shows up in winners: it closed 94 trades
+        that went on to win. In total it cost 82R (30R for the tighter version). Splitting by the daily trend didn't fix it.</li>
+      <li>Lessons 2 and 3 didn't help: in 2022–25 the trades they removed won 55% and 48%.</li>
     </ul>
+    <p>So your eye sees something on the 15m that my rule doesn't. Below is a <b>winner</b> where the same rule would have closed the trade.
+      Tell me what's different from h039, h030 and h029.</p>
   </section>
 
   <section class="card">
-    <span class="step">Liquidity and liquidations at entry</span>
+    <span class="step">The counter-example: a winner the 15m exit would have closed</span>
+    <h2>Long breakout, Monday 29 September 2025</h2>
     <div class="grid2">
       <dl class="kv">
-        <dt>Above</dt><dd></dd>
-        <dt>Resistance</dt><dd>2,392 (just above entry) · 2,421</dd>
-        <dt>Untaken 4h highs</dt><dd>2,404 · 2,423 · 2,464</dd>
-        <dt>Shorts liquidated</dt><dd>2,390 – 2,620, heaviest at 2,400 – 2,410 and 2,530 – 2,550</dd>
+        <dt>Signal</dt><dd>4h breakout</dd>
+        <dt>Entry</dt><dd>Mon 29 Sep 2025, 00:00 UTC</dd>
+        <dt>Entry price</dt><dd>4,139.54</dd>
       </dl>
       <dl class="kv">
-        <dt>Below</dt><dd></dd>
-        <dt>15m equal lows</dt><dd>2,307 · 2,297 (stops rest here)</dd>
-        <dt>Untaken lows</dt><dd>2,296 · 2,278 · 2,245 · 2,219</dd>
-        <dt>Longs liquidated</dt><dd>2,280 – 2,300: 1.2% · 2,140 – 2,240: about 6%</dd>
+        <dt>Stop / target</dt><dd>4,040.24 / 4,338.15 (2 : 1)</dd>
+        <dt>The 15m exit</dt><dd style="color:var(--loss)">29 Sep 07:30 UTC at about 4,092 · −0.55R</dd>
+        <dt>Without it</dt><dd style="color:var(--win)">target hit 1 Oct 15:20 UTC · +1.95R</dd>
       </dl>
     </div>
-    <p>Fibonacci: 15m leg 2,296 → 2,392: 0.382 = 2,355, 0.5 = 2,344, 0.618 = 2,333. 4h leg 2,156 → 2,464: 0.382 = 2,346, 0.5 = 2,310.</p>
   </section>
 
-  <section class="card">
-    <span class="step">What price did next</span>
-    <ol>
-      <li><b>4 May 04:20:</b> top at 2,398.88, just above the 2,392 resistance but below the untaken high at 2,404.</li>
-      <li><b>4 May 04:30 – 09:55:</b> a lower high, then a slow drift down: price lost the 15m EMA 20 and EMA 50 and broke the rising trendline;
-        the 15m MACD crossed down about four hours before the stop.</li>
-      <li><b>4 May 10:00:</b> one 5-minute candle on more than 10 times normal volume dropped from 2,367 to 2,342 and took our stop, then 2,313 at 10:20.
-        It stopped just above the equal lows at 2,307 / 2,297 and bounced to 2,342 by 10:30.</li>
-      <li><b>5 – 6 May:</b> back up to 2,399, then 2,422 (the h030 trade), never reaching 2,461. <b>7 May:</b> broke below 2,290; 17 May: 2,085.</li>
-    </ol>
-  </section>
+  <section class="tf"><h3>1 · 15-minute <small>27 – 29 Sep 2025 · pink line = where the 15m exit would close</small></h3>
+    <div class="scroll"><a href="w282_1_15m.png" target="_blank" rel="noopener"><img src="w282_1_15m.png" alt="Winner 15-minute chart" width="1640" height="960"></a></div></section>
+  <section class="tf"><h3>2 · 1-hour</h3>
+    <div class="scroll"><a href="w282_2_1h.png" target="_blank" rel="noopener"><img src="w282_2_1h.png" alt="Winner 1-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
+  <section class="tf"><h3>3 · 4-hour</h3>
+    <div class="scroll"><a href="w282_3_4h.png" target="_blank" rel="noopener"><img src="w282_3_4h.png" alt="Winner 4-hour chart" width="1640" height="960" loading="lazy"></a></div></section>
+  <section class="tf"><h3>4 · Daily</h3>
+    <div class="scroll"><a href="w282_4_1D.png" target="_blank" rel="noopener"><img src="w282_4_1D.png" alt="Winner daily chart" width="1640" height="960" loading="lazy"></a></div></section>
 
   <section class="card mine">
-    <h2>What I think went wrong</h2>
+    <h2>What I see as different (my guess)</h2>
     <ol>
-      <li><b>We bought near the top of a 4h range with falling highs.</b> The 4h highs were 2,464 (17 Apr), 2,423 (22 Apr) and 2,404 (27 Apr):
-        sellers came in lower each time. Entry was under the 2,392 resistance and the 2,404 high; the target needed 2,404, 2,421, 2,423 and the
-        2,464 high all to break.</li>
-      <li><b>Stretched again.</b> RSI 71 – 73 on 15m, 1h and 4h; price above the 1h upper Bollinger band.</li>
-      <li><b>Your lesson 1 again, in a softer form.</b> After entry the 15m made a lower high, lost its EMAs and trendline, and MACD turned down,
-        hours before the stop. It's a lower high rather than an exact double top, but it's the same message: buyers were done.</li>
-      <li><b>The stop was hunted, but a wider stop would not have saved it.</b> The flush stopped just above the equal lows and bounced, yet the
-        target was never reached; a stop under the equal lows (about 2,290) was hit on 7 May. The problem was the place we bought, not only the stop.</li>
-      <li><b>Same week, same zone, same mistake as h030.</b> h029 and h030 together cost about 18% of the account buying the top of the same range.</li>
+      <li><b>The pullback was quiet.</b> After the top at 4,144 the 15m drifted down on falling volume. In h039 the drop came on a big red volume candle;
+        in h029 one 5-minute candle had more than 10 times normal volume.</li>
+      <li><b>It held support.</b> The dips (lows 4,086 and 4,080) stayed inside the 4,071 – 4,110 support zones and between Fib 0.236 and 0.382 (4,101 – 4,074), above the rising 15m EMA 200.</li>
+      <li><b>The daily trend was up.</b> Price was far above the daily EMA 200 (about 3,409). h039, h030 and h029 were all below it. (Alone this
+        didn't fix the rule, but together with 1 and 2 it might.)</li>
+      <li><b>The bigger liquidity was above.</b> Large short-liquidation clusters from 4,150 to 4,350, little long liquidation close below.</li>
     </ol>
-    <p><b>Lessons so far:</b> (1) a 15m double top or lower high with a trendline break right after a long entry is an exit signal;
-      (2) don't buy a breakout into resistance at the top of a range, especially under falling highs and below the daily EMA 200;
-      (3) one position per move; (4) after a failed breakout at a level, don't buy the same level again days later.</p>
+    <p>If you agree, the next version of the rule would be: exit on the 15m double top only when the neckline breaks <b>on high volume</b>
+      and price loses the support zone. Tell me what you see, then I'll test it.</p>
   </section>
 
   <section class="card">
     <h2>What do you think?</h2>
     <div id="offline" class="offline" hidden>Saving is unavailable in this view (sign in to claude.ai to save).</div>
-    <form id="f-h029">
-      <fieldset><legend>What should the bot have done here?</legend>
+    <form id="f-lesson1">
+      <fieldset><legend>Which is closer to what you see?</legend>
         <div class="chips" id="acts"></div></fieldset>
       <fieldset><legend>Your view</legend>
         <textarea id="note" placeholder="What do you see on these charts? Which level, trendline, candle or indicator mattered? Do you agree with my points?"></textarea></fieldset>
@@ -202,8 +182,8 @@ details.tr > summary:focus-visible { outline: 2px solid var(--accent); outline-o
 </div>
 
 <script>
-const ID = "h029";
-const ACTIONS = ["Skip this trade", "Take it, stop below the liquidity", "Wait for a retest, then enter", "Take it, closer target", "Take it as it was"];
+const ID = "lesson1-counter";
+const ACTIONS = ["Quiet pullback = hold, loud breakdown = exit", "It held support, so hold", "Daily trend decides", "Something else (write below)"];
 const acts = document.getElementById("acts");
 ACTIONS.forEach((name, i) => {
   const lab = document.createElement("label"); lab.setAttribute("for", "act" + i);
@@ -211,7 +191,7 @@ ACTIONS.forEach((name, i) => {
   const sp = document.createElement("span"); sp.textContent = name;
   lab.append(inp, sp); acts.append(lab);
 });
-const form = document.getElementById("f-h029"), note = document.getElementById("note"),
+const form = document.getElementById("f-lesson1"), note = document.getElementById("note"),
   save = document.getElementById("save"), status = document.getElementById("status");
 let db = null;
 function fill(r) {

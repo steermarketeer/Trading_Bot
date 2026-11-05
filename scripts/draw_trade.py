@@ -13,6 +13,8 @@ from bot.study.flow import load_flow
 from bot.study.liquidation import _hourly, load_oi_hourly, liq_levels
 
 tid, et, xt, entry, risk, d, tr = sys.argv[1:8]
+marks = [(sys.argv[8], sys.argv[9], "#d81b60")] if len(sys.argv) > 9 else None
+exit_label = sys.argv[10] if len(sys.argv) > 10 else "stop"
 entry, risk, d, tr = float(entry), float(risk), int(d), float(tr)
 cfg = load_config()
 df5u, _ = load_klines_5m(cfg.data_dir, cfg.symbol)
@@ -21,12 +23,13 @@ hb = {"t": hb_df["open_time"].to_numpy()} | {c: hb_df[c].to_numpy(float) for c i
 hb["oi"] = load_oi_hourly(cfg.data_dir, cfg.symbol, hb_df["open_time"])
 t = {"entry_time": pd.Timestamp(et), "exit_time": pd.Timestamp(xt), "entry": entry, "risk": risk, "direction": d}
 t["stop"], t["target"] = entry - d * risk, entry + d * tr * risk
+t["exit_label"] = exit_label
 lm = liq_levels(hb, t["entry_time"], "oi")
 z = strong_levels(_level_table(df5u), t["entry_time"].tz_localize("UTC"))
 out = Path("reports/review/one")
 facts = {}
 for k, (tf, rule) in enumerate(TFS):
-    facts[tf] = plot_big(df5u, tf, rule, t, z, out / f"{tid}_{k + 1}_{tf}.png", lm)
+    facts[tf] = plot_big(df5u, tf, rule, t, z, out / f"{tid}_{k + 1}_{tf}.png", lm, marks)
 (lp, lw), (sp, sw) = lm
 b = np.arange(np.floor(entry * 0.9 / 10) * 10, entry * 1.1, 10)
 hl, _ = np.histogram(lp, bins=b, weights=lw)

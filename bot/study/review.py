@@ -174,7 +174,8 @@ def build_review(cfg: Config, out_dir: Path, which: str = "holdout") -> Path:
 BIG_BEFORE = {"15m": 160, "1h": 150, "4h": 150, "1D": 150}
 
 
-def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path, liqmap=None) -> dict:
+def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path, liqmap=None,
+             marks: list | None = None) -> dict:
     """One timeframe, full width, readable. Returns the indicator readings at the entry (last closed candle)."""
     import matplotlib
     matplotlib.use("Agg")
@@ -309,8 +310,16 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
             a_.axvline(i_x, color="#616161", linestyle=":", linewidth=1.3)
         a_.grid(alpha=0.15)
     ax.text(i_e - 0.5, ymax + pad * 0.6, " ENTRY", fontsize=9, fontweight="bold")
+    for mt, mlab, mcol in (marks or []):
+        k_ = int(np.searchsorted(d.ot, pd.Timestamp(mt).to_datetime64(), side="right")) - 1
+        if lo <= k_ < hi:
+            for a_ in (ax, axv, axm, axr):
+                a_.axvline(k_, color=mcol, linestyle="-.", linewidth=1.6)
+            ax.text(k_, ymin + (ymax - ymin) * 0.5, f" {mlab}", fontsize=9, color=mcol, fontweight="bold", rotation=90,
+                    va="center", bbox=dict(boxstyle="round,pad=0.15", fc="white", ec=mcol, lw=0.8, alpha=0.9))
     if i_x < hi:
-        ax.text(i_x, ymin - pad * 0.6, " EXIT (stop)", fontsize=9, color="#616161", fontweight="bold")
+        ax.text(i_x, ymin - pad * 0.6, " EXIT (" + str(t.get("exit_label", "stop")) + ")", fontsize=9, color="#616161",
+                fontweight="bold")
     ax.set_ylim(ymin - pad, ymax + pad)
     ax.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=8.5, ncol=6, frameon=False)
     off = "" if i_x < hi else "   (exit is later, beyond the right edge)"
