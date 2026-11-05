@@ -16,3 +16,7 @@ results/
 shadow_v2/run.log
 data/metrics/*.csv
 data/coinalyze/*.csv
+data/klines/SOLUSDT_5m.csv
+data/klines/BNBUSDT_5m.csv
+data/klines/XRPUSDT_5m.csv
+data/klines/DOGEUSDT_5m.csv
