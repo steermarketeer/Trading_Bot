@@ -53,7 +53,7 @@ def trades_v2() -> pd.DataFrame:
 
 def swing_tables(df5: pd.DataFrame) -> dict:
     out = {}
-    for tf in ("1h", "2h", "4h", "1D"):
+    for tf in ("1h", "2h", "4h", "6h", "12h", "1D"):
         bars = Bars(resample(df5, tf))
         ct = bars.ct.dt.tz_convert(None).to_numpy()
         hi = [(bars.ot.iloc[i].tz_convert(None), p, ct[cf]) for i, p, cf in bars.sh]
