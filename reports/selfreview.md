@@ -26,8 +26,8 @@
 | Second try at a level that just failed | at entry | holdout | 11% | 6% | 6 | 33% | 51% | +0.11 | +0.60 |
 | More than one signal on the same candle | at entry | 2022 - Oct 2025 | 12% | 27% | 55 | 64% | 40% | +0.79 | +0.37 |
 | More than one signal on the same candle | at entry | holdout | 14% | 20% | 12 | 58% | 47% | +0.67 | +0.53 |
-| First 4h close after entry back beyond the entry (no confirmation) | after entry | 2022 - Oct 2025 | 60% | 30% | 138 | 29% | 58% | +0.01 | +0.83 |
-| First 4h close after entry back beyond the entry (no confirmation) | after entry | holdout | 50% | 34% | 30 | 40% | 56% | +0.14 | +0.86 |
+| First 4h close after entry back beyond the entry (no confirmation) | after entry | 2022 - Oct 2025 | 61% | 31% | 141 | 29% | 59% | +0.01 | +0.85 |
+| First 4h close after entry back beyond the entry (no confirmation) | after entry | holdout | 47% | 34% | 29 | 41% | 55% | +0.18 | +0.81 |
 | 4h Bollinger band failure after entry | after entry | 2022 - Oct 2025 | 60% | 42% | 154 | 36% | 54% | +0.26 | +0.66 |
 | 4h Bollinger band failure after entry | after entry | holdout | 56% | 49% | 37 | 46% | 53% | +0.52 | +0.60 |
 | 15m double top / lower high + breakdown after entry | after entry | 2022 - Oct 2025 | 93% | 71% | 246 | 38% | 76% | +0.29 | +1.21 |

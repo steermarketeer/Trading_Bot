@@ -118,7 +118,7 @@ def run_selfreview(cfg: Config, out_dir: Path) -> Path:
         em = d1e200[kd]
         ema_near = (em - e) * d > 0 and (tg - em) * d > 0
         vert = (d1c[kd] - d1o[kd]) * d > 2 * d1atr[kd]
-        j4 = int(np.searchsorted(t4, np.datetime64(et), side="left"))
+        j4 = int(np.searchsorted(t4 + np.timedelta64(4, "h"), np.datetime64(et), side="right"))  # first 4h candle CLOSING after entry
         unconf = (c4[j4] - e) * d < 0 if j4 < len(c4) else False
         w = df[(df["t"] > et) & (df["t"] < et + pd.Timedelta(days=20))]
         hit = ((w["high"] >= tg) if d > 0 else (w["low"] <= tg)).any()
