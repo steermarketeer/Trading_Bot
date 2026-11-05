@@ -442,3 +442,26 @@ def test_flow_features_use_only_data_before_entry():
     full = flow_features(tr, fl)
     cut = flow_features(tr, fl[fl["open_time"] < tr["entry_time"][0]])
     pd.testing.assert_frame_equal(full, cut)
+
+
+def test_ml_context_no_lookahead():
+    from bot.ml.context import build_context
+    eth = _synthetic_5m(days=420, seed=51)
+    times = pd.to_datetime(["2024-09-10 08:00", "2024-12-02 00:00"])
+    cand = pd.DataFrame({"decision_time": times, "tf": ["4h", "1D"], "direction": [1, -1],
+                         "entry": [100.0, 100.0], "risk": [1.5, 3.0], "atr": [2.0, 4.0],
+                         "event": ["zone_break", "zone_bounce"]})
+    for k in range(2):
+        px = float(eth.loc[eth["open_time"] == times[k].tz_localize("UTC"), "open"].iloc[0])
+        cand.loc[k, "entry"] = px
+    full = build_context(cand, eth, cand)
+    for k in range(2):
+        cut = eth[eth["open_time"] < times[k].tz_localize("UTC")]
+        one = cand.iloc[[k]].reset_index(drop=True)
+        part = build_context(one, cut, one)
+        a, b = full.iloc[k], part.iloc[0]
+        for col in full.columns:
+            if col.startswith("ev_"):
+                continue  # depends on the other candidate in the shared event list
+            va, vb = a[col], b[col]
+            assert (pd.isna(va) and pd.isna(vb)) or abs(float(va) - float(vb)) < 1e-9, col
