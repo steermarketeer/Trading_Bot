@@ -53,33 +53,87 @@ def _hourly(fl: pd.DataFrame) -> pd.DataFrame:
     return h.reset_index()
 
 
-def liq_levels(hb: dict, entry_time: pd.Timestamp):
-    """Untaken long / short liquidation levels (price, weight) known at entry_time."""
+def liq_levels(hb: dict, entry_time: pd.Timestamp, mode: str = "volume"):
+    """Untaken long / short liquidation levels (price, weight) known at entry_time.
+    mode "volume": positions = taker buy / sell volume of each 1h candle (estimate).
+    mode "oi":     positions = real open-interest INCREASE of each 1h candle (Binance, USD), split long / short by
+                   that candle's taker-buy share; open-interest decreases shrink all earlier positions pro rata.
+    Weights are a share of the 30-day volume ("volume") or of the open interest at entry ("oi")."""
     n = int(np.searchsorted(hb["t"], (entry_time - pd.Timedelta(hours=1)).to_datetime64(), side="right"))
     k0 = max(0, n - WINDOW_H)
     if n - k0 < 100:
         return None
     L, H, TP, V, B = (hb[x][k0:n] for x in ("low", "high", "tp", "volume", "buy"))
-    # min low / max high AFTER each candle up to the entry
     suf_min = np.r_[np.minimum.accumulate(L[::-1])[::-1][1:], np.inf]
     suf_max = np.r_[np.maximum.accumulate(H[::-1])[::-1][1:], -np.inf]
+    if mode == "oi":
+        oi = hb["oi"][k0 - 1:n] if k0 > 0 else np.r_[np.nan, hb["oi"][k0:n]]
+        if np.isnan(oi[1:]).mean() > 0.2:
+            return None
+        oi = pd.Series(oi).ffill().to_numpy()
+        d_oi = np.diff(oi)
+        keep = np.where(d_oi < 0, oi[1:] / oi[:-1], 1.0)               # share of positions left after closes
+        keep = np.where(np.isfinite(keep), keep, 1.0)
+        later = np.r_[np.cumprod(keep[::-1])[::-1][1:], 1.0]           # product over candles AFTER k
+        opened = np.where(d_oi > 0, d_oi, 0.0) * later
+        share = np.where(V > 0, B / V, 0.5)
+        lw_tot, sw_tot, tot = opened * TP * share, opened * TP * (1 - share), oi[-1] * TP[-1]  # ETH -> USD
+    else:
+        lw_tot, sw_tot, tot = B, V - B, V.sum()
     lv = TP[:, None] * (1 - 1 / LEV + MM)[None, :]
     sv = TP[:, None] * (1 + 1 / LEV - MM)[None, :]
-    lw = B[:, None] * LEV_SHARE[None, :]
-    sw = (V - B)[:, None] * LEV_SHARE[None, :]
-    tot = V.sum()
+    lw = np.nan_to_num(lw_tot)[:, None] * LEV_SHARE[None, :]
+    sw = np.nan_to_num(sw_tot)[:, None] * LEV_SHARE[None, :]
     la = suf_min[:, None] > lv
     sa = suf_max[:, None] < sv
     return (lv[la], lw[la] / tot), (sv[sa], sw[sa] / tot)
 
 
-def trade_features(tr: pd.DataFrame, hb: dict, fl5: pd.DataFrame) -> pd.DataFrame:
+def load_oi_hourly(data_dir, symbol: str, hours: pd.Series) -> np.ndarray:
+    """Binance open interest (ETH) at each 1h candle's CLOSE (last 5m snapshot at or before open + 1h)."""
+    p = Path(data_dir) / "metrics" / f"{symbol}_metrics_5m.csv"
+    m = pd.read_csv(p, usecols=["create_time", "sum_open_interest"])
+    m["create_time"] = pd.to_datetime(m["create_time"]).dt.as_unit("ns")
+    m = m.dropna().sort_values("create_time")
+    q = pd.DataFrame({"close": (pd.to_datetime(hours) + pd.Timedelta(hours=1)).dt.as_unit("ns")})
+    r = pd.merge_asof(q, m, left_on="close", right_on="create_time", direction="backward",
+                      tolerance=pd.Timedelta(minutes=30))
+    return r["sum_open_interest"].to_numpy(float)
+
+
+def validate_map(hb: dict, data_dir, mode: str) -> dict:
+    """Does the map predict REAL liquidations? Per UTC day (Coinalyze, Binance ETHUSDT perp): liquidation weight the
+    map had in that day's range at 00:00 vs actual long / short liquidations (USD). Spearman correlations, also
+    for the day's range alone (a map must beat 'big moves liquidate more')."""
+    a = pd.read_csv(Path(data_dir) / "coinalyze" / "eth_liq_daily.csv", parse_dates=["time"])
+    a = a[a["market"] == "binance_usdt"].set_index("time")
+    hdf = pd.DataFrame({"t": hb["t"], "high": hb["high"], "low": hb["low"]}).set_index("t")
+    day = hdf.resample("1D").agg({"high": "max", "low": "min"}).dropna()
+    rows = []
+    for t, r in day.iterrows():
+        if t not in a.index:
+            continue
+        lv = liq_levels(hb, pd.Timestamp(t), mode)
+        if lv is None:
+            continue
+        (lp, lw), (sp, sw) = lv
+        mid = hb["tp"][max(0, int(np.searchsorted(hb["t"], t.to_datetime64())) - 1)]
+        rows.append({"pred_long": lw[lp >= r["low"]].sum(), "pred_short": sw[sp <= r["high"]].sum(),
+                     "down": mid - r["low"], "up": r["high"] - mid,
+                     "act_long": a.at[t, "l"], "act_short": a.at[t, "s"]})
+    v = pd.DataFrame(rows)
+    sp_ = lambda x, y: float(v[x].rank().corr(v[y].rank()))  # noqa: E731
+    return {"days": len(v), "long_map": sp_("pred_long", "act_long"), "long_move": sp_("down", "act_long"),
+            "short_map": sp_("pred_short", "act_short"), "short_move": sp_("up", "act_short")}
+
+
+def trade_features(tr: pd.DataFrame, hb: dict, fl5: pd.DataFrame, mode: str = "volume") -> pd.DataFrame:
     t5 = fl5["open_time"].to_numpy()
     TP5, V5 = fl5["tp"].to_numpy(float), fl5["volume"].to_numpy(float)
     rows = []
     for idx, r in tr.iterrows():
         e, rk, d, T = float(r["px"]), float(r["risk"]), int(r["direction"]), TGT[r["setup"]]
-        lv = liq_levels(hb, pd.Timestamp(r["decision_time"]))
+        lv = liq_levels(hb, pd.Timestamp(r["decision_time"]), mode)
         out = {"trade": idx}
         if lv is None:
             rows.append(out)
@@ -162,15 +216,17 @@ def reasons(X: pd.DataFrame, cut: dict) -> pd.DataFrame:
     return R
 
 
-def run_liquidation_study(cfg: Config, out_dir: Path) -> Path:
+def run_liquidation_study(cfg: Config, out_dir: Path, mode: str = "oi") -> Path:
     df5u, _ = load_klines_5m(cfg.data_dir, cfg.symbol)
     df5n = df5u.assign(open_time=pd.to_datetime(df5u["open_time"], utc=True).dt.tz_convert(None))
     fl = load_flow(cfg.data_dir, cfg.symbol)
     hb_df = _hourly(fl)
     hb = {"t": hb_df["open_time"].to_numpy()} | {c: hb_df[c].to_numpy(float) for c in ("low", "high", "tp", "volume", "buy")}
+    hb["oi"] = load_oi_hourly(cfg.data_dir, cfg.symbol, hb_df["open_time"])
+    val = {m: validate_map(hb, cfg.data_dir, m) for m in ("volume", "oi")}
     X = pd.read_pickle(ROOT / "results" / "ml_targets.pkl")
     X.attrs = {}
-    F = trade_features(X, hb, fl)
+    F = trade_features(X, hb, fl, mode)
     A = after_stop(X, df5n)
     X = X.drop(columns=[c for c in list(F.columns) + list(A.columns) if c in X.columns]).join(F).join(A)
     X["loss"] = X["net_fixed"] <= 0
@@ -178,11 +234,20 @@ def run_liquidation_study(cfg: Config, out_dir: Path) -> Path:
     cut = {"own_beyond_stop": X.loc[res, "own_beyond_stop"].quantile(2 / 3),
            "opp_to_target": X.loc[res, "opp_to_target"].quantile(1 / 3)}
     R = reasons(X, cut)
-    X.join(R).to_pickle(ROOT / "results" / "liquidation_study.pkl")
+    X.join(R).to_pickle(ROOT / "results" / f"liquidation_study_{mode}.pkl")
     loss, win = X["loss"], ~X["loss"]
     L = ["# Why trades fail: liquidations and thin volume", "",
-         f"All {len(X)} v3.1 trades (2022 - Oct 2026; {int(loss.sum())} losers after costs). Liquidation map "
-         "estimated from volume (no open-interest history available here), using only candles closed before entry.", ""]
+         f"All {len(X)} v3.1 trades (2022 - Oct 2026; {int(loss.sum())} losers after costs). Liquidation map built "
+         + ("from REAL Binance open interest (5m, increases = new positions, split long/short by taker buys)"
+            if mode == "oi" else "from volume (estimate)") + ", using only candles closed before entry.", "",
+         "## 0. Does the map predict real liquidations? (Coinalyze, Binance ETHUSDT, per day)", "",
+         "Spearman rank correlation with actual liquidations (USD). 'move only' = the day's move alone; "
+         "a useful map must beat it.", "",
+         _table(pd.DataFrame([{"map": k, **v} for k, v in val.items()]), [
+             ("map", "map built from", str), ("days", "days", str),
+             ("long_map", "long liqs: map", lambda v: f"{v:.2f}"), ("long_move", "long liqs: move only", lambda v: f"{v:.2f}"),
+             ("short_map", "short liqs: map", lambda v: f"{v:.2f}"),
+             ("short_move", "short liqs: move only", lambda v: f"{v:.2f}")]), ""]
     # 1. what happened after the stop
     st = X[X["came_back_entry"].notna()]
     L += ["## 1. What price did after stopping us out", "",
@@ -254,9 +319,10 @@ def run_liquidation_study(cfg: Config, out_dir: Path) -> Path:
         ("w_if", "win % with", _pct), ("w_not", "win % without", _pct)]), ""]
     cols = ["decision_time", "setup", "tf", "direction", "net_fixed", "came_back_entry", "came_back_target",
             "hunt_depth_r", "wick_stop", "own_beyond_stop", "pull", "thin_stop", "opp_to_target"]
-    X.loc[loss, cols].join(R[loss]).to_csv(out_dir / "losing_trades_reasons.csv")
+    X.loc[loss, cols].join(R[loss]).to_csv(out_dir / f"losing_trades_reasons_{mode}.csv")
     L += wider_stop_section(X, df5n, _funding_cum(cfg))
-    path = out_dir / "liquidation_failures.md"
+    L += setup_fair_section(X)
+    path = out_dir / f"liquidation_failures_{mode}.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path
 
@@ -324,3 +390,24 @@ def wider_stop_section(X, df5n, fund) -> list[str]:
                                         ("pf", "profit factor", lambda v: f"{v:.2f}"),
                                         ("eq", "account", lambda v: "" if v != v else f"{v:.2f}x"),
                                         ("mdd", "worst drop", lambda v: "" if v != v else f"-{v:.0%}")]), ""]
+
+
+def setup_fair_section(X: pd.DataFrame) -> list[str]:
+    """The 'magnet beyond the stop' weight grows with the stop width (1D bounces have wide stops), so compare it
+    fairly: (a) top third WITHIN each setup, (b) weight per 1% of price."""
+    res, w = ~X["hold"], ~X["loss"]
+    dens = X["own_beyond_stop"] / (X["risk"] / X["px"])
+    cut = X[res].groupby("setup")["own_beyond_stop"].quantile(2 / 3)
+    flags = {"top third within its own setup": X["own_beyond_stop"] >= X["setup"].map(cut),
+             "top third of weight per 1% of price": dens >= dens[res].quantile(2 / 3)}
+    rows = []
+    for name, f in flags.items():
+        for per, pm in (("research", res), ("holdout", ~res)):
+            for s_ in ["all"] + list(TGT):
+                m = pm & ((X["setup"] == s_) if s_ != "all" else True)
+                rows.append({"test": name, "period": per, "setup": s_, "n": int((m & f).sum()),
+                             "w_with": w[m & f].mean(), "w_without": w[m & ~f].mean()})
+    return ["## 7. Fair check of the liquidation-magnet reason (removing the stop-width effect)", "",
+            _table(pd.DataFrame(rows), [("test", "magnet defined as", str), ("period", "period", str),
+                                        ("setup", "setup", str), ("n", "trades with magnet", str),
+                                        ("w_with", "win % with", _pct), ("w_without", "win % without", _pct)]), ""]

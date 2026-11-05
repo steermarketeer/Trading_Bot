@@ -236,7 +236,7 @@ def cmd_decision_map(args, cfg):
 def cmd_liq_fail(args, cfg):
     from .study.liquidation import run_liquidation_study
     Path(args.out).mkdir(parents=True, exist_ok=True)
-    print(f"report: {run_liquidation_study(cfg, Path(args.out))}")
+    print(f"report: {run_liquidation_study(cfg, Path(args.out), args.map)}")
 
 
 def cmd_entry15(args, cfg):
@@ -371,6 +371,7 @@ def main(argv=None):
 
     lqf = sub.add_parser("liquidation-failures", help="why v3.1 trades fail: liquidation map + thin volume")
     lqf.add_argument("--out", default="reports")
+    lqf.add_argument("--map", default="oi", choices=["oi", "volume"])
     e15 = sub.add_parser("entry15", help="15m entries (limit / confirmation) for the v3.1 signals")
     e15.add_argument("--out", default="reports")
     mta = sub.add_parser("meta-label", help="meta-labeling: model may only veto v3.1 trades, walk-forward")

@@ -1,6 +1,15 @@
 # Why trades fail: liquidations and thin volume
 
-All 626 v3.1 trades (2022 - Oct 2026; 329 losers after costs). Liquidation map estimated from volume (no open-interest history available here), using only candles closed before entry.
+All 626 v3.1 trades (2022 - Oct 2026; 329 losers after costs). Liquidation map built from volume (estimate), using only candles closed before entry.
+
+## 0. Does the map predict real liquidations? (Coinalyze, Binance ETHUSDT, per day)
+
+Spearman rank correlation with actual liquidations (USD). 'move only' = the day's move alone; a useful map must beat it.
+
+| map built from | days | long liqs: map | long liqs: move only | short liqs: map | short liqs: move only |
+|---|---|---|---|---|---|
+| volume | 1479 | 0.51 | 0.64 | 0.45 | 0.57 |
+| oi | 1479 | 0.44 | 0.64 | 0.39 | 0.57 |
 
 ## 1. What price did after stopping us out
 
@@ -113,4 +122,25 @@ Decided at the entry. 'same target price' keeps our target; the reward:risk gets
 | holdout |   1D bounce: stop 0.5R further, same target price | 44 | 55% | +0.44 | 2.04 |  |  |
 | holdout |   1D bounce: stop 0.5R further, same R target | 44 | 52% | +0.57 | 2.26 |  |  |
 | holdout |   1D bounce: stop beyond the liquidation cluster, same target price | 44 | 45% | +0.25 | 1.47 |  |  |
+
+## 7. Fair check of the liquidation-magnet reason (removing the stop-width effect)
+
+| magnet defined as | period | setup | trades with magnet | win % with | win % without |
+|---|---|---|---|---|---|
+| top third within its own setup | research | all | 175 | 46% | 47% |
+| top third within its own setup | research | A+ breakout | 61 | 49% | 64% |
+| top third within its own setup | research | breakout | 49 | 45% | 43% |
+| top third within its own setup | research | 1D bounce | 65 | 43% | 34% |
+| top third within its own setup | holdout | all | 25 | 60% | 49% |
+| top third within its own setup | holdout | A+ breakout | 4 | 75% | 59% |
+| top third within its own setup | holdout | breakout | 5 | 60% | 44% |
+| top third within its own setup | holdout | 1D bounce | 16 | 56% | 39% |
+| top third of weight per 1% of price | research | all | 174 | 37% | 51% |
+| top third of weight per 1% of price | research | A+ breakout | 14 | 43% | 60% |
+| top third of weight per 1% of price | research | breakout | 5 | 20% | 44% |
+| top third of weight per 1% of price | research | 1D bounce | 155 | 37% | 37% |
+| top third of weight per 1% of price | holdout | all | 36 | 47% | 54% |
+| top third of weight per 1% of price | holdout | A+ breakout | 3 | 67% | 61% |
+| top third of weight per 1% of price | holdout | breakout | 1 | 0% | 50% |
+| top third of weight per 1% of price | holdout | 1D bounce | 32 | 47% | 42% |
 
