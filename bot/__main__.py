@@ -251,6 +251,12 @@ def cmd_reentry(args, cfg):
     print(f"report: {run_reentry(cfg, Path(args.out))}")
 
 
+def cmd_funnel(args, cfg):
+    from .study.funnel import run_funnel
+
+    print(f"report: {run_funnel(cfg, Path(args.out))}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m bot")
     ap.add_argument("--config", default="config.yaml")
@@ -348,10 +354,13 @@ def main(argv=None):
     rn = sub.add_parser("reentry", help="re-entries after stop hunts on v3 trades")
     rn.add_argument("--out", default="reports")
 
+    fn = sub.add_parser("funnel", help="which v3 rule removes the most trades")
+    fn.add_argument("--out", default="reports")
+
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     {"check-data": cmd_check_data, "backtest": cmd_backtest, "shadow": cmd_shadow, "study": cmd_study, "failures": cmd_failures, "indicators": cmd_indicators, "sr-study": cmd_sr, "sr2": cmd_sr2, "concepts": cmd_concepts, "scoring": cmd_scoring, "exits": cmd_exits, "smalltf": cmd_smalltf, "level-tests": cmd_level_tests, "strategy-eval": cmd_strategy_eval, "indicator-boost": cmd_indicator_boost, "strategy-v2": cmd_strategy_v2, "failure-liquidity": cmd_failure_liquidity,
-     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
+     "freeze-v3": cmd_freeze_v3, "two-layer": cmd_two_layer, "more-trades": cmd_more_trades, "reentry": cmd_reentry, "funnel": cmd_funnel, "decision-map": cmd_decision_map, "shadow-v3": cmd_shadow_v3}[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":
