@@ -21,6 +21,9 @@ Chosen on 2022-25 (t-score): **half at +2R, rest to break-even and run**; most p
 | half at +2R, rest to break-even and run | 129 | 60% | +0.81 | 2.94 | 5.67 | 4 | 17.17x | -14% | 11.6 | 64% | +1.01 | 2.28x | -13% |
 | Chandelier 3 ATR, no target | 129 | 47% | +0.89 | 2.67 | 3.53 | 3 | 11.54x | -34% | 10.6 | 45% | +0.55 | 1.16x | -23% |
 | 4h swing trail, no target | 129 | 50% | +0.74 | 2.54 | 3.53 | 4 | 10.26x | -23% | 7.2 | 48% | +0.54 | 1.14x | -25% |
+| exit after a daily sweep of the trade's high (after +1R) | 129 | 60% | +0.62 | 2.55 | 4.79 | 4 | 11.52x | -14% | 6.1 | 70% | +0.81 | 1.98x | -13% |
+| exit after a daily sweep of the trade's high (from entry) | 129 | 64% | +0.60 | 3.00 | 5.07 | 4 | 10.92x | -14% | 3.4 | 61% | +0.53 | 1.67x | -14% |
+| exit after a 4h sweep of the trade's high (after +1R) | 129 | 64% | +0.48 | 2.36 | 4.49 | 4 | 7.58x | -14% | 5.4 | 70% | +0.80 | 1.90x | -14% |
 | entry filter: skip all three liquidity reasons | 106 | 59% | +0.98 | 3.25 | 5.15 | 4 | 14.00x | -23% | 11.4 | 71% | +1.29 | 2.22x | -11% |
 
 ## breakouts
@@ -40,6 +43,9 @@ Chosen on 2022-25 (t-score): **trail below the last 4h swing low (after +1R)**; 
 | half at +2R, rest to break-even and run | 78 | 62% | +0.74 | 2.80 | 4.47 | 4 | 7.96x | -10% | 1.7 | 59% | +0.69 | 1.67x | -13% |
 | Chandelier 3 ATR, no target | 78 | 41% | +0.74 | 2.23 | 2.33 | 3 | 5.19x | -33% | 3.7 | 27% | -0.30 | 0.75x | -35% |
 | 4h swing trail, no target | 78 | 44% | +0.80 | 2.46 | 2.56 | 3 | 6.13x | -28% | 3.6 | 27% | -0.34 | 0.72x | -38% |
+| exit after a daily sweep of the trade's high (after +1R) | 78 | 62% | +0.72 | 2.81 | 4.43 | 4 | 7.64x | -10% | 1.5 | 59% | +0.60 | 1.54x | -15% |
+| exit after a daily sweep of the trade's high (from entry) | 78 | 62% | +0.69 | 2.85 | 4.39 | 4 | 7.17x | -10% | 1.0 | 59% | +0.60 | 1.54x | -15% |
+| exit after a 4h sweep of the trade's high (after +1R) | 78 | 65% | +0.63 | 2.95 | 4.36 | 4 | 6.05x | -9% | 1.0 | 59% | +0.51 | 1.43x | -17% |
 | entry filter: skip all three liquidity reasons | 68 | 62% | +0.75 | 2.83 | 4.21 | 4 | 5.88x | -17% | 1.7 | 69% | +0.98 | 1.72x | -11% |
 
 ## 1D bounces
@@ -59,6 +65,9 @@ Chosen on 2022-25 (t-score): **half at +2R, rest to break-even and run**; most p
 | half at +2R, rest to break-even and run | 51 | 59% | +0.92 | 3.15 | 3.54 | 4 | 2.30x | -12% | 26.8 | 73% | +1.65 | 1.40x | -2% |
 | Chandelier 3 ATR, no target | 51 | 55% | +1.11 | 3.61 | 2.70 | 4 | 2.56x | -14% | 21.2 | 82% | +2.23 | 1.56x | -2% |
 | 4h swing trail, no target | 51 | 59% | +0.64 | 2.73 | 2.82 | 4 | 1.82x | -12% | 12.8 | 91% | +2.32 | 1.59x | -2% |
+| exit after a daily sweep of the trade's high (after +1R) | 51 | 59% | +0.46 | 2.15 | 2.19 | 4 | 1.55x | -13% | 13.2 | 91% | +1.23 | 1.30x | -2% |
+| exit after a daily sweep of the trade's high (from entry) | 51 | 69% | +0.46 | 3.49 | 2.59 | 3 | 1.56x | -6% | 7.0 | 64% | +0.40 | 1.09x | -2% |
+| exit after a 4h sweep of the trade's high (after +1R) | 51 | 61% | +0.26 | 1.64 | 1.67 | 3 | 1.28x | -12% | 12.1 | 91% | +1.39 | 1.34x | -2% |
 | entry filter: skip all three liquidity reasons | 38 | 55% | +1.39 | 3.90 | 3.30 | 3 | 2.46x | -16% | 28.9 | 75% | +1.89 | 1.32x | -2% |
 
 ## Reading

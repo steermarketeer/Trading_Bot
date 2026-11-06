@@ -10,6 +10,9 @@ Exits (each alone; the fixed target stays as a ceiling unless the name ends in "
   SW         structure: after +1R, at each 4h close the stop rises to the last confirmed 4h swing low * (1 - 0.1%)
   PT         partial: half the position closes at +2R (limit), the stop of the rest moves to the entry, the rest runs
   CH3-NT SW-NT    the trailing stops with no fixed target (the trade ends only on the trail, the stop or the time limit)
+  SWP1D SWP4H   sweep of the trade's running high (trader's concept): after +1R, a daily (4h) candle that makes a new high
+             above the running high of the closed candles since entry and CLOSES below that previous high -> exit at the
+             next 5m open. SWP1D0 = the same from the entry, without waiting for +1R.
   SKIP3      an ENTRY filter for comparison: skip trades with all three liquidity reasons (ceiling before the target,
              against the daily EMA 200, liquidity just beyond the stop; results/failure_study.pkl)
 Stops are price orders: a 5m candle that opens through the stop fills at the open, else at the stop. Trail updates use
@@ -34,7 +37,7 @@ from .sr2_run import _pct, _table
 
 HOLDOUT = pd.Timestamp("2025-11-01")
 RISK = {"A+ breakout": 0.04, "breakout": 0.02, "1D bounce": 0.02}
-MODES = ["fixed", "BE1", "BE1.5", "BE2", "X4H", "CH2", "CH3", "SW", "PT", "CH3-NT", "SW-NT"]
+MODES = ["fixed", "BE1", "BE1.5", "BE2", "X4H", "CH2", "CH3", "SW", "PT", "CH3-NT", "SW-NT", "SWP1D", "SWP1D0", "SWP4H"]
 
 
 def run_exit(M, t4, d1, i0, end, d, e, s0, tg, mode):
@@ -51,6 +54,9 @@ def run_exit(M, t4, d1, i0, end, d, e, s0, tg, mode):
     SL4 = t4.sl if d > 0 else [(i, -p, cf) for i, p, cf in t4.sh]        # oriented swing lows (confirm index)
     be_k = {"BE1": 1.0, "BE1.5": 1.5, "BE2": 2.0}.get(mode)
     ch_k = {"CH2": 2.0, "CH3": 3.0, "CH3-NT": 3.0}.get(mode)
+    HD, CD = (d1.h, d1.c) if d > 0 else (-d1.l, -d1.c)                  # oriented daily high / close
+    run4 = -np.inf                                                      # running high of the closed 4h candles since entry
+    rund = -np.inf                                                      # running high of the closed daily candles since entry
     stop = s_
     armed = False
     hh = -np.inf
@@ -87,7 +93,18 @@ def run_exit(M, t4, d1, i0, end, d, e, s0, tg, mode):
             if armed and ch_k is not None and np.isfinite(d1.a[d1.closed_before(t4.ct[j4]) - 1]):
                 atr_d = d1.a[d1.closed_before(t4.ct[j4]) - 1]
                 pending_stop = max(pending_stop or -np.inf, hh - ch_k * atr_d)
-            if armed and mode.startswith("SW"):
+            if mode.startswith("SWP") and i + 1 < end:
+                go = armed or mode == "SWP1D0"
+                if mode == "SWP4H":
+                    if go and run4 > -np.inf and H4[j4] > run4 and C4[j4] < run4:
+                        legs.append((frac, (o[i + 1] - e_) / risk, i + 1, "sweep")); frac = 0
+                    run4 = max(run4, H4[j4])
+                elif pd.Timestamp(t4.ct[j4]).hour == 0:                 # a daily candle closed too
+                    kd = d1.closed_before(t4.ct[j4]) - 1
+                    if go and rund > -np.inf and HD[kd] > rund and CD[kd] < rund:
+                        legs.append((frac, (o[i + 1] - e_) / risk, i + 1, "sweep")); frac = 0
+                    rund = max(rund, HD[kd])
+            if armed and mode in ("SW", "SW-NT"):
                 lows = [p for ii, p, cf in SL4 if cf <= j4 and ii >= j4 - 60]
                 if lows:
                     pending_stop = max(pending_stop or -np.inf, lows[-1] * (1 - 0.001) if d > 0 else lows[-1] - 0.001 * abs(lows[-1]))
@@ -104,13 +121,13 @@ def book(M, i0, legs, d, risk_pct):
     t5 = M["t5"]
     net = 0.0
     for frac, R, xi, kind in legs:
-        x_t = t5[xi] + (np.timedelta64(0, "m") if kind == "4h against" else np.timedelta64(5, "m"))
+        x_t = t5[xi] + (np.timedelta64(0, "m") if kind in ("4h against", "sweep") else np.timedelta64(5, "m"))
         a_ = np.searchsorted(ft, t5[i0], side="right"); b_ = np.searchsorted(ft, x_t, side="left")
         fund = (fc[b_] - fc[a_]) * d if b_ > a_ else 0.0
         cost = C_MKT + (C_LMT if kind == "target" else C_MKT) + fund
         net += frac * (R - cost / risk_pct)
     last = max(legs, key=lambda x: x[2])
-    return net, pd.Timestamp(t5[last[2]]) + (pd.Timedelta(0) if last[3] == "4h against" else pd.Timedelta(minutes=5)), \
+    return net, pd.Timestamp(t5[last[2]]) + (pd.Timedelta(0) if last[3] in ("4h against", "sweep") else pd.Timedelta(minutes=5)), \
         "+".join(sorted({k for _, _, _, k in legs}))
 
 
@@ -151,6 +168,8 @@ def run_exit_study(cfg: Config, out_dir: Path) -> Path:
              "CH2": "Chandelier 2 ATR (after +1R)", "CH3": "Chandelier 3 ATR (after +1R)",
              "SW": "trail below the last 4h swing low (after +1R)", "PT": "half at +2R, rest to break-even and run",
              "CH3-NT": "Chandelier 3 ATR, no target", "SW-NT": "4h swing trail, no target",
+             "SWP1D": "exit after a daily sweep of the trade's high (after +1R)", "SWP1D0": "exit after a daily sweep of the trade's high (from entry)",
+             "SWP4H": "exit after a 4h sweep of the trade's high (after +1R)",
              "SKIP3": "entry filter: skip all three liquidity reasons"}
     L = ["# Exit study on the chosen version", "",
          "Same 162 trades, entries, initial stops, replay, costs and funding; only the exit changes. **win % = profit after "
