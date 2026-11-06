@@ -45,6 +45,26 @@ def outcome(t: TF) -> np.ndarray:
     return out
 
 
+SHIFTS = 400
+
+
+def event_pvalue(y, bu, be) -> float:
+    """Circular time-shift test (2020 - Oct 2025 only): move the signal's event dates by a random offset (keeping their
+    clustering) and count how often the shifted copy is as far from its own coin-flip rate as the real one."""
+    def rate(b, e):
+        r = np.concatenate([y[b], 1 - y[e]])
+        r = r[~np.isnan(r)]
+        return r.mean() if len(r) else np.nan
+    n = len(y)
+    obs = rate(bu, be)
+    if not np.isfinite(obs) or (bu.sum() + be.sum()) < 20:
+        return 1.0
+    rng = np.random.default_rng(5)
+    null = np.array([rate(np.roll(bu, k), np.roll(be, k)) for k in rng.integers(n // 20, n - n // 20, SHIFTS)])
+    null = null[np.isfinite(null)]
+    return (np.sum(np.abs(null - null.mean()) >= abs(obs - null.mean())) + 1) / (len(null) + 1)
+
+
 def _cross_up(x, y):
     return (x > y) & (np.r_[False, x[:-1] <= y[:-1]])
 
@@ -134,7 +154,9 @@ def run_indicator_learn(cfg: Config, out_dir: Path) -> Path:
     d_e200 = ema(pd.Series(d1.c), 200).to_numpy(float)
     L = ["# Learning the indicators: every classic signal, the same fair test", "",
          f"At the signal close: does ETH move {K} ATR the way the signal says before {K} ATR against (30 candles max)? "
-         "**A coin flip = 50%.** Bullish and mirrored bearish signals pooled. Research 2020 - Oct 2025, holdout Nov 2025 on.", ""]
+         "**A coin flip = 50%.** Bullish and mirrored bearish signals pooled. Research 2020 - Oct 2025, holdout Nov 2025 on. "
+         "**chance it is noise**: the share of 400 time-shifted copies of the signal (same events moved to random dates, "
+         "clustering kept) that are as far from a coin flip as the real one; below 0.01 = real.", ""]
     for tf in ("1h", "4h", "1D"):
         t = TF(resample(df5u, tf))
         y = outcome(t)
@@ -161,12 +183,15 @@ def run_indicator_learn(cfg: Config, out_dir: Path) -> Path:
             res = ~hd
             good_years = sum(1 for yy in range(2020, 2026) if (m := res & (yr == yy)).sum() >= 10 and right[m].mean() > 0.5)
             n_years = sum(1 for yy in range(2020, 2026) if (res & (yr == yy)).sum() >= 10)
-            rows.append({"sig": name, "n": int(res.sum()), "p": right[res].mean(), "pw": right[res & eok & trend].mean(),
+            okr = ~hold & ~late
+            pv = event_pvalue(y[okr], bu[okr], be[okr])
+            rows.append({"sig": name, "n": int(res.sum()), "p": right[res].mean(), "pv": pv, "pw": right[res & eok & trend].mean(),
                          "pa": right[res & eok & ~trend].mean(), "yrs": f"{good_years}/{n_years}", "nh": int(hd.sum()),
                          "ph": right[hd].mean() if hd.sum() else np.nan})
         base = np.nanmean(y[~hold])
         L += [f"## {tf} (all candles: up first {base:.0%})", "",
               _table(pd.DataFrame(rows), [("sig", "signal", str), ("n", "cases", lambda v: f"{v:,}"), ("p", "right", _pct),
+                                          ("pv", "chance it is noise", lambda v: f"{v:.3f}"),
                                           ("pw", "right, with the daily trend", _pct), ("pa", "right, against it", _pct),
                                           ("yrs", "years above 50%", str), ("nh", "holdout cases", str), ("ph", "holdout right", _pct)]), ""]
         if tf == "4h":

@@ -4,32 +4,32 @@ Every candle that reaches the upper band (and, mirrored, the lower band) on ETH.
 
 ## 1h (13,678 band reaches 2020 - Oct 2025; price went further 50% of the time)
 
-| at the band | cases | went further | holdout cases | holdout went further |
-|---|---|---|---|---|
-| close outside | 5,675 | 52% | 850 | 55% |
-| not close outside | 8,003 | 48% | 1347 | 47% |
-| walk | 2,654 | 54% | 424 | 53% |
-| not walk | 11,024 | 49% | 1773 | 50% |
-| squeeze breakout | 3,946 | 50% | 652 | 50% |
-| not squeeze breakout | 9,732 | 49% | 1545 | 50% |
-| bulge | 2,070 | 58% | 278 | 58% |
-| not bulge | 11,608 | 48% | 1919 | 49% |
-| bands expanding | 10,076 | 51% | 1625 | 51% |
-| not bands expanding | 3,602 | 47% | 572 | 49% |
-| opposite band turned | 6,079 | 48% | 996 | 50% |
-| not opposite band turned | 7,599 | 51% | 1201 | 50% |
-| %b non-confirmation | 3,264 | 50% | 461 | 50% |
-| not %b non-confirmation | 10,414 | 49% | 1736 | 50% |
-| volume high | 6,079 | 51% | 1050 | 47% |
-| not volume high | 7,599 | 49% | 1147 | 53% |
-| RSI > 75 | 1,020 | 61% | 167 | 54% |
-| not RSI > 75 | 12,658 | 49% | 2030 | 50% |
-| upper wick | 6,722 | 48% | 1078 | 48% |
-| not upper wick | 6,956 | 51% | 1119 | 52% |
-| higher TF at band | 3,523 | 53% | 573 | 50% |
-| not higher TF at band | 10,155 | 48% | 1624 | 50% |
-| higher TF trend | 8,764 | 50% | 1432 | 51% |
-| not higher TF trend | 4,904 | 49% | 765 | 49% |
+| at the band | cases | went further | chance the difference is noise | holdout cases | holdout went further |
+|---|---|---|---|---|---|
+| close outside | 5,675 | 52% | 0.002 | 850 | 55% |
+| not close outside | 8,003 | 48% | 0.002 | 1347 | 47% |
+| walk | 2,654 | 54% | 0.002 | 424 | 53% |
+| not walk | 11,024 | 49% | 0.002 | 1773 | 50% |
+| squeeze breakout | 3,946 | 50% | 0.399 | 652 | 50% |
+| not squeeze breakout | 9,732 | 49% | 0.399 | 1545 | 50% |
+| bulge | 2,070 | 58% | 0.002 | 278 | 58% |
+| not bulge | 11,608 | 48% | 0.002 | 1919 | 49% |
+| bands expanding | 10,076 | 51% | 0.002 | 1625 | 51% |
+| not bands expanding | 3,602 | 47% | 0.002 | 572 | 49% |
+| opposite band turned | 6,079 | 48% | 0.002 | 996 | 50% |
+| not opposite band turned | 7,599 | 51% | 0.002 | 1201 | 50% |
+| %b non-confirmation | 3,264 | 50% | 0.504 | 461 | 50% |
+| not %b non-confirmation | 10,414 | 49% | 0.504 | 1736 | 50% |
+| volume high | 6,079 | 51% | 0.025 | 1050 | 47% |
+| not volume high | 7,599 | 49% | 0.025 | 1147 | 53% |
+| RSI > 75 | 1,020 | 61% | 0.002 | 167 | 54% |
+| not RSI > 75 | 12,658 | 49% | 0.002 | 2030 | 50% |
+| upper wick | 6,722 | 48% | 0.002 | 1078 | 48% |
+| not upper wick | 6,956 | 51% | 0.002 | 1119 | 52% |
+| higher TF at band | 3,523 | 53% | 0.002 | 573 | 50% |
+| not higher TF at band | 10,155 | 48% | 0.002 | 1624 | 50% |
+| higher TF trend | 8,764 | 50% | 0.182 | 1432 | 51% |
+| not higher TF trend | 4,904 | 49% | 0.182 | 765 | 49% |
 
 ### 1h: the two-condition mixes where price failed most and went further most (>= 150 cases)
 
@@ -50,32 +50,32 @@ Every candle that reaches the upper band (and, mirrored, the lower band) on ETH.
 
 ## 4h (3,362 band reaches 2020 - Oct 2025; price went further 49% of the time)
 
-| at the band | cases | went further | holdout cases | holdout went further |
-|---|---|---|---|---|
-| close outside | 1,444 | 52% | 238 | 47% |
-| not close outside | 1,918 | 47% | 317 | 47% |
-| walk | 754 | 51% | 111 | 47% |
-| not walk | 2,608 | 49% | 444 | 48% |
-| squeeze breakout | 1,015 | 46% | 200 | 44% |
-| not squeeze breakout | 2,347 | 50% | 355 | 49% |
-| bulge | 568 | 62% | 77 | 60% |
-| not bulge | 2,794 | 47% | 478 | 45% |
-| bands expanding | 2,483 | 50% | 403 | 46% |
-| not bands expanding | 879 | 48% | 152 | 51% |
-| opposite band turned | 1,427 | 49% | 243 | 52% |
-| not opposite band turned | 1,935 | 49% | 312 | 44% |
-| %b non-confirmation | 878 | 52% | 128 | 46% |
-| not %b non-confirmation | 2,484 | 48% | 427 | 48% |
-| volume high | 1,299 | 51% | 249 | 50% |
-| not volume high | 2,063 | 48% | 306 | 45% |
-| RSI > 75 | 311 | 64% | 38 | 63% |
-| not RSI > 75 | 3,051 | 48% | 517 | 46% |
-| upper wick | 1,568 | 47% | 269 | 48% |
-| not upper wick | 1,794 | 51% | 286 | 47% |
-| higher TF at band | 633 | 58% | 99 | 55% |
-| not higher TF at band | 2,729 | 47% | 456 | 46% |
-| higher TF trend | 1,984 | 51% | 328 | 48% |
-| not higher TF trend | 1,332 | 46% | 227 | 46% |
+| at the band | cases | went further | chance the difference is noise | holdout cases | holdout went further |
+|---|---|---|---|---|---|
+| close outside | 1,444 | 52% | 0.005 | 238 | 47% |
+| not close outside | 1,918 | 47% | 0.005 | 317 | 47% |
+| walk | 754 | 51% | 0.344 | 111 | 47% |
+| not walk | 2,608 | 49% | 0.344 | 444 | 48% |
+| squeeze breakout | 1,015 | 46% | 0.115 | 200 | 44% |
+| not squeeze breakout | 2,347 | 50% | 0.115 | 355 | 49% |
+| bulge | 568 | 62% | 0.002 | 77 | 60% |
+| not bulge | 2,794 | 47% | 0.002 | 478 | 45% |
+| bands expanding | 2,483 | 50% | 0.474 | 403 | 46% |
+| not bands expanding | 879 | 48% | 0.474 | 152 | 51% |
+| opposite band turned | 1,427 | 49% | 0.798 | 243 | 52% |
+| not opposite band turned | 1,935 | 49% | 0.798 | 312 | 44% |
+| %b non-confirmation | 878 | 52% | 0.090 | 128 | 46% |
+| not %b non-confirmation | 2,484 | 48% | 0.090 | 427 | 48% |
+| volume high | 1,299 | 51% | 0.067 | 249 | 50% |
+| not volume high | 2,063 | 48% | 0.067 | 306 | 45% |
+| RSI > 75 | 311 | 64% | 0.002 | 38 | 63% |
+| not RSI > 75 | 3,051 | 48% | 0.002 | 517 | 46% |
+| upper wick | 1,568 | 47% | 0.005 | 269 | 48% |
+| not upper wick | 1,794 | 51% | 0.005 | 286 | 47% |
+| higher TF at band | 633 | 58% | 0.002 | 99 | 55% |
+| not higher TF at band | 2,729 | 47% | 0.002 | 456 | 46% |
+| higher TF trend | 1,984 | 51% | 0.037 | 328 | 48% |
+| not higher TF trend | 1,332 | 46% | 0.037 | 227 | 46% |
 
 ### 4h: the two-condition mixes where price failed most and went further most (>= 150 cases)
 
@@ -96,32 +96,32 @@ Every candle that reaches the upper band (and, mirrored, the lower band) on ETH.
 
 ## 1D (506 band reaches 2020 - Oct 2025; price went further 58% of the time)
 
-| at the band | cases | went further | holdout cases | holdout went further |
-|---|---|---|---|---|
-| close outside | 202 | 61% | 35 | 69% |
-| not close outside | 304 | 56% | 41 | 37% |
-| walk | 108 | 68% | 16 | 56% |
-| not walk | 398 | 55% | 60 | 50% |
-| squeeze breakout | 153 | 59% | 30 | 63% |
-| not squeeze breakout | 353 | 57% | 46 | 43% |
-| bulge | 72 | 67% | 5 | 40% |
-| not bulge | 434 | 56% | 71 | 52% |
-| bands expanding | 380 | 60% | 56 | 52% |
-| not bands expanding | 126 | 52% | 20 | 50% |
-| opposite band turned | 231 | 56% | 35 | 37% |
-| not opposite band turned | 275 | 60% | 41 | 63% |
-| %b non-confirmation | 146 | 63% | 16 | 56% |
-| not %b non-confirmation | 360 | 56% | 60 | 50% |
-| volume high | 151 | 65% | 22 | 59% |
-| not volume high | 355 | 55% | 54 | 48% |
-| RSI > 75 | 53 | 75% | 3 | 100% |
-| not RSI > 75 | 453 | 56% | 73 | 49% |
-| upper wick | 223 | 54% | 32 | 41% |
-| not upper wick | 283 | 61% | 44 | 59% |
-| higher TF at band | 128 | 61% | 8 | 38% |
-| not higher TF at band | 378 | 57% | 68 | 53% |
-| higher TF trend | 262 | 57% | 33 | 52% |
-| not higher TF trend | 195 | 57% | 43 | 51% |
+| at the band | cases | went further | chance the difference is noise | holdout cases | holdout went further |
+|---|---|---|---|---|---|
+| close outside | 202 | 61% | 0.214 | 35 | 69% |
+| not close outside | 304 | 56% | 0.214 | 41 | 37% |
+| walk | 108 | 68% | 0.087 | 16 | 56% |
+| not walk | 398 | 55% | 0.087 | 60 | 50% |
+| squeeze breakout | 153 | 59% | 0.738 | 30 | 63% |
+| not squeeze breakout | 353 | 57% | 0.738 | 46 | 43% |
+| bulge | 72 | 67% | 0.264 | 5 | 40% |
+| not bulge | 434 | 56% | 0.264 | 71 | 52% |
+| bands expanding | 380 | 60% | 0.319 | 56 | 52% |
+| not bands expanding | 126 | 52% | 0.319 | 20 | 50% |
+| opposite band turned | 231 | 56% | 0.494 | 35 | 37% |
+| not opposite band turned | 275 | 60% | 0.494 | 41 | 63% |
+| %b non-confirmation | 146 | 63% | 0.162 | 16 | 56% |
+| not %b non-confirmation | 360 | 56% | 0.162 | 60 | 50% |
+| volume high | 151 | 65% | 0.057 | 22 | 59% |
+| not volume high | 355 | 55% | 0.057 | 54 | 48% |
+| RSI > 75 | 53 | 75% | 0.045 | 3 | 100% |
+| not RSI > 75 | 453 | 56% | 0.045 | 73 | 49% |
+| upper wick | 223 | 54% | 0.117 | 32 | 41% |
+| not upper wick | 283 | 61% | 0.117 | 44 | 59% |
+| higher TF at band | 128 | 61% | 0.596 | 8 | 38% |
+| not higher TF at band | 378 | 57% | 0.596 | 68 | 53% |
+| higher TF trend | 262 | 57% | 1.000 | 33 | 52% |
+| not higher TF trend | 195 | 57% | 1.000 | 43 | 51% |
 
 ### 1D: the two-condition mixes where price failed most and went further most (>= 150 cases)
 

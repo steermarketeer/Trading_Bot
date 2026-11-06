@@ -165,7 +165,7 @@ def detect(O: Oriented, j):
             out.append(("Morning star", 1, ctx))
         if body <= 0.1 * rng and O.cx["liq_behind"][j] <= 1.0:
             out.append(("Doji at support (claim up)", 1, ctx))
-        if h[j - 1] <= h[j - 2] and l[j - 1] >= l[j - 2] and c[j] > h[j - 1] and c[j - 1] <= h[j - 1]:
+        if h[j - 1] <= h[j - 2] and l[j - 1] >= l[j - 2] and c[j] > h[j - 2]:            # mother = candle j-2
             out.append(("Inside bar, close above the mother high", 1, {"with the trend (EMA 20 > 50)": O.e20[j] > O.e50[j],
                                                                         "volume >= 1.5x": O.v[j] >= 1.5 * O.v20[j]}))
         if c[j] > O.o[j] and body >= 0.8 * rng and rng >= 1.5 * a:
@@ -237,6 +237,30 @@ def detect(O: Oriented, j):
     return out
 
 
+SHIFTS = 400
+
+
+def shift_pvalue(res: pd.DataFrame, cn: str) -> float:
+    """Circular time-shift test: shift the condition against the outcomes (both keep their own clustering) and count
+    how often a shifted copy shows a difference at least as large as the real one."""
+    m = res[cn].notna().to_numpy()
+    cnd = res[cn].to_numpy()[m].astype(bool)
+    y = res["right"].to_numpy(float)[m]
+    n = len(y)
+    if n < 60:
+        return 1.0
+    obs = y[cnd].mean() - y[~cnd].mean()
+    rng = np.random.default_rng(11)
+    ks = rng.integers(n // 20, n - n // 20, SHIFTS)
+    cnt = 0
+    for k in ks:
+        cs = np.roll(cnd, k)
+        if cs.all() or not cs.any():
+            continue
+        cnt += abs(y[cs].mean() - y[~cs].mean()) >= abs(obs)
+    return (cnt + 1) / (SHIFTS + 1)
+
+
 def _sweep_low(O: Oriented, j) -> bool:
     """The candle's low went below an untaken confirmed swing low (last 150 candles) and the candle closed above it."""
     ls = O.sl_arr[(O.sl_arr[:, 2] <= j - 1) & (O.sl_arr[:, 0] >= j - 150)]
@@ -272,8 +296,9 @@ def run_indicator_deep(cfg: Config, out_dir: Path) -> Path:
     L = ["# Every indicator in detail: when its signal works and when it fails", "",
          "Same fair test for all: from the event close, 1.5 ATR in the claimed direction before 1.5 ATR against (30 "
          "candles). **A coin flip = 50%.** Up and mirrored down versions pooled. Research 2020 - Oct 2025; holdout "
-         "Nov 2025 on. A condition is worth using only if it moves the rate in BOTH periods.", ""]
+         "Nov 2025 on.", ""]
     allrows = []
+    n_tested = n_yes = 0
     for tf in ("1h", "4h", "1D"):
         t, ht = tfs[tf], tfs[HTF[tf]]
         cx = context_table(t, daily=(tf == "1D"))
@@ -301,19 +326,23 @@ def run_indicator_deep(cfg: Config, out_dir: Path) -> Path:
         allrows.append(E)
         L += [f"## {tf}", ""]
         for ev, g in E.groupby("event", sort=False):
+            g = g.sort_values("time")
             res, hol = g[~g["hold"]], g[g["hold"]]
             conds = [c for c in g.columns if c.startswith(("s: ", "c: ")) and g[c].notna().any()]
             tab = []
             for cn in conds:
                 a_, b_ = res[res[cn] == True], hol[hol[cn] == True]  # noqa: E712
                 a0, b0 = res[res[cn] == False], hol[hol[cn] == False]  # noqa: E712
-                if len(a_) < 20:
+                if len(a_) < 20 or len(a0) < 20:
                     continue
                 d_r = a_["right"].mean() - a0["right"].mean()
                 d_h = (b_["right"].mean() - b0["right"].mean()) if len(b_) >= 10 and len(b0) >= 10 else np.nan
+                pv = shift_pvalue(res, cn)
                 tab.append({"cond": cn[3:] + ("" if cn.startswith("s: ") else " (context)"), "n": len(a_), "p": a_["right"].mean(),
-                            "p0": a0["right"].mean(), "d": d_r, "nh": len(b_), "ph": b_["right"].mean() if len(b_) else np.nan,
-                            "dh": d_h, "same": "yes" if (d_h == d_h and np.sign(d_h) == np.sign(d_r) and abs(d_r) >= 0.03 and abs(d_h) >= 0.03) else ""})
+                            "p0": a0["right"].mean(), "d": d_r, "pv": pv, "nh": len(b_), "ph": b_["right"].mean() if len(b_) else np.nan,
+                            "dh": d_h, "same": "yes" if (pv < 0.01 and d_h == d_h and np.sign(d_h) == np.sign(d_r)) else ""})
+                n_tested += 1
+                n_yes += tab[-1]["same"] == "yes"
             T = pd.DataFrame(tab).sort_values("d") if tab else pd.DataFrame()
             claim = "down" if ev in ("RSI leaves 70", "Trendline break", "Stretched > 3 ATR above EMA 20") else "up"
             L += [f"### {tf} · {ev} (claim: price goes {claim}) · {len(res):,} cases, right {res['right'].mean():.0%}; "
@@ -322,9 +351,15 @@ def run_indicator_deep(cfg: Config, out_dir: Path) -> Path:
             if len(T):
                 f2 = lambda v: "" if v != v else f"{v * 100:+.0f} pts"  # noqa: E731
                 L += [_table(T, [("cond", "when", str), ("n", "cases", lambda v: f"{v:,}"), ("p", "right when present", _pct),
-                                 ("p0", "right when absent", _pct), ("d", "difference", f2), ("nh", "holdout cases", str),
+                                 ("p0", "right when absent", _pct), ("d", "difference", f2),
+                                 ("pv", "chance it is noise (2020-25)", lambda v: f"{v:.3f}"), ("nh", "holdout cases", str),
                                  ("ph", "holdout right when present", _pct), ("dh", "holdout difference", f2),
-                                 ("same", "holds in both periods", str)]), ""]
+                                 ("same", "real (p < 0.01) and same sign in holdout", str)]), ""]
+    L.insert(4, f"**Significance:** a condition is marked real only if its 2020 - Oct 2025 difference beats 99% of {SHIFTS} "
+                f"time-shifted copies of the same condition (which keep the clustering of nearby events), and the holdout "
+                f"difference has the same sign. {n_yes} of {n_tested} conditions pass; noise alone would pass about "
+                f"{n_tested * 0.01 * 0.5:.0f}.")
+    L.insert(5, "")
     pd.concat(allrows).to_pickle(ROOT / "results" / "indicator_deep.pkl")
     path = out_dir / "indicator_deep.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")

@@ -34,6 +34,7 @@ from ..config import ROOT, Config
 from ..data import load_klines_5m
 from ..study.indicators import ema, rsi
 from .defs import TF
+from .indicator_deep import shift_pvalue
 from .mtf import resample
 from .sr2_run import _pct, _table
 
@@ -117,12 +118,14 @@ def run_bollinger(cfg: Config, out_dir: Path) -> Path:
         for cn in conds:
             for val in (True, False):
                 a_, b_ = res[res[cn] == val], hol[hol[cn] == val]
-                rows.append({"cond": cn if val else f"not {cn}", "n": len(a_), "p": a_["cont"].mean(), "nh": len(b_),
+                pv = shift_pvalue(res.sort_values("time").rename(columns={"cont": "right"}), cn)
+                rows.append({"cond": cn if val else f"not {cn}", "n": len(a_), "p": a_["cont"].mean(), "pv": pv, "nh": len(b_),
                              "ph": b_["cont"].mean() if len(b_) else np.nan})
         base = res["cont"].mean()
         L += [f"## {tf} ({len(res):,} band reaches 2020 - Oct 2025; price went further {base:.0%} of the time)", "",
               _table(pd.DataFrame(rows), [("cond", "at the band", str), ("n", "cases", lambda v: f"{v:,}"),
-                                          ("p", "went further", _pct), ("nh", "holdout cases", str), ("ph", "holdout went further", _pct)]), ""]
+                                          ("p", "went further", _pct), ("pv", "chance the difference is noise", lambda v: f"{v:.3f}"),
+                                          ("nh", "holdout cases", str), ("ph", "holdout went further", _pct)]), ""]
         # the best and worst combinations of two conditions (>= 150 cases, holdout shown)
         combo = []
         for i, c1 in enumerate(conds):

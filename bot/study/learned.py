@@ -13,7 +13,7 @@ Entry filters (skip the trade):
   R5 against the regime the daily close is on the wrong side of the daily EMA 200 (shown for information)
   R6 breakout volume below 2x     breakouts: the breaking candle's volume < 2x its 20-candle average (deep study)
   R7 RSI divergence at a breakout the last 4h candle makes a 30-candle high with RSI > 60 but below the RSI peak of
-                                  25 - 5 candles before (momentum fading)
+                                  candles j-30 .. j-6 (momentum fading)
   R8 shallow pullback             1D bounces: in the last 4h up-leg (confirmed swing low -> highest high, > 3 ATR) the
                                   pullback since the high retraced < 0.45 of the leg (the 0.382 pullbacks failed)
 Exit:
@@ -87,7 +87,10 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
                 seg = t4.h[i_lo:j + 1] if d > 0 else t4.l[i_lo:j + 1]
                 p_hi = seg.max() if d > 0 else seg.min()
                 i_hi = i_lo + int(np.argmax(seg) if d > 0 else np.argmin(seg))
-                after = (t4.l[i_hi:j + 1].min() if d > 0 else t4.h[i_hi:j + 1].max())
+                if i_hi < j:                                                     # candles after the high only
+                    after = t4.l[i_hi + 1:j + 1].min() if d > 0 else t4.h[i_hi + 1:j + 1].max()
+                else:
+                    after = p_hi                                                 # no pullback yet: depth 0
                 leg = (p_hi - p_lo) * d
                 if leg > 3 * t4.a[j]:
                     depth = (p_hi - after) * d / leg
