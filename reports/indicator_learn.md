@@ -31,6 +31,13 @@ At the signal close: does ETH move 1.5 ATR the way the signal says before 1.5 AT
 | Bollinger: squeeze breakout (close outside after a squeeze) | 1,135 | 52% | 0.175 | 52% | 52% | 4/6 | 166 | 59% |
 | Volume: 20-candle breakout close on volume >= 1.5x | 3,066 | 53% | 0.012 | 53% | 53% | 5/6 | 465 | 52% |
 | Volume: 20-candle breakout close on low volume (< 1x) | 305 | 46% | 0.160 | 44% | 48% | 2/5 | 25 | 48% |
+| Ichimoku: Tenkan crosses Kijun (any position) | 2,573 | 52% | 0.030 | 53% | 52% | 5/6 | 439 | 51% |
+| Ichimoku: TK cross on the trend side of the cloud (strong) | 1,040 | 54% | 0.037 | 55% | 53% | 5/6 | 177 | 48% |
+| Ichimoku: close breaks out of the cloud | 2,676 | 51% | 0.297 | 51% | 52% | 4/6 | 451 | 53% |
+| Ichimoku: cloud breakout with Chikou free and a bullish future cloud | 974 | 48% | 0.352 | 48% | 50% | 2/6 | 168 | 49% |
+| Ichimoku: Kijun bounce above / below the cloud | 1,569 | 49% | 0.571 | 48% | 51% | 4/6 | 248 | 50% |
+| Ichimoku: kumo twist (future cloud turns) | 1,445 | 51% | 0.317 | 50% | 52% | 5/6 | 234 | 50% |
+| Ichimoku: Chikou crosses the price of 26 candles ago | 4,643 | 49% | 0.209 | 49% | 49% | 1/6 | 749 | 52% |
 | Price: 20-candle breakout close (any volume) | 4,052 | 51% | 0.224 | 50% | 52% | 4/6 | 558 | 53% |
 
 ## 4h (all candles: up first 51%)
@@ -62,6 +69,13 @@ At the signal close: does ETH move 1.5 ATR the way the signal says before 1.5 AT
 | Bollinger: squeeze breakout (close outside after a squeeze) | 274 | 47% | 0.342 | 48% | 43% | 1/6 | 54 | 50% |
 | Volume: 20-candle breakout close on volume >= 1.5x | 716 | 56% | 0.020 | 57% | 52% | 5/6 | 128 | 47% |
 | Volume: 20-candle breakout close on low volume (< 1x) | 137 | 44% | 0.195 | 44% | 44% | 1/5 | 11 | 27% |
+| Ichimoku: Tenkan crosses Kijun (any position) | 625 | 52% | 0.190 | 52% | 51% | 5/6 | 103 | 50% |
+| Ichimoku: TK cross on the trend side of the cloud (strong) | 247 | 53% | 0.254 | 55% | 52% | 5/6 | 44 | 50% |
+| Ichimoku: close breaks out of the cloud | 596 | 54% | 0.045 | 57% | 52% | 5/6 | 117 | 38% |
+| Ichimoku: cloud breakout with Chikou free and a bullish future cloud | 221 | 56% | 0.137 | 64% | 50% | 5/6 | 42 | 38% |
+| Ichimoku: Kijun bounce above / below the cloud | 410 | 47% | 0.377 | 48% | 44% | 2/6 | 46 | 54% |
+| Ichimoku: kumo twist (future cloud turns) | 353 | 57% | 0.002 | 57% | 56% | 4/6 | 55 | 44% |
+| Ichimoku: Chikou crosses the price of 26 candles ago | 1,115 | 50% | 0.653 | 53% | 47% | 3/6 | 217 | 47% |
 | Price: 20-candle breakout close (any volume) | 1,154 | 53% | 0.232 | 52% | 50% | 5/6 | 163 | 43% |
 
 ## How much the indicators say the same thing (4h, rank correlation of their values; 1 = identical)
@@ -108,5 +122,12 @@ At the signal close: does ETH move 1.5 ATR the way the signal says before 1.5 AT
 | Bollinger: squeeze breakout (close outside after a squeeze) | 43 | 51% | 0.773 | 41% | 79% | 1/1 | 7 | 86% |
 | Volume: 20-candle breakout close on volume >= 1.5x | 108 | 61% | 0.115 | 62% | 61% | 5/5 | 16 | 44% |
 | Volume: 20-candle breakout close on low volume (< 1x) | 35 | 51% | 1.000 | 54% | 29% | 0/1 | 4 | 100% |
+| Ichimoku: Tenkan crosses Kijun (any position) | 87 | 51% | 0.908 | 48% | 52% | 3/6 | 18 | 61% |
+| Ichimoku: TK cross on the trend side of the cloud (strong) | 35 | 51% | 0.870 | 48% | 60% | 0/0 | 7 | 29% |
+| Ichimoku: close breaks out of the cloud | 85 | 62% | 0.007 | 60% | 65% | 4/5 | 12 | 42% |
+| Ichimoku: cloud breakout with Chikou free and a bullish future cloud | 36 | 69% | 0.010 | 67% | 71% | 0/0 | 5 | 40% |
+| Ichimoku: Kijun bounce above / below the cloud | 55 | 62% | 0.122 | 65% | 60% | 3/3 | 8 | 50% |
+| Ichimoku: kumo twist (future cloud turns) | 42 | 57% | 0.282 | 61% | 55% | 1/1 | 5 | 60% |
+| Ichimoku: Chikou crosses the price of 26 candles ago | 184 | 52% | 0.504 | 47% | 54% | 3/6 | 38 | 50% |
 | Price: 20-candle breakout close (any volume) | 213 | 59% | 0.135 | 59% | 55% | 6/6 | 25 | 48% |
 

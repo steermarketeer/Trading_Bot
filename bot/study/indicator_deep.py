@@ -33,7 +33,7 @@ from ..data import load_klines_5m
 from ..ml.manager import context_table
 from .defs import TF
 from .indicator_learn import outcome
-from .indicators import ema, macd, rsi
+from .indicators import ema, ichimoku, macd, rsi
 from .mtf import resample
 from .sr2_run import _pct, _table
 
@@ -68,6 +68,11 @@ class Oriented:
         self.rank = pd.Series(bw).rolling(120, min_periods=60).apply(lambda x: (x[:-1] < x[-1]).mean(), raw=True).to_numpy()
         self.cx = cx[side]
         self.hi20 = pd.Series(self.h).shift(1).rolling(20).max().to_numpy()
+        tk, kj, top, bot, fa, fb = (x.to_numpy(float) for x in ichimoku(t.b))
+        if side > 0:
+            self.tk, self.kj, self.ctop, self.cbot, self.fa, self.fb = tk, kj, top, bot, fa, fb
+        else:                                                           # Ichimoku is symmetric under negation
+            self.tk, self.kj, self.ctop, self.cbot, self.fa, self.fb = -tk, -kj, -bot, -top, -fa, -fb
         self.sl_arr = np.array([(i, p, cf) for i, p, cf in self.sl], float).reshape(-1, 3)
         self.sh_arr = np.array([(i, p, cf) for i, p, cf in self.sh], float).reshape(-1, 3)
 
@@ -189,6 +194,30 @@ def detect(O: Oriented, j):
                 out.append(("Break of structure (with the trend)", 1, spec))
             if dn_s:
                 out.append(("Change of character (first break against)", 1, spec))
+    # ---------------- Ichimoku (Hosoda; 9 / 26 / 52, the cloud shown at j was computed 26 candles earlier)
+    if j >= 80 and np.isfinite(O.ctop[j]) and np.isfinite(O.kj[j]):
+        tk, kj, top, bot = O.tk, O.kj, O.ctop, O.cbot
+        chikou = c[j] > h[j - 26]                                       # the lagging line clears the candles 26 back
+        fut = O.fa[j] > O.fb[j]                                         # the cloud being drawn 26 ahead is bullish
+        thick = (top[j] - bot[j]) / a > 1
+        ich = {"Chikou free (close above the high 26 candles ago)": bool(chikou), "future cloud bullish": bool(fut),
+               "Tenkan above Kijun": tk[j] > kj[j], "thick cloud (> 1 ATR)": bool(thick),
+               "Kijun flat (5 candles)": abs(kj[j] - kj[j - 5]) < 1e-9 * max(1.0, abs(kj[j])),
+               "Kijun rising": kj[j] > kj[j - 5] + 1e-9 * max(1.0, abs(kj[j]))}
+        if tk[j] > kj[j] and tk[j - 1] <= kj[j - 1]:
+            out.append(("Ichimoku TK cross", 1, {**ich, "above the cloud (strong cross)": c[j] > top[j],
+                                                 "inside the cloud (neutral cross)": bot[j] <= c[j] <= top[j],
+                                                 "below the cloud (weak cross)": c[j] < bot[j]}))
+        if c[j] > top[j] and c[j - 1] <= top[j - 1]:
+            out.append(("Ichimoku cloud breakout (close above the cloud)", 1, {**ich, "volume >= 1.5x": O.v[j] >= 1.5 * O.v20[j]}))
+        if c[j] > top[j] and l[j] <= kj[j] and c[j] > kj[j] and l[j - 1] > kj[j - 1]:
+            out.append(("Ichimoku Kijun bounce (above the cloud)", 1, ich))
+        if c[j - 1] < bot[j - 1] and bot[j] <= c[j] <= top[j]:
+            out.append(("Ichimoku enters the cloud from below (edge to edge)", 1, ich))
+        if (c[j] - kj[j]) / a > 3 and (c[j - 1] - kj[j - 1]) / O.a[j - 1] <= 3:
+            out.append(("Ichimoku stretched > 3 ATR above Kijun", -1, ich))
+        if O.fa[j] > O.fb[j] and O.fa[j - 1] <= O.fb[j - 1]:
+            out.append(("Ichimoku kumo twist ahead (future cloud turns bullish)", 1, {**ich, "price above the cloud": c[j] > top[j]}))
     # ---------------- volume breakout
     if c[j] > O.hi20[j] and not c[j - 1] > O.hi20[j - 1]:
         vr = O.v[j] / O.v20[j]
@@ -344,7 +373,8 @@ def run_indicator_deep(cfg: Config, out_dir: Path) -> Path:
                 n_tested += 1
                 n_yes += tab[-1]["same"] == "yes"
             T = pd.DataFrame(tab).sort_values("d") if tab else pd.DataFrame()
-            claim = "down" if ev in ("RSI leaves 70", "Trendline break", "Stretched > 3 ATR above EMA 20") else "up"
+            claim = "down" if ev in ("RSI leaves 70", "Trendline break", "Stretched > 3 ATR above EMA 20",
+                                     "Ichimoku stretched > 3 ATR above Kijun") else "up"
             L += [f"### {tf} · {ev} (claim: price goes {claim}) · {len(res):,} cases, right {res['right'].mean():.0%}; "
                   f"holdout {len(hol)} cases, right {hol['right'].mean():.0%}" if len(hol) else
                   f"### {tf} · {ev} · {len(res):,} cases, right {res['right'].mean():.0%}", ""]

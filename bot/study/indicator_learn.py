@@ -18,7 +18,7 @@ import pandas as pd
 from ..config import ROOT, Config
 from ..data import load_klines_5m
 from .defs import TF
-from .indicators import ema, macd, rsi
+from .indicators import ema, ichimoku, macd, rsi
 from .mtf import resample
 from .sr2_run import _pct, _table
 
@@ -141,6 +141,19 @@ def signals(t: TF):
     brk_u, brk_d = (c > hi20), (c < lo20)
     S["Volume: 20-candle breakout close on volume >= 1.5x"] = (brk_u & (v >= 1.5 * v20), brk_d & (v >= 1.5 * v20))
     S["Volume: 20-candle breakout close on low volume (< 1x)"] = (brk_u & (v < v20), brk_d & (v < v20))
+    # --- Ichimoku (Hosoda 9 / 26 / 52; the cloud at each candle was computed 26 candles earlier)
+    tk, kj, ctop, cbot, fa, fb = (x.to_numpy(float) for x in ichimoku(t.b))
+    S["Ichimoku: Tenkan crosses Kijun (any position)"] = (_cross_up(tk, kj), _cross_up(-tk, -kj))
+    S["Ichimoku: TK cross on the trend side of the cloud (strong)"] = (_cross_up(tk, kj) & (c > ctop), _cross_up(-tk, -kj) & (c < cbot))
+    S["Ichimoku: close breaks out of the cloud"] = (_cross_up(c, ctop), _cross_up(-c, -cbot))
+    S["Ichimoku: cloud breakout with Chikou free and a bullish future cloud"] = (
+        _cross_up(c, ctop) & (c > np.r_[np.full(26, np.nan), h[:-26]]) & (fa > fb),
+        _cross_up(-c, -cbot) & (c < np.r_[np.full(26, np.nan), l[:-26]]) & (fa < fb))
+    S["Ichimoku: Kijun bounce above / below the cloud"] = (
+        (c > ctop) & (l <= kj) & (c > kj) & (prev(l) > prev(kj)), (c < cbot) & (h >= kj) & (c < kj) & (prev(h) < prev(kj)))
+    S["Ichimoku: kumo twist (future cloud turns)"] = (_cross_up(fa, fb), _cross_up(fb, fa))
+    S["Ichimoku: Chikou crosses the price of 26 candles ago"] = (_cross_up(c, np.r_[np.full(26, np.nan), c[:-26]]),
+                                                               _cross_up(-c, -np.r_[np.full(26, np.nan), c[:-26]]))
     # --- price action reference points (main rules, for comparison)
     S["Price: 20-candle breakout close (any volume)"] = (brk_u, brk_d)
     return S, {"e20": (c - e20) / t.a, "e50": (c - e50) / t.a, "e200": (c - e200) / t.a, "macd_line": ml / t.a,

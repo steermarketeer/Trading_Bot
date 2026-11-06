@@ -2,9 +2,50 @@
 
 Same fair test for all: from the event close, 1.5 ATR in the claimed direction before 1.5 ATR against (30 candles). **A coin flip = 50%.** Up and mirrored down versions pooled. Research 2020 - Oct 2025; holdout Nov 2025 on.
 
-**Significance:** a condition is marked real only if its 2020 - Oct 2025 difference beats 99% of 400 time-shifted copies of the same condition (which keep the clustering of nearby events), and the holdout difference has the same sign. 22 of 635 conditions pass; noise alone would pass about 3.
+**Significance:** a condition is marked real only if its 2020 - Oct 2025 difference beats 99% of 400 time-shifted copies of the same condition (which keep the clustering of nearby events), and the holdout difference has the same sign. 26 of 851 conditions pass; noise alone would pass about 4.
 
 ## 1h
+
+### 1h · Ichimoku cloud breakout (close above the cloud) (claim: price goes up) · 2,665 cases, right 51%; holdout 451 cases, right 53%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| higher timeframe above its EMA 50 (context) | 1,489 | 50% | 53% | -3 pts | 0.122 | 248 | 54% | +1 pts |  |
+| thick cloud (> 1 ATR) | 1,390 | 50% | 52% | -3 pts | 0.219 | 238 | 54% | +2 pts |  |
+| structure up (HH + HL) (context) | 738 | 49% | 52% | -2 pts | 0.357 | 117 | 62% | +12 pts |  |
+| Tenkan above Kijun | 1,547 | 50% | 52% | -2 pts | 0.284 | 252 | 48% | -10 pts |  |
+| Chikou free (close above the high 26 candles ago) | 1,640 | 50% | 52% | -2 pts | 0.262 | 288 | 52% | -3 pts |  |
+| Kijun rising | 1,255 | 50% | 52% | -2 pts | 0.329 | 216 | 54% | +1 pts |  |
+| future cloud bullish | 1,635 | 50% | 52% | -2 pts | 0.387 | 272 | 52% | -2 pts |  |
+| with the daily trend (EMA 200) (context) | 1,237 | 51% | 52% | -1 pts | 0.596 | 234 | 53% | +1 pts |  |
+| Bollinger bulge (context) | 251 | 50% | 51% | -1 pts | 0.793 | 40 | 50% | -3 pts |  |
+| volume >= 1.5x | 965 | 52% | 51% | +1 pts | 0.708 | 177 | 53% | -1 pts |  |
+| volume >= 1.5x (context) | 965 | 52% | 51% | +1 pts | 0.708 | 177 | 53% | -1 pts |  |
+| RSI > 60 (context) | 881 | 52% | 51% | +1 pts | 0.683 | 147 | 54% | +1 pts |  |
+| Kijun flat (5 candles) | 737 | 52% | 51% | +1 pts | 0.721 | 136 | 49% | -6 pts |  |
+| close in the top quarter of the candle (context) | 1,512 | 52% | 50% | +2 pts | 0.232 | 238 | 53% | +1 pts |  |
+| bands expanding (context) | 1,494 | 53% | 49% | +3 pts | 0.082 | 260 | 54% | +3 pts |  |
+| liquidity ahead within 1 ATR (context) | 602 | 56% | 49% | +7 pts | 0.002 | 101 | 52% | -1 pts |  |
+
+### 1h · Ichimoku enters the cloud from below (edge to edge) (claim: price goes up) · 2,155 cases, right 49%; holdout 361 cases, right 51%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Chikou free (close above the high 26 candles ago) | 954 | 46% | 52% | -6 pts | 0.002 | 174 | 50% | -1 pts | yes |
+| Bollinger bulge (context) | 153 | 45% | 50% | -5 pts | 0.302 | 24 | 46% | -5 pts |  |
+| Kijun flat (5 candles) | 626 | 47% | 50% | -3 pts | 0.165 | 121 | 53% | +3 pts |  |
+| with the daily trend (EMA 200) (context) | 926 | 48% | 51% | -3 pts | 0.200 | 174 | 57% | +13 pts |  |
+| Kijun rising | 674 | 47% | 50% | -3 pts | 0.242 | 114 | 51% | +0 pts |  |
+| structure up (HH + HL) (context) | 419 | 48% | 50% | -2 pts | 0.471 | 64 | 50% | -1 pts |  |
+| Tenkan above Kijun | 1,024 | 48% | 50% | -2 pts | 0.426 | 169 | 51% | +1 pts |  |
+| future cloud bullish | 542 | 49% | 50% | -1 pts | 0.713 | 89 | 47% | -5 pts |  |
+| thick cloud (> 1 ATR) | 1,426 | 49% | 50% | -1 pts | 0.828 | 238 | 51% | +0 pts |  |
+| bands expanding (context) | 1,086 | 50% | 49% | +1 pts | 0.776 | 194 | 51% | +1 pts |  |
+| higher timeframe above its EMA 50 (context) | 730 | 50% | 49% | +1 pts | 0.616 | 116 | 55% | +7 pts |  |
+| close in the top quarter of the candle (context) | 1,150 | 50% | 48% | +2 pts | 0.297 | 177 | 50% | -2 pts |  |
+| RSI > 60 (context) | 259 | 51% | 49% | +2 pts | 0.534 | 48 | 54% | +4 pts |  |
+| volume >= 1.5x (context) | 532 | 52% | 48% | +3 pts | 0.162 | 105 | 54% | +5 pts |  |
+| liquidity ahead within 1 ATR (context) | 419 | 54% | 48% | +6 pts | 0.020 | 77 | 52% | +2 pts |  |
 
 ### 1h · EMA 20 pullback (claim: price goes up) · 2,410 cases, right 50%; holdout 343 cases, right 52%
 
@@ -163,6 +204,68 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | close in the top quarter of the candle (context) | 294 | 60% | 52% | +8 pts | 0.022 | 73 | 51% | -1 pts |  |
 | both EMAs rising | 906 | 55% | 44% | +11 pts | 0.334 | 161 | 52% |  |  |
 
+### 1h · Ichimoku kumo twist ahead (future cloud turns bullish) (claim: price goes up) · 1,442 cases, right 51%; holdout 234 cases, right 50%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| higher timeframe above its EMA 50 (context) | 711 | 49% | 53% | -3 pts | 0.267 | 116 | 52% | +3 pts |  |
+| Tenkan above Kijun | 1,136 | 51% | 53% | -2 pts | 0.434 | 186 | 51% | +1 pts |  |
+| Chikou free (close above the high 26 candles ago) | 1,019 | 50% | 53% | -2 pts | 0.429 | 167 | 51% | +2 pts |  |
+| close in the top quarter of the candle (context) | 419 | 50% | 52% | -2 pts | 0.511 | 62 | 55% | +6 pts |  |
+| Kijun rising | 920 | 50% | 52% | -2 pts | 0.541 | 150 | 53% | +6 pts |  |
+| Bollinger bulge (context) | 222 | 50% | 51% | -1 pts | 0.776 | 40 | 42% | -10 pts |  |
+| with the daily trend (EMA 200) (context) | 651 | 50% | 52% | -1 pts | 0.711 | 117 | 51% | +2 pts |  |
+| thick cloud (> 1 ATR) | 827 | 51% | 52% | -1 pts | 0.696 | 147 | 48% | -6 pts |  |
+| Kijun flat (5 candles) | 337 | 51% | 51% | -0 pts | 0.898 | 55 | 42% | -11 pts |  |
+| RSI > 60 (context) | 629 | 51% | 51% | +0 pts | 0.950 | 103 | 49% | -3 pts |  |
+| volume >= 1.5x (context) | 518 | 51% | 51% | +0 pts | 0.915 | 87 | 51% | +0 pts |  |
+| bands expanding (context) | 904 | 51% | 51% | +1 pts | 0.880 | 156 | 49% | -3 pts |  |
+| price above the cloud | 780 | 52% | 50% | +1 pts | 0.708 | 133 | 47% | -7 pts |  |
+| liquidity ahead within 1 ATR (context) | 287 | 54% | 50% | +3 pts | 0.349 | 48 | 48% | -3 pts |  |
+| structure up (HH + HL) (context) | 301 | 54% | 50% | +3 pts | 0.279 | 43 | 65% | +18 pts |  |
+
+### 1h · Ichimoku TK cross (claim: price goes up) · 2,559 cases, right 52%; holdout 439 cases, right 51%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| below the cloud (weak cross) | 1,013 | 49% | 54% | -5 pts | 0.055 | 177 | 51% | -1 pts |  |
+| bands expanding (context) | 1,423 | 51% | 54% | -3 pts | 0.117 | 230 | 49% | -6 pts |  |
+| thick cloud (> 1 ATR) | 1,445 | 51% | 53% | -1 pts | 0.474 | 259 | 51% | -0 pts |  |
+| structure up (HH + HL) (context) | 333 | 51% | 52% | -1 pts | 0.738 | 59 | 58% | +7 pts |  |
+| Chikou free (close above the high 26 candles ago) | 926 | 51% | 52% | -1 pts | 0.666 | 168 | 52% | +0 pts |  |
+| Kijun flat (5 candles) | 523 | 51% | 52% | -1 pts | 0.726 | 97 | 45% | -8 pts |  |
+| volume >= 1.5x (context) | 729 | 52% | 52% | +0 pts | 0.820 | 120 | 53% | +3 pts |  |
+| RSI > 60 (context) | 743 | 53% | 52% | +1 pts | 0.663 | 119 | 50% | -1 pts |  |
+| with the daily trend (EMA 200) (context) | 1,155 | 53% | 52% | +1 pts | 0.636 | 219 | 53% | +3 pts |  |
+| higher timeframe above its EMA 50 (context) | 1,270 | 53% | 51% | +1 pts | 0.494 | 215 | 50% | -3 pts |  |
+| Bollinger bulge (context) | 217 | 53% | 52% | +2 pts | 0.656 | 38 | 45% | -7 pts |  |
+| inside the cloud (neutral cross) | 510 | 54% | 52% | +3 pts | 0.299 | 85 | 60% | +11 pts |  |
+| above the cloud (strong cross) | 1,036 | 54% | 51% | +3 pts | 0.217 | 177 | 48% | -6 pts |  |
+| Kijun rising | 736 | 55% | 51% | +4 pts | 0.097 | 144 | 52% | +1 pts |  |
+| future cloud bullish | 1,131 | 54% | 50% | +4 pts | 0.077 | 200 | 48% | -7 pts |  |
+| liquidity ahead within 1 ATR (context) | 496 | 55% | 51% | +4 pts | 0.145 | 85 | 52% | +0 pts |  |
+| close in the top quarter of the candle (context) | 705 | 55% | 51% | +5 pts | 0.052 | 92 | 53% | +2 pts |  |
+
+### 1h · Ichimoku Kijun bounce (above the cloud) (claim: price goes up) · 1,565 cases, right 49%; holdout 248 cases, right 50%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| thick cloud (> 1 ATR) | 786 | 44% | 54% | -10 pts | 0.002 | 131 | 45% | -11 pts | yes |
+| Kijun flat (5 candles) | 322 | 43% | 51% | -8 pts | 0.017 | 27 | 44% | -7 pts |  |
+| higher timeframe above its EMA 50 (context) | 1,258 | 48% | 53% | -5 pts | 0.167 | 175 | 46% | -14 pts |  |
+| future cloud bullish | 1,491 | 49% | 54% | -5 pts | 0.409 | 236 | 52% | +27 pts |  |
+| Tenkan above Kijun | 1,372 | 49% | 53% | -5 pts | 0.254 | 220 | 50% | +0 pts |  |
+| with the daily trend (EMA 200) (context) | 827 | 48% | 51% | -2 pts | 0.464 | 117 | 47% | -6 pts |  |
+| structure up (HH + HL) (context) | 841 | 49% | 50% | -1 pts | 0.706 | 112 | 50% | -1 pts |  |
+| Chikou free (close above the high 26 candles ago) | 1,349 | 50% | 46% | +3 pts | 0.377 | 219 | 50% | -5 pts |  |
+| volume >= 1.5x (context) | 608 | 52% | 48% | +4 pts | 0.117 | 112 | 48% | -4 pts |  |
+| Bollinger bulge (context) | 183 | 54% | 49% | +5 pts | 0.249 | 26 | 42% | -9 pts |  |
+| close in the top quarter of the candle (context) | 505 | 53% | 47% | +6 pts | 0.040 | 79 | 58% | +11 pts |  |
+| Kijun rising | 1,183 | 51% | 45% | +6 pts | 0.065 | 214 | 51% | +7 pts |  |
+| bands expanding (context) | 658 | 53% | 46% | +7 pts | 0.002 | 127 | 52% | +3 pts | yes |
+| RSI > 60 (context) | 392 | 57% | 47% | +10 pts | 0.002 | 77 | 57% | +10 pts | yes |
+| liquidity ahead within 1 ATR (context) | 81 | 59% | 49% | +11 pts | 0.077 | 26 | 69% | +21 pts |  |
+
 ### 1h · Fib pullback (claim: price goes up) · 4,786 cases, right 50%; holdout 711 cases, right 51%
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
@@ -204,8 +307,8 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
 | bands expanding (context) | 562 | 49% | 51% | -2 pts | 0.683 | 76 | 51% | -6 pts |  |
-| volume >= 1.5x (context) | 462 | 50% | 51% | -1 pts | 0.753 | 72 | 54% | +1 pts |  |
 | volume >= 1.5x | 462 | 50% | 51% | -1 pts | 0.753 | 72 | 54% | +1 pts |  |
+| volume >= 1.5x (context) | 462 | 50% | 51% | -1 pts | 0.753 | 72 | 54% | +1 pts |  |
 | higher timeframe above its EMA 50 (context) | 388 | 51% | 50% | +1 pts | 0.838 | 52 | 54% | +0 pts |  |
 | with the daily trend (EMA 200) (context) | 351 | 52% | 49% | +4 pts | 0.294 | 55 | 56% | +5 pts |  |
 | Bollinger bulge (context) | 78 | 54% | 50% | +4 pts | 0.504 | 14 | 50% | -4 pts |  |
@@ -333,8 +436,8 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | made by a displacement candle | 387 | 54% | 49% | +6 pts | 0.090 | 50 | 48% | -12 pts |  |
 | bands expanding (context) | 628 | 53% | 46% | +7 pts | 0.085 | 100 | 53% | -10 pts |  |
 | liquidity ahead within 1 ATR (context) | 101 | 57% | 50% | +7 pts | 0.182 | 17 | 59% | +3 pts |  |
-| volume >= 1.5x (context) | 589 | 54% | 46% | +8 pts | 0.042 | 85 | 54% | -4 pts |  |
 | volume >= 1.5x | 589 | 54% | 46% | +8 pts | 0.042 | 85 | 54% | -4 pts |  |
+| volume >= 1.5x (context) | 589 | 54% | 46% | +8 pts | 0.042 | 85 | 54% | -4 pts |  |
 
 ### 1h · Stretched > 3 ATR above EMA 20 (claim: price goes down) · 601 cases, right 42%; holdout 98 cases, right 45%
 
@@ -385,6 +488,25 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | liquidity ahead within 1 ATR (context) | 21 | 52% | 45% | +7 pts | 0.683 | 6 | 67% |  |  |
 | with the daily trend (EMA 200) (context) | 445 | 48% | 41% | +7 pts | 0.037 | 80 | 55% | +5 pts |  |
 | Bollinger bulge (context) | 93 | 53% | 45% | +8 pts | 0.190 | 23 | 57% | +5 pts |  |
+
+### 1h · Ichimoku stretched > 3 ATR above Kijun (claim: price goes down) · 918 cases, right 46%; holdout 132 cases, right 46%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Kijun flat (5 candles) | 110 | 38% | 47% | -9 pts | 0.115 | 22 | 55% | +10 pts |  |
+| Bollinger bulge (context) | 602 | 44% | 50% | -6 pts | 0.137 | 90 | 46% | -2 pts |  |
+| liquidity ahead within 1 ATR (context) | 194 | 42% | 47% | -5 pts | 0.249 | 33 | 52% | +7 pts |  |
+| with the daily trend (EMA 200) (context) | 574 | 45% | 48% | -3 pts | 0.454 | 63 | 52% | +12 pts |  |
+| higher timeframe above its EMA 50 (context) | 811 | 46% | 47% | -1 pts | 0.923 | 106 | 45% | -5 pts |  |
+| volume >= 1.5x (context) | 327 | 46% | 46% | +0 pts | 1.000 | 50 | 46% | -0 pts |  |
+| future cloud bullish | 887 | 46% | 45% | +1 pts | 1.000 | 123 | 46% |  |  |
+| structure up (HH + HL) (context) | 438 | 47% | 45% | +1 pts | 0.741 | 60 | 43% | -5 pts |  |
+| bands expanding (context) | 558 | 46% | 45% | +1 pts | 0.723 | 90 | 46% | -2 pts |  |
+| thick cloud (> 1 ATR) | 368 | 47% | 45% | +2 pts | 0.534 | 71 | 42% | -9 pts |  |
+| close in the top quarter of the candle (context) | 622 | 47% | 43% | +4 pts | 0.299 | 71 | 48% | +4 pts |  |
+| Kijun rising | 786 | 47% | 39% | +8 pts | 0.127 | 106 | 45% | -5 pts |  |
+| RSI > 60 (context) | 898 | 46% | 35% | +11 pts | 0.382 | 127 | 46% |  |  |
+| Chikou free (close above the high 26 candles ago) | 898 | 46% | 30% | +16 pts | 0.227 | 130 | 46% |  |  |
 
 ## 4h
 
@@ -450,6 +572,47 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | higher timeframe above its EMA 50 (context) | 148 | 59% | 46% | +13 pts | 0.072 | 27 | 44% | -10 pts |  |
 | with the daily trend (EMA 200) (context) | 137 | 60% | 43% | +17 pts | 0.002 | 31 | 52% | +7 pts | yes |
 
+### 4h · Ichimoku cloud breakout (close above the cloud) (claim: price goes up) · 590 cases, right 54%; holdout 117 cases, right 38%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Tenkan above Kijun | 344 | 52% | 56% | -4 pts | 0.451 | 65 | 42% | +9 pts |  |
+| thick cloud (> 1 ATR) | 317 | 53% | 55% | -3 pts | 0.571 | 46 | 35% | -5 pts |  |
+| Kijun flat (5 candles) | 169 | 53% | 54% | -2 pts | 0.696 | 44 | 50% | +20 pts |  |
+| structure up (HH + HL) (context) | 145 | 53% | 54% | -1 pts | 0.850 | 23 | 52% | +18 pts |  |
+| Kijun rising | 264 | 54% | 54% | -0 pts | 1.000 | 51 | 35% | -4 pts |  |
+| bands expanding (context) | 327 | 54% | 53% | +1 pts | 0.773 | 51 | 33% | -8 pts |  |
+| Bollinger bulge (context) | 49 | 55% | 54% | +1 pts | 0.905 | 8 | 38% |  |  |
+| future cloud bullish | 359 | 55% | 53% | +2 pts | 0.623 | 66 | 36% | -3 pts |  |
+| Chikou free (close above the high 26 candles ago) | 387 | 55% | 52% | +3 pts | 0.569 | 77 | 39% | +4 pts |  |
+| volume >= 1.5x (context) | 199 | 56% | 53% | +3 pts | 0.544 | 47 | 43% | +8 pts |  |
+| volume >= 1.5x | 199 | 56% | 53% | +3 pts | 0.544 | 47 | 43% | +8 pts |  |
+| RSI > 60 (context) | 217 | 56% | 53% | +3 pts | 0.461 | 42 | 40% | +4 pts |  |
+| close in the top quarter of the candle (context) | 345 | 56% | 51% | +4 pts | 0.332 | 68 | 44% | +16 pts |  |
+| with the daily trend (EMA 200) (context) | 282 | 57% | 52% | +5 pts | 0.287 | 65 | 34% | -8 pts |  |
+| higher timeframe above its EMA 50 (context) | 313 | 57% | 50% | +7 pts | 0.085 | 62 | 40% | +6 pts |  |
+| liquidity ahead within 1 ATR (context) | 159 | 59% | 52% | +7 pts | 0.110 | 34 | 35% | -3 pts |  |
+
+### 4h · Ichimoku kumo twist ahead (future cloud turns bullish) (claim: price goes up) · 345 cases, right 57%; holdout 55 cases, right 44%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| structure up (HH + HL) (context) | 72 | 51% | 59% | -7 pts | 0.329 | 10 | 50% | +8 pts |  |
+| close in the top quarter of the candle (context) | 117 | 53% | 59% | -6 pts | 0.322 | 22 | 45% | +3 pts |  |
+| Kijun flat (5 candles) | 58 | 53% | 58% | -4 pts | 0.481 | 13 | 38% | -7 pts |  |
+| Kijun rising | 232 | 57% | 58% | -1 pts | 1.000 | 31 | 42% | -4 pts |  |
+| Chikou free (close above the high 26 candles ago) | 247 | 57% | 57% | -0 pts | 1.000 | 35 | 40% | -10 pts |  |
+| thick cloud (> 1 ATR) | 204 | 57% | 57% | +1 pts | 0.915 | 25 | 48% | +8 pts |  |
+| bands expanding (context) | 216 | 57% | 57% | +1 pts | 0.920 | 29 | 38% | -12 pts |  |
+| with the daily trend (EMA 200) (context) | 155 | 57% | 56% | +2 pts | 0.850 | 27 | 37% | -13 pts |  |
+| higher timeframe above its EMA 50 (context) | 168 | 58% | 56% | +2 pts | 0.741 | 26 | 38% | -10 pts |  |
+| Tenkan above Kijun | 277 | 58% | 54% | +3 pts | 0.643 | 39 | 41% | -9 pts |  |
+| RSI > 60 (context) | 161 | 59% | 55% | +4 pts | 0.469 | 28 | 39% | -9 pts |  |
+| volume >= 1.5x (context) | 103 | 62% | 55% | +7 pts | 0.214 | 23 | 35% | -15 pts |  |
+| Bollinger bulge (context) | 45 | 64% | 56% | +8 pts | 0.329 | 10 | 50% | +8 pts |  |
+| price above the cloud | 184 | 62% | 52% | +10 pts | 0.065 | 36 | 42% | -6 pts |  |
+| liquidity ahead within 1 ATR (context) | 81 | 67% | 54% | +12 pts | 0.055 | 19 | 42% | -2 pts |  |
+
 ### 4h · MACD bull cross (claim: price goes up) · 957 cases, right 50%; holdout 161 cases, right 50%
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
@@ -482,6 +645,28 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | Bollinger bulge (context) | 20 | 65% | 55% | +10 pts | 0.491 | 2 | 50% |  |  |
 | with the daily trend (EMA 200) (context) | 89 | 61% | 50% | +11 pts | 0.172 | 18 | 39% | -25 pts |  |
 | closes > 0.5 ATR beyond the swing | 77 | 64% | 52% | +11 pts | 0.142 | 11 | 64% | +21 pts |  |
+
+### 4h · Ichimoku TK cross (claim: price goes up) · 607 cases, right 52%; holdout 103 cases, right 50%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| structure up (HH + HL) (context) | 63 | 43% | 53% | -10 pts | 0.202 | 16 | 44% | -8 pts |  |
+| inside the cloud (neutral cross) | 127 | 46% | 54% | -8 pts | 0.125 | 19 | 42% | -10 pts |  |
+| thick cloud (> 1 ATR) | 359 | 50% | 56% | -6 pts | 0.175 | 50 | 48% | -5 pts |  |
+| bands expanding (context) | 370 | 51% | 54% | -4 pts | 0.359 | 61 | 52% | +5 pts |  |
+| Kijun flat (5 candles) | 116 | 50% | 53% | -3 pts | 0.713 | 20 | 50% | -1 pts |  |
+| Kijun rising | 186 | 51% | 53% | -2 pts | 0.648 | 30 | 50% | -1 pts |  |
+| volume >= 1.5x (context) | 161 | 52% | 52% | -1 pts | 0.890 | 35 | 46% | -7 pts |  |
+| future cloud bullish | 253 | 52% | 52% | -0 pts | 0.918 | 45 | 49% | -3 pts |  |
+| Chikou free (close above the high 26 candles ago) | 223 | 52% | 52% | -0 pts | 1.000 | 32 | 53% | +4 pts |  |
+| with the daily trend (EMA 200) (context) | 277 | 52% | 51% | +1 pts | 0.880 | 50 | 48% | -5 pts |  |
+| RSI > 60 (context) | 197 | 53% | 52% | +1 pts | 0.858 | 38 | 47% | -5 pts |  |
+| Bollinger bulge (context) | 43 | 53% | 52% | +2 pts | 0.905 | 8 | 38% |  |  |
+| higher timeframe above its EMA 50 (context) | 292 | 53% | 51% | +2 pts | 0.544 | 48 | 48% | -5 pts |  |
+| below the cloud (weak cross) | 239 | 54% | 51% | +2 pts | 0.589 | 40 | 55% | +7 pts |  |
+| close in the top quarter of the candle (context) | 169 | 54% | 51% | +2 pts | 0.586 | 27 | 52% | +2 pts |  |
+| above the cloud (strong cross) | 241 | 54% | 51% | +3 pts | 0.429 | 44 | 50% | -1 pts |  |
+| liquidity ahead within 1 ATR (context) | 127 | 57% | 51% | +6 pts | 0.254 | 20 | 60% | +12 pts |  |
 
 ### 4h · Inside bar, close above the mother high (claim: price goes up) · 707 cases, right 49%; holdout 131 cases, right 47%
 
@@ -567,6 +752,22 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | volume >= 1.5x (context) | 219 | 62% | 56% | +6 pts | 0.212 | 43 | 53% | -11 pts |  |
 | bands expanding (context) | 297 | 63% | 48% | +14 pts | 0.017 | 53 | 55% |  |  |
 | first time above 70 in 50 candles | 147 | 69% | 54% | +15 pts | 0.002 | 20 | 65% | +12 pts | yes |
+
+### 4h · Ichimoku stretched > 3 ATR above Kijun (claim: price goes down) · 274 cases, right 46%; holdout 25 cases, right 52%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Kijun flat (5 candles) | 24 | 38% | 46% | -9 pts | 0.531 | 3 | 33% |  |  |
+| structure up (HH + HL) (context) | 132 | 42% | 49% | -6 pts | 0.404 | 10 | 40% | -20 pts |  |
+| volume >= 1.5x (context) | 114 | 42% | 48% | -6 pts | 0.372 | 11 | 45% | -12 pts |  |
+| Bollinger bulge (context) | 185 | 44% | 49% | -6 pts | 0.521 | 14 | 29% | -53 pts |  |
+| close in the top quarter of the candle (context) | 201 | 45% | 47% | -1 pts | 0.885 | 14 | 43% | -21 pts |  |
+| with the daily trend (EMA 200) (context) | 188 | 46% | 46% | +0 pts | 1.000 | 15 | 40% | -30 pts |  |
+| higher timeframe above its EMA 50 (context) | 230 | 46% | 45% | +0 pts | 1.000 | 17 | 47% |  |  |
+| thick cloud (> 1 ATR) | 124 | 47% | 45% | +2 pts | 0.803 | 17 | 59% |  |  |
+| bands expanding (context) | 177 | 48% | 41% | +7 pts | 0.242 | 16 | 50% |  |  |
+| Kijun rising | 248 | 47% | 35% | +12 pts | 0.359 | 22 | 55% |  |  |
+| liquidity ahead within 1 ATR (context) | 64 | 56% | 42% | +14 pts | 0.057 | 6 | 50% |  |  |
 
 ### 4h · RSI leaves 70 (claim: price goes down) · 394 cases, right 45%; holdout 59 cases, right 44%
 
@@ -701,6 +902,26 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | Bollinger bulge (context) | 118 | 45% | 28% | +17 pts | 0.090 | 14 | 50% |  |  |
 | higher timeframe above its EMA 50 (context) | 132 | 44% | 25% | +19 pts | 0.087 | 13 | 62% |  |  |
 
+### 4h · Ichimoku Kijun bounce (above the cloud) (claim: price goes up) · 405 cases, right 47%; holdout 46 cases, right 54%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Chikou free (close above the high 26 candles ago) | 334 | 45% | 56% | -11 pts | 0.095 | 41 | 54% |  |  |
+| thick cloud (> 1 ATR) | 198 | 44% | 50% | -5 pts | 0.362 | 17 | 53% | -2 pts |  |
+| Kijun rising | 310 | 46% | 51% | -4 pts | 0.436 | 36 | 56% | +6 pts |  |
+| future cloud bullish | 383 | 47% | 50% | -3 pts | 0.825 | 44 | 55% |  |  |
+| Tenkan above Kijun | 356 | 47% | 49% | -2 pts | 0.875 | 40 | 55% |  |  |
+| structure up (HH + HL) (context) | 197 | 47% | 48% | -1 pts | 0.900 | 24 | 62% | +17 pts |  |
+| volume >= 1.5x (context) | 158 | 48% | 47% | +2 pts | 0.885 | 21 | 67% | +23 pts |  |
+| higher timeframe above its EMA 50 (context) | 305 | 48% | 44% | +3 pts | 0.643 | 37 | 59% |  |  |
+| with the daily trend (EMA 200) (context) | 233 | 48% | 44% | +3 pts | 0.571 | 29 | 66% | +30 pts |  |
+| bands expanding (context) | 160 | 49% | 46% | +4 pts | 0.484 | 19 | 68% | +24 pts |  |
+| RSI > 60 (context) | 99 | 51% | 46% | +4 pts | 0.471 | 7 | 86% |  |  |
+| Kijun flat (5 candles) | 74 | 51% | 46% | +5 pts | 0.474 | 9 | 44% |  |  |
+| Bollinger bulge (context) | 47 | 53% | 46% | +7 pts | 0.546 | 5 | 80% |  |  |
+| close in the top quarter of the candle (context) | 123 | 54% | 44% | +9 pts | 0.110 | 13 | 62% | +10 pts |  |
+| liquidity ahead within 1 ATR (context) | 34 | 74% | 45% | +29 pts | 0.002 | 4 | 25% |  |  |
+
 ### 4h · Break of structure (with the trend) (claim: price goes up) · 191 cases, right 50%; holdout 34 cases, right 53%
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
@@ -715,6 +936,26 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | bands expanding (context) | 113 | 56% | 41% | +15 pts | 0.045 | 26 | 46% |  |  |
 | closes > 0.5 ATR beyond the swing | 84 | 58% | 43% | +15 pts | 0.080 | 18 | 44% | -18 pts |  |
 | made by a displacement candle | 82 | 61% | 41% | +20 pts | 0.030 | 18 | 39% | -30 pts |  |
+
+### 4h · Ichimoku enters the cloud from below (edge to edge) (claim: price goes up) · 489 cases, right 49%; holdout 87 cases, right 66%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Kijun rising | 171 | 39% | 55% | -16 pts | 0.002 | 18 | 78% | +15 pts |  |
+| RSI > 60 (context) | 82 | 41% | 51% | -9 pts | 0.157 | 3 | 0% |  |  |
+| bands expanding (context) | 261 | 45% | 54% | -9 pts | 0.047 | 31 | 61% | -7 pts |  |
+| Chikou free (close above the high 26 candles ago) | 236 | 45% | 53% | -7 pts | 0.122 | 31 | 61% | -7 pts |  |
+| Tenkan above Kijun | 241 | 46% | 52% | -7 pts | 0.152 | 40 | 65% | -1 pts |  |
+| with the daily trend (EMA 200) (context) | 207 | 46% | 49% | -4 pts | 0.459 | 36 | 53% | -22 pts |  |
+| volume >= 1.5x (context) | 128 | 48% | 49% | -1 pts | 0.915 | 26 | 58% | -11 pts |  |
+| future cloud bullish | 124 | 49% | 49% | +0 pts | 1.000 | 25 | 60% | -8 pts |  |
+| thick cloud (> 1 ATR) | 335 | 49% | 49% | +1 pts | 0.918 | 45 | 67% | +2 pts |  |
+| structure up (HH + HL) (context) | 93 | 52% | 48% | +3 pts | 0.673 | 22 | 91% | +34 pts |  |
+| higher timeframe above its EMA 50 (context) | 185 | 52% | 48% | +4 pts | 0.414 | 38 | 71% | +10 pts |  |
+| close in the top quarter of the candle (context) | 254 | 51% | 47% | +4 pts | 0.374 | 45 | 64% | -2 pts |  |
+| Kijun flat (5 candles) | 132 | 55% | 47% | +7 pts | 0.135 | 35 | 69% | +5 pts |  |
+| Bollinger bulge (context) | 31 | 58% | 48% | +10 pts | 0.369 | 9 | 67% |  |  |
+| liquidity ahead within 1 ATR (context) | 91 | 62% | 46% | +15 pts | 0.015 | 18 | 50% | -20 pts |  |
 
 ### 4h · Three white soldiers (claim: price goes up) · 286 cases, right 54%; holdout 35 cases, right 51%
 
@@ -760,6 +1001,22 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | pullback volume below the push volume | 56 | 52% | 54% | -2 pts | 1.000 | 8 | 50% |  |  |
 | EMA 50 rising strongly (> 0.1 ATR per candle) | 21 | 62% | 49% | +13 pts | 0.406 | 5 | 80% |  |  |
 | structure up (HH + HL) (context) | 37 | 65% | 42% | +23 pts | 0.015 | 6 | 50% |  |  |
+
+### 1D · Ichimoku TK cross (claim: price goes up) · 81 cases, right 49%; holdout 18 cases, right 61%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| below the cloud (weak cross) | 34 | 41% | 55% | -14 pts | 0.177 | 8 | 75% |  |  |
+| higher timeframe above its EMA 50 (context) | 33 | 42% | 56% | -14 pts | 0.404 | 7 | 57% |  |  |
+| thick cloud (> 1 ATR) | 57 | 46% | 58% | -13 pts | 0.302 | 13 | 54% |  |  |
+| close in the top quarter of the candle (context) | 26 | 46% | 51% | -5 pts | 0.813 | 6 | 50% |  |  |
+| with the daily trend (EMA 200) (context) | 42 | 48% | 51% | -4 pts | 0.768 | 9 | 67% |  |  |
+| above the cloud (strong cross) | 34 | 50% | 49% | +1 pts | 1.000 | 7 | 29% |  |  |
+| bands expanding (context) | 48 | 52% | 45% | +7 pts | 0.716 | 12 | 67% |  |  |
+| future cloud bullish | 36 | 56% | 44% | +11 pts | 0.389 | 7 | 43% |  |  |
+| RSI > 60 (context) | 26 | 58% | 45% | +12 pts | 0.272 | 4 | 100% |  |  |
+| Chikou free (close above the high 26 candles ago) | 30 | 60% | 43% | +17 pts | 0.130 | 5 | 80% |  |  |
+| Kijun rising | 24 | 62% | 44% | +19 pts | 0.170 | 7 | 57% |  |  |
 
 ### 1D · Trendline rejection (claim: price goes up) · 205 cases, right 52%; holdout 27 cases, right 52%
 
@@ -861,6 +1118,25 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | breaks a 20-candle high | 31 | 61% | 57% | +5 pts | 1.000 | 5 | 60% |  |  |
 | volume >= 1.5x (context) | 31 | 65% | 52% | +12 pts | 1.000 | 5 | 60% |  |  |
 
+### 1D · Ichimoku cloud breakout (close above the cloud) (claim: price goes up) · 82 cases, right 62%; holdout 12 cases, right 42%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| higher timeframe above its EMA 50 (context) | 34 | 59% | 76% | -17 pts | 0.224 | 6 | 33% |  |  |
+| Kijun flat (5 candles) | 22 | 55% | 65% | -10 pts | 0.454 | 1 | 0% |  |  |
+| RSI > 60 (context) | 27 | 56% | 65% | -10 pts | 0.486 | 5 | 40% |  |  |
+| with the daily trend (EMA 200) (context) | 45 | 60% | 65% | -5 pts | 0.788 | 8 | 38% |  |  |
+| volume >= 1.5x | 21 | 62% | 62% | -0 pts | 1.000 | 2 | 50% |  |  |
+| volume >= 1.5x (context) | 21 | 62% | 62% | -0 pts | 1.000 | 2 | 50% |  |  |
+| bands expanding (context) | 50 | 64% | 59% | +5 pts | 0.771 | 6 | 33% |  |  |
+| liquidity ahead within 1 ATR (context) | 21 | 67% | 61% | +6 pts | 0.813 | 2 | 0% |  |  |
+| Chikou free (close above the high 26 candles ago) | 52 | 65% | 57% | +9 pts | 0.421 | 6 | 50% |  |  |
+| Tenkan above Kijun | 47 | 66% | 57% | +9 pts | 0.546 | 7 | 43% |  |  |
+| Kijun rising | 38 | 68% | 57% | +12 pts | 0.302 | 8 | 38% |  |  |
+| future cloud bullish | 54 | 67% | 54% | +13 pts | 0.337 | 7 | 43% |  |  |
+| structure up (HH + HL) (context) | 34 | 71% | 56% | +14 pts | 0.327 | 5 | 60% |  |  |
+| close in the top quarter of the candle (context) | 47 | 70% | 51% | +19 pts | 0.115 | 3 | 33% |  |  |
+
 ### 1D · Hammer / pin bar (claim: price goes up) · 165 cases, right 49%; holdout 37 cases, right 51%
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
@@ -893,6 +1169,12 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | level 0.618 | 35 | 60% | 53% | +7 pts | 0.546 | 9 | 22% |  |  |
 | structure up (HH + HL) (context) | 54 | 63% | 50% | +13 pts | 0.090 | 11 | 45% | +1 pts |  |
 | Bollinger bulge (context) | 26 | 65% | 52% | +13 pts | 0.299 | 4 | 25% |  |  |
+
+### 1D · Ichimoku Kijun bounce (above the cloud) (claim: price goes up) · 52 cases, right 63%; holdout 8 cases, right 50%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| structure up (HH + HL) (context) | 25 | 72% | 56% | +16 pts | 1.000 | 6 | 67% |  |  |
 
 ### 1D · Volume breakout (claim: price goes up) · 125 cases, right 53%; holdout 19 cases, right 47%
 
@@ -933,6 +1215,12 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | volume >= 1.5x (context) | 22 | 73% | 56% | +17 pts | 0.147 | 7 | 71% |  |  |
 | bands expanding (context) | 39 | 69% | 50% | +19 pts | 0.187 | 9 | 78% |  |  |
 
+### 1D · Ichimoku stretched > 3 ATR above Kijun (claim: price goes down) · 43 cases, right 47%; holdout 8 cases, right 38%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| Bollinger bulge (context) | 23 | 52% | 40% | +12 pts | 1.000 | 5 | 40% |  |  |
+
 ### 1D · RSI leaves 70 (claim: price goes down) · 58 cases, right 45%; holdout 5 cases, right 60%
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
@@ -946,7 +1234,22 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 ### 1D · Morning star (claim: price goes up) · 41 cases, right 61%; holdout 10 cases, right 50%
 
+### 1D · Ichimoku enters the cloud from below (edge to edge) (claim: price goes up) · 74 cases, right 42%; holdout 11 cases, right 55%
+
+| when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
+|---|---|---|---|---|---|---|---|---|---|
+| higher timeframe above its EMA 50 (context) | 25 | 28% | 47% | -19 pts | 0.147 | 3 | 33% |  |  |
+| close in the top quarter of the candle (context) | 27 | 41% | 43% | -2 pts | 1.000 | 7 | 43% |  |  |
+| with the daily trend (EMA 200) (context) | 30 | 43% | 41% | +2 pts | 1.000 | 4 | 50% |  |  |
+| Kijun flat (5 candles) | 25 | 44% | 41% | +3 pts | 0.818 | 3 | 100% |  |  |
+| bands expanding (context) | 36 | 44% | 39% | +5 pts | 0.818 | 6 | 50% |  |  |
+| Kijun rising | 25 | 52% | 37% | +15 pts | 0.192 | 5 | 40% |  |  |
+| Tenkan above Kijun | 38 | 50% | 33% | +17 pts | 0.137 | 6 | 50% |  |  |
+| Chikou free (close above the high 26 candles ago) | 41 | 51% | 30% | +21 pts | 0.065 | 6 | 50% |  |  |
+
 ### 1D · EMA 20 crosses above 50 (claim: price goes up) · 32 cases, right 53%; holdout 4 cases, right 50%
+
+### 1D · Ichimoku kumo twist ahead (future cloud turns bullish) (claim: price goes up) · 40 cases, right 57%; holdout 5 cases, right 60%
 
 ### 1D · Change of character (first break against) (claim: price goes up) · 25 cases, right 52%; holdout 1 cases, right 100%
 
