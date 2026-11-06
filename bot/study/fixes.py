@@ -129,7 +129,7 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
                 if j4 >= t4.n or (t4.c[j4] - e) * d <= 0:
                     continue                                            # not confirmed by the 4h close
                 conf_t = pd.Timestamp(t4.ct[j4]) + pd.Timedelta(milliseconds=1)
-                ic = int(np.searchsorted(t5, np.datetime64(conf_t)))
+                ic = int(np.searchsorted(t5, np.datetime64(pd.Timestamp(t4.ct[j4]))))   # close time = next open
                 seg_s = (ctx["L"][st:ic] <= s) if d > 0 else (ctx["H"][st:ic] >= s)
                 seg_t = (ctx["H"][st:ic] >= tg) if d > 0 else (ctx["L"][st:ic] <= tg)
                 if seg_s.any() or seg_t.any():
@@ -145,7 +145,7 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
                     if hit_s or hit_t:
                         break
                     if near and back:
-                        found = int(np.searchsorted(t5, np.datetime64(pd.Timestamp(t1.ct[jj]) + pd.Timedelta(milliseconds=1))))
+                        found = int(np.searchsorted(t5, np.datetime64(pd.Timestamp(t1.ct[jj]))))
                         break
                 if found is None or found >= len(t5):
                     continue

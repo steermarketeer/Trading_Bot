@@ -30,22 +30,22 @@ Start: v3.1 ETH trades (one position per move) with the two journal filters. **w
 | enter at signal + failure exit (in profit) | 129 | 67% | +0.37 | 4.10 | 4 | 33 | 67% | +0.33 |
 | enter at signal + failure exit (in profit) + no trendline in the way | 76 | 68% | +0.49 | 4.07 | 4 | 17 | 71% | +0.52 |
 | enter at signal + failure exit (any) + strong breaking candle | 100 | 51% | +0.32 | 3.89 | 4 | 27 | 44% | +0.21 |
-| retest entry + fixed target | 45 | 64% | +0.88 | 3.83 | 4 | 12 | 58% | +0.70 |
 | enter at signal + failure exit (in profit) + strong breaking candle | 100 | 71% | +0.37 | 3.74 | 4 | 27 | 74% | +0.39 |
 | enter at signal + failure exit (any) + no trendline in the way + strong breaking candle | 56 | 52% | +0.43 | 3.55 | 4 | 13 | 54% | +0.50 |
+| retest entry + fixed target | 44 | 61% | +0.82 | 3.43 | 4 | 13 | 54% | +0.52 |
 | enter at signal + failure exit (in profit) + no trendline in the way + strong breaking candle | 56 | 71% | +0.46 | 3.42 | 4 | 13 | 85% | +0.65 |
 | enter at signal + fixed target + no trendline in the way + strong breaking candle | 56 | 57% | +0.71 | 3.27 | 4 | 13 | 62% | +0.79 |
-| retest entry + fixed target + strong breaking candle | 32 | 62% | +0.93 | 3.20 | 4 | 9 | 67% | +0.97 |
-| retest entry + failure exit (in profit) | 45 | 73% | +0.35 | 2.84 | 4 | 12 | 67% | +0.39 |
-| retest entry + fixed target + no trendline in the way | 30 | 63% | +0.73 | 2.77 | 4 | 6 | 33% | -0.13 |
-| retest entry + failure exit (in profit) + no trendline in the way | 30 | 73% | +0.40 | 2.77 | 4 | 6 | 50% | +0.28 |
-| retest entry + failure exit (in profit) + strong breaking candle | 32 | 78% | +0.34 | 2.58 | 4 | 9 | 78% | +0.63 |
-| retest entry + failure exit (in profit) + no trendline in the way + strong breaking candle | 22 | 77% | +0.42 | 2.52 | 3 | 4 | 75% | +0.75 |
-| retest entry + fixed target + no trendline in the way + strong breaking candle | 22 | 59% | +0.65 | 2.00 | 3 | 4 | 50% | +0.35 |
-| retest entry + failure exit (any) | 45 | 42% | +0.06 | 0.67 | 2 | 12 | 58% | +0.37 |
-| retest entry + failure exit (any) + no trendline in the way | 30 | 40% | +0.07 | 0.67 | 2 | 6 | 50% | +0.48 |
-| retest entry + failure exit (any) + no trendline in the way + strong breaking candle | 22 | 41% | +0.06 | 0.46 | 1 | 4 | 75% | +0.88 |
-| retest entry + failure exit (any) + strong breaking candle | 32 | 44% | +0.03 | 0.41 | 1 | 9 | 67% | +0.56 |
+| retest entry + fixed target + strong breaking candle | 33 | 61% | +0.88 | 3.03 | 4 | 10 | 60% | +0.70 |
+| retest entry + failure exit (in profit) + no trendline in the way | 30 | 73% | +0.43 | 2.90 | 4 | 7 | 43% | -0.02 |
+| retest entry + failure exit (in profit) | 44 | 73% | +0.34 | 2.74 | 4 | 13 | 62% | +0.22 |
+| retest entry + failure exit (in profit) + strong breaking candle | 33 | 76% | +0.33 | 2.62 | 4 | 10 | 70% | +0.38 |
+| retest entry + failure exit (in profit) + no trendline in the way + strong breaking candle | 23 | 74% | +0.41 | 2.55 | 3 | 5 | 60% | +0.23 |
+| retest entry + fixed target + no trendline in the way | 30 | 60% | +0.66 | 2.45 | 4 | 7 | 29% | -0.38 |
+| retest entry + fixed target + no trendline in the way + strong breaking candle | 23 | 57% | +0.58 | 1.81 | 3 | 5 | 40% | -0.10 |
+| retest entry + failure exit (any) + no trendline in the way | 30 | 47% | +0.10 | 0.90 | 2 | 7 | 43% | +0.23 |
+| retest entry + failure exit (any) + no trendline in the way + strong breaking candle | 23 | 43% | +0.07 | 0.58 | 1 | 5 | 60% | +0.44 |
+| retest entry + failure exit (any) + strong breaking candle | 33 | 45% | +0.04 | 0.52 | 1 | 10 | 60% | +0.37 |
+| retest entry + failure exit (any) | 44 | 45% | +0.05 | 0.51 | 2 | 13 | 54% | +0.25 |
 
 ## Fibonacci confluence (same trades in every row)
 
