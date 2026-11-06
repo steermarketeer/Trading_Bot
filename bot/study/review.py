@@ -24,7 +24,7 @@ from .mtf import resample
 
 TFS = [("15m", "15min"), ("1h", "1h"), ("4h", "4h"), ("1D", "1D")]
 BEFORE, AFTER_MIN, AFTER_MAX = 100, 12, 90
-TGT = {"A+ breakout": 2.0, "breakout": 2.0, "1D bounce": 3.0}
+from ..live.v3 import TARGET as TGT          # one source of truth for the targets
 FIVE = pd.Timedelta(minutes=5)
 
 

@@ -40,7 +40,7 @@ from .sr2_run import _pct, _table
 
 HOLDOUT = pd.Timestamp("2025-11-01")
 FIVE = pd.Timedelta(minutes=5)
-TGT = {"A+ breakout": 2.0, "breakout": 2.0, "1D bounce": 3.0}
+from ..live.v3 import TARGET as TGT          # one source of truth for the targets
 RISK = {"A+ breakout": 0.04, "breakout": 0.02, "1D bounce": 0.02}
 
 

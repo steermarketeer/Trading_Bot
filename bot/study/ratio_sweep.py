@@ -47,7 +47,8 @@ def run_ratio_sweep(cfg: Config, out_dir: Path) -> Path:
     D.to_pickle(ROOT / "results" / "ratio_sweep.pkl")
     res = ~D["hold"] & (D["exit_time"] < HOLDOUT)
     # sanity: the 2 : 1 / 3 : 1 rows must equal the chosen version's trades (same replay, same costs)
-    chk = D[((D["fam"] == "breakout") & (D["ratio"] == 2.0)) | ((D["fam"] == "1D bounce") & (D["ratio"] == 3.0))]
+    from ..live.v3 import TARGET
+    chk = D[((D["fam"] == "breakout") & (D["ratio"] == TARGET["breakout"])) | ((D["fam"] == "1D bounce") & (D["ratio"] == TARGET["1D bounce"]))]
     ref = T.set_index("decision_time")["net"]
     diff = (chk.set_index("decision_time")["net"] - ref.reindex(chk["decision_time"]).to_numpy()).abs().max()
     f2 = lambda v: "" if v != v else f"{v:+.2f}"  # noqa: E731
@@ -56,7 +57,7 @@ def run_ratio_sweep(cfg: Config, out_dir: Path) -> Path:
          "Same 162 trades, entries, stops, replay, costs and funding; only the fixed reward:risk ratio changes, per family. "
          "**win % = profit after costs.** Chosen on 2022 - Oct 2025 (best t-score, >= 3 of 4 good years); the holdout is "
          "shown for every ratio and never used to choose.", "",
-         f"Check: the 2 : 1 (breakouts) / 3 : 1 (bounces) rows reproduce the chosen version's trades to {diff:.2e} R.", ""]
+         f"Check: the rows at the strategy's own targets reproduce the chosen version's trades to {diff:.2e} R.", ""]
     best = {}
     for fam in ("breakout", "1D bounce"):
         tab = []

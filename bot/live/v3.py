@@ -9,7 +9,8 @@ Rules (frozen from the research period, see reports/strategy_v2.md + failure_liq
                   - clean risk zone: no confirmed swing (1h + own TF) between entry and stop, no equal-high/low
                     pool within 0.5 ATR of the stop
                   - A+ = low-volume path to the target (volume-profile LVN share above the research median)
-  BOUNCE (3:1)    1D strong zone tested >= 4 times, bounce confirmed by the next daily candle
+  BOUNCE (5:1)    1D strong zone tested >= 4 times, bounce confirmed by the next daily candle; stop below the Fib 0.786
+                  (reports/fixes.md); target 5 : 1 (reports/ratio_sweep.md: chosen on 2022 - Oct 2025, holdout agrees)
 Risk: A+ 4%, breakout 2%, bounce 2% of equity per trade, leverage capped at 5x. Entry = open of the candle after
 the signal; stop / target as defined; max holding 60 candles of the trade's timeframe. Fills simulated on 5m data.
 """
@@ -39,7 +40,7 @@ from ..study.sr2 import add_mtf_features
 MODEL_DIR = ROOT / "models" / "v3"
 HOLDOUT = pd.Timestamp("2025-11-01", tz="UTC")
 RISK = {"A+ breakout": 0.04, "breakout": 0.02, "1D bounce": 0.02}
-TARGET = {"A+ breakout": 2.0, "breakout": 2.0, "1D bounce": 3.0}
+TARGET = {"A+ breakout": 2.0, "breakout": 2.0, "1D bounce": 5.0}   # bounces 5 : 1 since the ratio sweep (reports/ratio_sweep.md)
 LEV_CAP = 5.0
 MAX_TF_BARS = 60
 FIVE = pd.Timedelta(minutes=5)

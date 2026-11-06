@@ -38,7 +38,7 @@ HOLDOUT = pd.Timestamp("2025-11-01")
 GAP = pd.Timedelta(days=62)
 YEARS = [2022, 2023, 2024, 2025]
 FIVE = pd.Timedelta(minutes=5)
-TGT = {"A+ breakout": 2.0, "breakout": 2.0, "1D bounce": 3.0}
+from ..live.v3 import TARGET as TGT          # one source of truth for the targets
 RISK = {"A+ breakout": 0.04, "breakout": 0.02, "1D bounce": 0.02}
 MARGINS = (-1.0, -0.75, -0.5, -0.35, -0.25, -0.15, -0.05)
 PARAMS = dict(objective="regression", learning_rate=0.03, num_leaves=15, min_data_in_leaf=300, feature_fraction=0.7,

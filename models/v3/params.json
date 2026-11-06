@@ -13,7 +13,7 @@
   "target": {
     "A+ breakout": 2.0,
     "breakout": 2.0,
-    "1D bounce": 3.0
+    "1D bounce": 5.0
   },
   "lev_cap": 5.0,
   "frozen_at": "2026-11-04T16:24:43.466672+00:00",
