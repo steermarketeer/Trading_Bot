@@ -107,8 +107,9 @@ win 29% vs 59%, `reports/selfreview.md`), but it is only known after the entry. 
 per trade in 2022 - 25 (+0.82R vs +0.71R) but took only 44 trades instead of 129, too few for the selection rule
 (>= 60), and earned less in the holdout (+0.52R vs +0.68R), so it was not adopted (`reports/fixes.md`).
 
-Where the remaining losses come from: a **resistance or untaken 4h high between the entry and the target** is a proven
-loser marker (win 43% vs 68% without, holdout 48% vs 100%, `reports/selfreview.md`), and the journal shows it on 22 Nov
+Where the remaining losses come from: across all v3.1 trades, a **resistance or untaken 4h high between the entry and the
+target** goes with losing (win 43% when present vs 68% when absent; holdout 48% vs 100%; it is present in most trades, and
+the self-review table has no significance test, `reports/selfreview.md`), and the journal shows it on 22 Nov
 2024 (the 3R target beyond the 4,099 top). The journal's two stops just inside the liquidity (5 Dec 2023, 22 Nov 2024)
 are single examples: systematically, untaken liquidity just beyond the stop does **not** mark losers (41% of losers vs 39%
 of winners, holdout 44% vs 46%, `reports/selfreview.md`).
