@@ -1,7 +1,8 @@
 # Indicators: what each one is, what the ETH data says, and which to use for what
 
-Evidence: `reports/indicator_learn.md` (every classic signal, one fair test) and `reports/bollinger.md` (the upper / lower
-band in detail). Fair test: at the signal close, does price move 1.5 ATR the way the signal claims before 1.5 ATR
+Evidence: `reports/indicator_learn.md` (every classic signal, one fair test), `reports/bollinger.md` (the upper / lower
+band in detail) and `reports/indicator_deep.md` (every indicator, candlestick and structure signal in detail: which
+conditions make it work or fail, in both periods). Applied to the trades: `reports/learned.md`. Fair test: at the signal close, does price move 1.5 ATR the way the signal claims before 1.5 ATR
 against? A coin flip is 50%. A signal counts only if it beats 50% in most years **and** in the holdout. The main rules
 (structure, levels, liquidity, closes) come first; indicators only support them.
 
@@ -20,7 +21,7 @@ against? A coin flip is 50%. A signal counts only if it beats 50% in most years 
 
 Two rules from the data, before any single indicator:
 
-1. **On the 1h, every indicator signal is close to a coin flip (45 – 55%).** Indicators carry information only on the 4h and
+1. **On the 1h, every indicator signal is close to a coin flip (46 – 55%).** Indicators carry information only on the 4h and
    the daily. Decisions use the 4h / daily; the 1h and 15m only time the entry.
 2. **Most indicators say the same thing.** On the 4h, RSI, %b, distance from EMA 20 and the 20-candle return have
    rank correlations of 0.85 – 0.98: they all measure where price is relative to its recent average. MACD correlates
@@ -69,7 +70,7 @@ Two rules from the data, before any single indicator:
   | the daily also at its upper band | 58% | 55% |
   | bulge + RSI > 75 | **68%** | 84% (19 cases) |
   | squeeze breakout + daily trend down | **41%** | 43% |
-  | upper wick + daily trend down | **43%** | 44% |
+  | upper wick + daily trend down | **42%** | 44% |
   | bands not expanding + upper wick (1h) | **44%** | 45% |
 
   So **a stall at the upper band in a bulge with RSI > 75 and the daily at its band is a pause**: price comes back to
@@ -80,7 +81,7 @@ Two rules from the data, before any single indicator:
 
 ### Moving averages (EMA 20 / 50 / 200)
 - What: smoothed price, i.e. trend. They lag by design.
-- Data: crosses are 51 – 56% on every timeframe; the 4h golden cross was 56% in 6 of 6 years but **34% in the holdout**
+- Data: crosses are 51 – 56% on every timeframe; the 4h golden cross was 56% in 5 of 6 years but **34% in the holdout**
   (44 cases). **Buying a pullback to the EMA 20 in a stacked uptrend on 4h: 45%, 1 of 6 years** (it loses).
   The EMA 50 pullback: 50%.
 - Use: the daily EMA 200 as the regime (which side, and whether a failure is a reversal or only a pullback, the
@@ -110,3 +111,80 @@ daily trend up. Weakness only from the upper wick and the %b non-confirmation. V
 the middle band holds on the close (2,200). That matches the trader's reading. Across all 1D bounces, a pullback to the
 4h middle band within 3 days marks the weaker bounces (2022 - 25: 24% win vs 67% without; holdout 50% vs 57%), and
 entering at the band does not rescue them (`reports/pullback.md`): the band is a reference, not an entry by itself.
+
+## In depth: when each signal works and when it fails (`reports/indicator_deep.md`)
+
+Only conditions that move the result by >= 3 points the same way in **both** 2020 - Oct 2025 and the holdout are listed;
+4h unless marked. "Right" = the fair 1.5 ATR test. Holdout samples are small where noted, so these are tendencies.
+
+### Moving averages
+| Situation | Right | When it works better | When it fails |
+|---|---|---|---|
+| EMA 200 test (rising 200: low touches it, close above) | 57% (holdout 75%, 28 cases) | **a rejection wick** (close in the top third): 62% / 86% | |
+| Reclaim the EMA 20 after 6+ closes below | 55% / 56% | with the daily trend: 57% / 62% | in a Bollinger bulge: 45% / 50% |
+| EMA 20 crosses above 50 | 56% / **34%** | RSI > 60 at the cross | unreliable recently: not a signal |
+| Pullback to the EMA 20 (20 > 50) | 47% / 49% | a rejection wick: 51% / 53% | it is a coin flip at best |
+| Stretched > 3 ATR above the EMA 20 (sell it?) | 40% right as a sell (1h: 42% / 45%; 4h holdout 55% on only 20 cases) | | fading a stretch mostly loses: price stays stretched |
+So: **the EMA 200 retest with a rejection wick is the one average signal that works**; the 20 / 50 are trend context.
+
+### RSI
+| Situation | Right | Better | Worse |
+|---|---|---|---|
+| RSI enters 70 (buy) | 59% / 57% | **first time above 70 in 50 candles: 69% / 65%** | bearish divergence: 53% / 40%; when the higher timeframe is already extended above its EMA 50: 56% / 52% |
+| RSI leaves 70 (sell) | 45% / 44% (a losing sell) | a high-volume drop out of 70: 54% / 47% | in a bulge 38%; after 5+ candles above 70 37%; even Wilder's failure swing 40% / 38% |
+So: the **first** push above 70 starts a move; divergence is the warning; never sell RSI leaving 70 unless volume confirms.
+
+### Volume
+| Situation | Right | Better | Worse |
+|---|---|---|---|
+| 20-candle breakout close | 51% / 45% | **volume >= 2x: 58% / 53%**; closes > 1 ATR beyond: 62% / 58% | volume 1 - 2x: **46% / 32%** |
+So: a breakout needs **2x volume and a decisive close**; 1 - 2x volume breakouts fail more than they work.
+
+### Fibonacci (the first pullback to a level in an up-leg, closing back above)
+| Level reached | Right |
+|---|---|
+| 0.382 | **46% / 38%** (shallow pullbacks fail) |
+| 0.786 | **53% / 63%** (deep pullbacks hold) |
+| RSI still > 60 at the touch | 40% / 42% |
+So: **the 0.786 holds, the 0.382 does not** (the same reason the bounce stop below the 0.786 helped).
+
+### Trendlines (rising line through the last two confirmed swing lows)
+| Situation | Right | Detail |
+|---|---|---|
+| Rejection (touch, close above) | 47% / 46% | **3+ touches: 42% / 40%**; steep line: 40% / 35%; with the daily trend 43% / 38% |
+| Break (close below by 0.25 ATR) | 55% / 49% | |
+So: **the more a trendline is touched, the more likely it breaks**: stops rest under it, it is liquidity. A trendline is a
+place where liquidity sits, not a floor. (This matches "price goes to liquidity".)
+
+### Candlesticks
+| Candle | Right | Better | Worse |
+|---|---|---|---|
+| Hammer / pin bar | 47% / 50% | higher timeframe up: 49% / 56%; daily hammer after a 10-day decline: 54% / 60% | **just above an untaken low (support): 38% / 42%**: the low below is liquidity and gets taken |
+| Bullish engulfing | 51% / 51% | **at the lower band: 56% / 57%**; higher timeframe up | RSI < 40: 45% / 46%; just above an untaken low: 48% / 38% |
+| Doji at support | **40%** (holdout 68%, only 34 cases: not consistent) | | not a signal |
+| Morning star | 55% / 53% | inside an uptrend (no prior decline): 64% | after a decline: 51% / 48% |
+| Three white soldiers | 54% / 51% | closing outside the upper band: **62% / 62%** | |
+| Strong full-body candle (displacement) | 54% / 49% | **with the daily trend: 60% / 52%**; 2x volume | RSI > 75 after it (1h) |
+So: **a candle pattern is not a signal on its own** (all 40 - 55%). It works when it agrees with the trend and volume, and a
+reversal candle sitting just above untaken liquidity usually fails, because that liquidity gets taken first.
+
+### Market structure
+| Situation | Right | Better |
+|---|---|---|
+| Break of structure (with the trend) | 50% / 53% | no edge by itself |
+| **Change of character (first close beyond the last swing against the trend)** | 56% / 50% | **closes > 0.5 ATR beyond the swing: 64% / 64%**; with 1.5x volume: 59% / 55% |
+So: the **first decisive close against the old structure** is the strongest structure signal; a BOS in an existing trend
+adds nothing. Again: the close (how far beyond, on what volume) decides.
+
+### MACD (in depth)
+Nothing positive in either period. In a Bollinger bulge the MACD cross is 41% / 44%. It stays dropped.
+
+## What this means for the bot, tested on the trades (`reports/learned.md`)
+
+Each lesson was turned into a filter before looking at the trades and run on the current best version (100 trades
+2022 - Oct 2025, 27 holdout): band-touch weakness, fading momentum, squeeze against the trend, thin volume, 2x volume,
+RSI divergence at a breakout, shallow pullback. **None improved it**: they either never fire (the existing filters, such
+as the strong-breaking-candle rule, already remove those trades) or they remove more winners than losers. The best
+version already uses the indicator lessons that matter (volume on the breaking candle, the 0.786 stop, the 4h
+confirmation). The losses that remain are about **liquidity**: targets beyond big liquidity (4,099 on 22 Nov 2024) and
+stops just inside it (5 Dec 2023, 22 Nov 2024), which is where the journal goes next.

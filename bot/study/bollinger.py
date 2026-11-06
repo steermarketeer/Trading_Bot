@@ -93,7 +93,7 @@ def events(t: TF, ht: TF, side: int) -> pd.DataFrame:
             "RSI > 75": r[j] > 75,
             "upper wick": (c[j] - l[j]) < 0.5 * (h[j] - l[j]),
             "higher TF at band": hj >= 0 and hh[hj] >= hup[hj],
-            "higher TF trend": hj >= 0 and hc[hj] > he50[hj],
+            "higher TF trend": (hc[hj] > he50[hj]) if hj >= 0 and np.isfinite(he50[hj]) else None,
         })
     return pd.DataFrame(rows)
 
@@ -111,7 +111,8 @@ def run_bollinger(cfg: Config, out_dir: Path) -> Path:
     for tf in ("1h", "4h", "1D"):
         E = pd.concat([events(tfs[tf], tfs[HTF[tf]], s).assign(band="upper" if s > 0 else "lower") for s in (1, -1)])
         allE[tf] = E
-        res, hol = E[E["time"] < HOLDOUT], E[E["time"] >= HOLDOUT]
+        late_t = HOLDOUT - HORIZON * pd.Timedelta(RULE[tf])            # outcomes that would use holdout prices
+        res, hol = E[E["time"] < late_t], E[E["time"] >= HOLDOUT]
         rows = []
         for cn in conds:
             for val in (True, False):
@@ -128,7 +129,7 @@ def run_bollinger(cfg: Config, out_dir: Path) -> Path:
             for c2 in conds[i + 1:]:
                 for v1 in (True, False):
                     for v2 in (True, False):
-                        m = (res[c1] == v1) & (res[c2] == v2)
+                        m = (res[c1] == v1) & (res[c2] == v2)                       # None (unknown) matches neither
                         if m.sum() < 150:
                             continue
                         mh = (hol[c1] == v1) & (hol[c2] == v2)

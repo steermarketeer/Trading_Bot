@@ -140,24 +140,29 @@ def run_indicator_learn(cfg: Config, out_dir: Path) -> Path:
         y = outcome(t)
         ot = pd.to_datetime(t.ot)
         jd = np.searchsorted(d1.ct, t.ct, side="right") - 1
-        bull_day = np.where(jd >= 0, d1.c[np.clip(jd, 0, None)] > d_e200[np.clip(jd, 0, None)], False)
+        jdc = np.clip(jd, 0, None)
+        e_ok = (jd >= 0) & np.isfinite(d_e200[jdc])                  # no daily EMA 200 yet: in neither trend column
+        bull_day = e_ok & (d1.c[jdc] > d_e200[jdc])
         hold = np.asarray(ot >= HOLDOUT)
+        late = np.asarray((ot < HOLDOUT) & (ot >= HOLDOUT - HORIZON * pd.Timedelta(tf)))   # outcome would use holdout prices
         years = np.asarray(ot.year)
         S, vals = signals(t)
         rows = []
         for name, (bu, be) in S.items():
             bu, be = np.nan_to_num(bu).astype(bool), np.nan_to_num(be).astype(bool)
+            bu, be = bu & ~late, be & ~late
             right = np.concatenate([y[bu], 1 - y[be]])
             hd = np.concatenate([hold[bu], hold[be]])
+            eok = np.concatenate([e_ok[bu], e_ok[be]])
             yr = np.concatenate([years[bu], years[be]])
             trend = np.concatenate([bull_day[bu], ~bull_day[be]])        # signal WITH the daily trend
             ok = ~np.isnan(right)
-            right, hd, yr, trend = right[ok], hd[ok], yr[ok], trend[ok]
+            right, hd, yr, trend, eok = right[ok], hd[ok], yr[ok], trend[ok], eok[ok]
             res = ~hd
             good_years = sum(1 for yy in range(2020, 2026) if (m := res & (yr == yy)).sum() >= 10 and right[m].mean() > 0.5)
             n_years = sum(1 for yy in range(2020, 2026) if (res & (yr == yy)).sum() >= 10)
-            rows.append({"sig": name, "n": int(res.sum()), "p": right[res].mean(), "pw": right[res & trend].mean(),
-                         "pa": right[res & ~trend].mean(), "yrs": f"{good_years}/{n_years}", "nh": int(hd.sum()),
+            rows.append({"sig": name, "n": int(res.sum()), "p": right[res].mean(), "pw": right[res & eok & trend].mean(),
+                         "pa": right[res & eok & ~trend].mean(), "yrs": f"{good_years}/{n_years}", "nh": int(hd.sum()),
                          "ph": right[hd].mean() if hd.sum() else np.nan})
         base = np.nanmean(y[~hold])
         L += [f"## {tf} (all candles: up first {base:.0%})", "",

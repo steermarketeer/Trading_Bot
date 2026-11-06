@@ -11,6 +11,11 @@ Entry filters (skip the trade):
                         before, close beyond the band) against the daily trend (daily close vs daily EMA 50)
   R4 thin breakout      breakouts only: breaking-candle volume below its 20-candle average
   R5 against the regime the daily close is on the wrong side of the daily EMA 200 (shown for information)
+  R6 breakout volume below 2x     breakouts: the breaking candle's volume < 2x its 20-candle average (deep study)
+  R7 RSI divergence at a breakout the last 4h candle makes a 30-candle high with RSI > 60 but below the RSI peak of
+                                  25 - 5 candles before (momentum fading)
+  R8 shallow pullback             1D bounces: in the last 4h up-leg (confirmed swing low -> highest high, > 3 ATR) the
+                                  pullback since the high retraced < 0.45 of the leg (the 0.382 pullbacks failed)
 Exit:
   X  1D bounces only: a 4h candle within 3 days touches the 4h middle band (low <= middle + 0.25 ATR) -> exit at the
      next open (the pullback that marked the weak bounces)
@@ -63,10 +68,30 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
              "R3": bool(np.isfinite(rank[j - 5]) and rank[j - 5] <= 0.2 and out_c and (d1.c[jd] - de50[jd]) * d < 0),
              "R4": False,
              "R5": bool((d1.c[jd] - de200[jd]) * d < 0)}
+        f["R6"] = f["R7"] = f["R8"] = False
         if r.setup != "1D bounce":
             tb = tfs[{2: "2h", 4: "4h", 24: "1D"}[int(round(r.tf_h))]]
             jb = tb.closed_before(et) - 1
-            f["R4"] = bool(tb.v[jb] < tb.v[max(0, jb - 20):jb].mean())
+            vavg = tb.v[max(0, jb - 20):jb].mean()
+            f["R4"] = bool(tb.v[jb] < vavg)
+            f["R6"] = bool(tb.v[jb] < 2 * vavg)
+            rr = r4 if d > 0 else 100 - r4                                   # 4h RSI, oriented
+            hh = t4.h if d > 0 else -t4.l
+            prev_peak = np.nanmax(rr[j - 30:j - 5])
+            f["R7"] = bool(hh[j] >= np.max(hh[j - 30:j]) and rr[j] > 60 and prev_peak > rr[j])
+        else:
+            # how deep the pullback was in the last 4h up-leg (confirmed swing low -> highest high since), at the entry
+            lows = [(i, p) for i, p, cf in (t4.sl if d > 0 else t4.sh) if cf <= j]
+            if lows:
+                i_lo, p_lo = lows[-1]
+                seg = t4.h[i_lo:j + 1] if d > 0 else t4.l[i_lo:j + 1]
+                p_hi = seg.max() if d > 0 else seg.min()
+                i_hi = i_lo + int(np.argmax(seg) if d > 0 else np.argmin(seg))
+                after = (t4.l[i_hi:j + 1].min() if d > 0 else t4.h[i_hi:j + 1].max())
+                leg = (p_hi - p_lo) * d
+                if leg > 3 * t4.a[j]:
+                    depth = (p_hi - after) * d / leg
+                    f["R8"] = bool(depth < 0.45)
         net_x, exit_x, kind_x = r.net, r.exit_time, r.kind
         if r.setup == "1D bounce":
             j0 = t4.closed_before(et)
@@ -89,7 +114,10 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
     res = ~D["hold"] & (D["exit_time"] < HOLDOUT)
     names = {"R1": "R1 weak band touch at entry", "R2": "R2 fading momentum (buy RSI < 30 / sell RSI > 70)",
              "R3": "R3 squeeze breakout against the daily trend", "R4": "R4 breakout on thin volume",
-             "R5": "R5 against the daily EMA 200 (information)"}
+             "R5": "R5 against the daily EMA 200 (information)",
+             "R6": "R6 breakout volume below 2x (deep study: 2x works, 1-2x fails)",
+             "R7": "R7 bearish RSI divergence at a breakout (4h)",
+             "R8": "R8 1D bounce after only a shallow 4h pullback (< 0.45 of the leg)"}
     rows = []
     for key, nm in names.items():
         for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
@@ -100,6 +128,7 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
     f2 = lambda v: "" if v != v else f"{v:+.2f}"  # noqa: E731
     base = []
     for nm, col, msk in (("current best version", "net", None), ("+ R1 + R2 + R3 + R4 (all learned filters)", "net", ["R1", "R2", "R3", "R4"]),
+                         ("+ R6 + R7 + R8 (deep-study filters)", "net", ["R6", "R7", "R8"]),
                          ("+ exit X (bounce touches the 4h middle band)", "net_x", None)):
         for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
             g = D[pm]
