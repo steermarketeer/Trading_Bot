@@ -18,10 +18,10 @@ The main rules (structure, levels, liquidity, closes) come first; indicators onl
 |---|---|---|---|
 | **RSI (14)** | **use, as momentum** | 4h RSI crossing above 70 = **up** (59%, all 6 years, holdout 57%); the **first** push above 70 in 50 candles: **69%** (holdout 65%) | selling "overbought" / buying "oversold" (41%, lost every year); selling RSI leaving 70 inside a Bollinger bulge (4h 38%, 1h 41%) |
 | **Volume** | **use, for breakouts** | a 4h 20-candle breakout on **>= 2x volume: 58%** vs 46% without (holdout 53%); closing **> 1 ATR** beyond: 62% (holdout 58%) | "1 - 2x volume fails" (a tendency, not proven) |
-| **Bollinger (20, 2)** | **use, for move strength** | at the upper band, price goes further: 4h with a **bulge (62%)**, **RSI > 75 (64%)**, **the daily also at its band (58%)**; 1h with a close outside, a walk, expanding bands, or the 4h at its band (+3.6 to +4.9 pts). It fails back more often on 1h with an upper wick or the opposite band turning (-3.5 / -3.8 pts) | the band by itself (a tag or close outside is 50 – 52% overall); squeeze breakouts (not proven) |
+| **Bollinger (20, 2)** | **use, for move strength** | at the upper band, price goes further: 4h with a **bulge (62%)**, **RSI > 75 (64%)**, **the daily also at its band (58%)**; 1h with a bulge (58%), RSI > 75 (61%), a close outside, a walk, expanding bands, or the 4h at its band (+3.6 to +4.9 pts). It fails back more often on 1h with an upper wick or the opposite band turning (-3.5 / -3.8 pts). The 4h close outside (52% vs 47%), the 1h opposite band and the 1h '4h at its band' pass the rule only by a nearly flat holdout (within 0.4 pts): weak | the band by itself (about a coin flip on 1h / 4h, 49 – 52%; on the daily band reaches go further 58%, not proven); squeeze breakouts (not proven) |
 | **EMA 20 / 50 / 200** | **context only** | none on 4h / daily. On 1h: an EMA 50 pullback with RSI 40 - 50 (Cardwell range) holds better (51% vs 43%, holdout 56%); the 1h golden / death cross 55% (holdout 51%) | the 4h golden cross (56% but 34% in the holdout), pullbacks to the EMA 20 (4h 45%), the EMA 200 retest (not proven) |
 | **Candlesticks** | **only with context** | a 4h strong full-body candle **with the daily trend: 60%** vs 43% against (holdout 52%); in oversold (RSI < 40) the **1h engulfing (45%)** and the **4h hammer (40%)** fail | any pattern by itself: 40 – 55% on 1h / 4h; a few daily patterns look better (three white soldiers 61%, morning star 61%) on small samples, not proven |
-| **Trendlines** | **mixed, no rule** | steep rejections fail on 4h (40%, holdout 35%) but do better on 1h (51% vs 47%, holdout +5): opposite on the two timeframes, so no usable rule. Rejections overall are 47 – 48% | "3 touches = strong" (not proven; the tendency is the opposite) |
+| **Trendlines** | **mixed, no rule** | steep rejections fail on 4h (40%, holdout 35%) but do better on 1h (51% vs 47%, holdout +5): opposite on the two timeframes, so no usable rule. Rejections overall are 47 – 48% on 1h / 4h (52% on the daily) | "3 touches = strong" (not proven; the tendency is the opposite) |
 | **Market structure** | price action is the main rule | no BOS / CHoCH condition passes (on 1h with ~900 cases each; on 4h / daily the samples are smaller) | |
 | **Fibonacci** | only at confluence | none proven in this test | a level by itself |
 | **MACD** | **drop** | nothing on 4h / daily. On 1h a cross is right 52% (real but too small to use); it does better with expanding bands, volume or liquidity ahead (+5 – 6 pts), which is the context, not MACD | every MACD signal on its own; it repeats the EMAs (0.94) and RSI (0.87) |
@@ -43,9 +43,10 @@ Three rules from the data, before any single indicator:
 
 ### RSI (Wilder, 1978)
 Momentum: the share of up-moves over 14 candles. Wilder used failure swings and divergences, never "70 = sell".
-Cardwell / Brown: in uptrends RSI lives in 40 – 80. **Proven on ETH:** above 70 is strength (59%), above all the first
-push (69%). Selling it is the losing side (41%). Leaving 70 inside a bulge is not a sell (38% right on 4h). Wilder's
-failure swing and RSI divergence: not proven either way.
+Cardwell / Brown: in uptrends RSI lives in 40 – 80. **Proven on ETH, on the 4h:** above 70 is strength (59%), above all
+the first push (69%). Selling it is the losing side (41%). Leaving 70 inside a bulge is not a sell (38% right on 4h, 41%
+on 1h). On the 1h (53%) and the daily (49%) the 70 cross itself is not proven. Wilder's failure swing and RSI
+divergence: not proven either way.
 
 ### Volume
 Participation. Edwards & Magee: real breakouts expand volume. **Proven:** >= 2x volume and a close > 1 ATR beyond the
@@ -56,9 +57,10 @@ candle.
 Two readings: %b (where price is; the same as RSI) and BandWidth (volatility; new information). Bollinger's rules: tags
 are not signals; closes outside are continuation more often than reversal; squeezes precede moves but often start with a
 head fake; the opposite band turning ends a move. **Proven:** strength at the band means the move continues (4h: bulge,
-RSI > 75, the daily at its band; 1h: a close outside, a walk, expanding bands, the 4h at its band), and on 1h an upper
-wick or the opposite band turning means it fails back more often, as Bollinger says. On 4h a close outside is real in
-2020 – 25 (52% vs 47%) but almost flat in the holdout; the 4h upper wick is not confirmed by the holdout. The
+RSI > 75, the daily at its band; 1h: bulge, RSI > 75, a close outside, a walk, expanding bands, the 4h at its band), and
+on 1h an upper wick or the opposite band turning means it fails back more often, as Bollinger says. The 4h close outside
+(52% vs 47%) passes only by a nearly flat holdout (+0.2 pts), as do the 1h opposite band and the 1h '4h at its band'
+(within 0.4 pts): weak. The 4h upper wick is not confirmed by the holdout. The
 two-condition mixes in `reports/bollinger.md` are descriptive only.
 
 ### Moving averages
@@ -68,9 +70,9 @@ Use the daily EMA 200 for the regime and the EMAs for "is there a trend".
 
 ### Candlesticks and candle structure
 No pattern works alone. **Proven:** a 4h strong full-body candle works with the daily trend (60%) and not against it
-(43%); in oversold (RSI < 40) the 1h engulfing (45%) and the 4h hammer (40%) fail. Tendencies (not proven): a hammer
+(43%); in oversold (RSI < 40) the 1h engulfing (45%) and the 4h hammer (40%) fail. Tendencies on the 4h (not proven): a hammer
 just above an untaken low fails (38%), because that low is liquidity and is taken first; an engulfing at the lower band
-does better (56%).
+does better (56%). On the 1h the engulfing at the lower band does slightly worse (48%), so even the tendency is not general.
 
 ### Trendlines
 Mixed: steep lines fail as support on 4h (40%) but hold slightly better on 1h (51%). No usable steepness rule.
@@ -92,8 +94,13 @@ middle band holds on the close (2,200). That matches the trader's read.
 ## What this means for the bot (tested on the trades, `reports/learned.md`)
 Every lesson was turned into a filter before looking at the trades and run on the current best version (100 trades
 2022 - Oct 2025, 27 holdout). **None improved it in a meaningful way.** The weak-band-touch rule skips a single losing
-trade; two rules never fire (the strong-breaking-candle rule already removes those trades); every other rule skips a set
-of trades whose total R is **positive** in both periods, so skipping them loses money. The best version already holds what
-worked in the strategy tests (volume on the breaking candle, which is also proven here; waiting for the 4h close and the
-0.786 bounce stop, which helped in the strategy tests). The losses left are about **liquidity**: targets beyond big
+trade; two rules never fire (fading momentum never occurs on these trades; thin volume is already excluded by the
+strong-breaking-candle rule, which needs >= 1.2x); every other rule skips a set of trades whose total R is **positive** in
+both periods, so skipping them loses money. That includes the proven 2x-volume level: requiring it (R6) skips trades worth
++1.84R and +1.94R. The best version keeps what worked in the strategy tests: the strong breaking candle (>= 1.2x volume,
+body >= 60%, range >= 1.5 ATR) and the 0.786 bounce stop (`reports/fixes.md`). The 4h-close lesson is a strong marker
+(trades whose first 4h close goes back against the entry win 29% vs 59%, `reports/selfreview.md`), but it is only known
+after the entry. The retest entry built on it earned more per trade in 2022 - 25 (+0.82R vs +0.71R) but took only 44
+trades instead of 129, too few for the selection rule (>= 60), and earned less in the holdout (+0.52R vs +0.68R), so it
+was not adopted (`reports/fixes.md`). The losses left are about **liquidity**: targets beyond big
 liquidity (4,099 on 22 Nov 2024) and stops just inside it (5 Dec 2023, 22 Nov 2024).
