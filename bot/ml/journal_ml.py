@@ -236,7 +236,7 @@ def run_journal_ml(cfg: Config, out_dir: Path, rebuild: bool = False) -> Path:
             te = D[(D["decision_time"] >= start) & (D["decision_time"] < end)]
             if per != "holdout":
                 te = te[~te["hold"]]
-            if len(tr) < 1500 or te.empty:
+            if len(tr) < 400 or te.empty:
                 continue
             p, _ = fit_predict(tr, te, cols, "y")
             cut = oof_cut(tr, cols, "y", "net")
@@ -267,6 +267,13 @@ def run_journal_ml(cfg: Config, out_dir: Path, rebuild: bool = False) -> Path:
         ("pw", "per week", lambda v: f"{v:.1f}"), ("win", "win %", _pct), ("avg", "avg R", f2),
         ("pf", "profit factor", lambda v: f"{v:.2f}"), ("eq", "account", lambda v: f"{v:.2f}x"),
         ("mdd", "worst drop", lambda v: f"-{v:.0%}")]), ""]
+    rows = []
+    for (mode, per), g in P.groupby(["mode", "period"]):
+        a, b = stats(g["net"].to_numpy()), stats(g.loc[g["take"], "net"].to_numpy())
+        rows.append({"mode": mode, "per": per, "n": a["n"], "w": a["win"], "a": a["avg"], "nt": b["n"], "wt": b["win"], "at": b["avg"]})
+    L += ["## By year (every scored period is shown)", "", _table(pd.DataFrame(rows), [
+        ("mode", "entry", str), ("per", "period", str), ("n", "all signals", str), ("w", "win %", _pct), ("a", "avg R", f2),
+        ("nt", "model takes", str), ("wt", "win %", _pct), ("at", "avg R", f2)]), ""]
     # which inputs matter (final model on research, gain importance)
     import lightgbm as lgb
     D = X[X["ok_confirm4h"].fillna(False).astype(bool) & ~X["hold"]].copy()
