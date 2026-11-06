@@ -24,7 +24,7 @@ Margins chosen per period (exit when predicted gain from holding < margin, in R)
 | v3.1 filtered: 1D bounces only (base) | holdout | 11 | 55% | +0.65 | 55% | +0.65 | 0% |  |  |  |  |
 | v3.1 filtered: breakouts only (base) | 2022 - Oct 2025 | 78 | 62% | +0.74 | 62% | +0.74 | 0% |  |  |  |  |
 | v3.1 filtered: breakouts only (base) | holdout | 22 | 59% | +0.69 | 59% | +0.69 | 0% |  |  |  |  |
-| all main-rule signals (2 : 1) | 2022 - Oct 2025 | 6743 | 35% | -0.09 | 35% | -0.09 | 0% |  |  |  |  |
+| all main-rule signals (2 : 1) | 2022 - Oct 2025 | 6731 | 35% | -0.09 | 35% | -0.09 | 0% |  |  |  |  |
 | all main-rule signals (2 : 1) | holdout | 1658 | 32% | -0.19 | 32% | -0.19 | 0% |  |  |  |  |
 
 ## By year (v3.1 filtered, entry at signal, fixed target)
@@ -64,20 +64,20 @@ Margins chosen per period (exit when predicted gain from holding < margin, in R)
 
 ## Does the model see anything? (trained on trades ended before Nov 2023, tested on 2024 - Oct 2025)
 
-Rank correlation between predicted and actual gain from holding: **-0.029** (40,316 4h closes). If the model saw something, the actual gain would rise from group 1 to group 10.
+Rank correlation between predicted and actual gain from holding: **-0.020** (38,678 4h closes). If the model saw something, the actual gain would rise from group 1 to group 10.
 
 | group (1 = model most wants to exit) | predicted gain from holding | actual gain from holding | 4h closes |
 |---|---|---|---|
-| 1 | -0.49 | +0.26 | 4,032 |
-| 2 | -0.30 | +0.14 | 4,032 |
-| 3 | -0.19 | +0.14 | 4,031 |
-| 4 | -0.10 | +0.19 | 4,032 |
-| 5 | -0.02 | +0.12 | 4,031 |
-| 6 | +0.07 | +0.06 | 4,032 |
-| 7 | +0.15 | +0.01 | 4,031 |
-| 8 | +0.25 | +0.08 | 4,032 |
-| 9 | +0.39 | +0.07 | 4,031 |
-| 10 | +0.65 | +0.20 | 4,032 |
+| 1 | -0.49 | +0.23 | 3,868 |
+| 2 | -0.29 | +0.11 | 3,868 |
+| 3 | -0.18 | +0.11 | 3,868 |
+| 4 | -0.09 | +0.17 | 3,867 |
+| 5 | -0.01 | +0.09 | 3,868 |
+| 6 | +0.07 | +0.06 | 3,868 |
+| 7 | +0.16 | -0.00 | 3,867 |
+| 8 | +0.26 | +0.09 | 3,868 |
+| 9 | +0.39 | +0.07 | 3,868 |
+| 10 | +0.66 | +0.19 | 3,868 |
 
 ## Your failure signals on their own (2022 - Oct 2025): average gain from HOLDING after the signal
 
@@ -85,11 +85,11 @@ Positive = holding on to the stop / target still earned more than closing at tha
 
 | signal at a 4h close | 4h closes | gain from holding when present | when absent |
 |---|---|---|---|
-| 1h failure (lower high, close below pullback low) on this close | 16802 | +0.09 | +0.14 |
-| 1h failure after the trade was +0.5R | 11660 | +0.10 | +0.14 |
-| 4h failure on this close | 6415 | +0.13 | +0.13 |
-| daily failure since the peak | 20647 | +0.28 | +0.10 |
-| 3+ 4h rejections at the trade's top | 51310 | +0.15 | +0.12 |
-| sweep of the top (wick above, close back below), 4h | 75368 | +0.12 | +0.16 |
-| v3.1 trades: daily failure since the peak | 11277 | +0.35 | +0.24 |
+| 1h failure (lower high, close below pullback low) on this close | 16595 | +0.08 | +0.14 |
+| 1h failure after the trade was +0.5R | 11524 | +0.09 | +0.13 |
+| 4h failure on this close | 6304 | +0.12 | +0.13 |
+| daily failure since the peak | 20056 | +0.26 | +0.09 |
+| 3+ 4h rejections at the trade's top | 50038 | +0.15 | +0.11 |
+| sweep of the top (wick above, close back below), 4h | 73922 | +0.12 | +0.15 |
+| v3.1 trades: daily failure since the peak | 11124 | +0.34 | +0.23 |
 

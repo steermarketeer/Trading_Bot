@@ -13,9 +13,10 @@ Long (PB)  after the daily signal, within 18 4h candles (3 days): the first 4h c
   PBL      the same, and the pullback candle swept an untaken 1h swing low (wick below it, close back above it).
   targets  O  the original v3.1 target price      3  3R of the new risk      T  the top before the pullback (the
            highest high since the signal, where the buyers' stops rest), if >= 1.2R, else 3R
-  no pullback: skip (S) or enter at the daily close as now (N).
+  no pullback: skip (S), or (N) enter at the daily close as now and, if the pullback signal comes, close that trade at
+           the next open and take the pullback trade (both legs at the same account risk; no hindsight).
 Short (SH) a 4h Bollinger failure at the top (a close above the upper band in the 3 candles before, then a close back
-           inside) from 6 candles before the daily signal until the long's pullback trigger. Short at the next open,
+           inside) after the daily signal and before the long's pullback trigger. Short at the next open,
            stop 0.1% above the highest high of the last 6 4h candles, exit at the next open after the long's trigger
            close (flip), or after 24 4h candles at the open, or at the stop.
 Choice on 2022 - Oct 2025 (best t-score, >= 25 trades, >= 3 good years); holdout once. Costs and funding as everywhere.
@@ -39,7 +40,7 @@ from .sr2_run import _pct, _table
 
 HOLDOUT = pd.Timestamp("2025-11-01")
 W = 18
-SH_BACK, SH_MAX = 6, 24
+SH_MAX = 24
 
 
 def replay(M, i0, end, d, e, s, tg=None, fx=None):
@@ -131,6 +132,11 @@ def run_pullback(cfg: Config, out_dir: Path) -> Path:
             if i0 >= len(t5):
                 continue
             e = M["O"][i0]; e_ = d * e
+            # the tradeable fallback: the daily-close trade, closed at this open when the pullback signal comes
+            Rc, xc, kc = replay(M, st, end0, d, P, s0, tg0, i0)
+            netc, xtc = booked(M, st, xc, kc, d, Rc, rk / P)
+            rows.append({**base, "entry": f"{mode}_cut", "stopm": "orig", "target": "3", "net": netc, "kind": kc,
+                         "decision_time": pd.Timestamp(t5[st]), "exit_time": xtc, "stop_pct": rk / P, "rr": 3.0})
             end = min(len(t5), i0 + MAX_TF_BARS * 288)
             top_all = max(top_, max(h4[j0:j + 1]))
             for sm, s_ in (("tight", min(l4[j], mid4[j]) - 0.25 * t4.a[j]), ("orig", s0_)):
@@ -146,7 +152,7 @@ def run_pullback(cfg: Config, out_dir: Path) -> Path:
                                  "decision_time": pd.Timestamp(t5[i0]), "exit_time": xt, "stop_pct": risk / e, "rr": (tgt_ - e_) / risk})
         # the short first: a Bollinger failure at the 4h top before the long's trigger
         jt = trig["PB"][0] if trig["PB"] is not None else min(t4.n - 1, j0 + W)
-        for kk in range(max(4, j0 - SH_BACK), jt):
+        for kk in range(max(4, j0), jt):                                   # only after the daily signal exists
             if c4[kk] < up4[kk] and np.any(c4[kk - 3:kk] > up4[kk - 3:kk]):
                 i0 = int(np.searchsorted(t5, t4.ct[kk]))
                 e = M["O"][i0]
@@ -177,11 +183,12 @@ def _rule_sets(R_):
     for mode, sm, tm, fb in itertools.product(("PB", "PBL"), ("tight", "orig"), ("O", "3", "T"), ("S", "N")):
         g = R_[(R_["entry"] == mode) & (R_["stopm"] == sm) & (R_["target"] == tm)]
         if fb == "N":
-            g = pd.concat([g, now[~now["sig"].isin(g["sig"])]])
+            cut = R_[R_["entry"] == f"{mode}_cut"]
+            g = pd.concat([g, cut[cut["sig"].isin(g["sig"])], now[~now["sig"].isin(g["sig"])]])
         name = (f"{'4h middle band holds' if mode == 'PB' else '4h middle band holds + sweep of a 1h low'} · "
                 f"{'stop under the pullback' if sm == 'tight' else 'original stop'} · "
                 f"{dict(O='original target', T='target the top before the pullback', **{'3': '3R'})[tm]} · "
-                f"{'no pullback: skip' if fb == 'S' else 'no pullback: enter as now'}")
+                f"{'no pullback: skip' if fb == 'S' else 'enter as now, switch at the pullback'}")
         sets[name] = g
     return sets
 

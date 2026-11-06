@@ -440,7 +440,7 @@ def write_report(P: pd.DataFrame, mdl, cols, margins, out_dir: Path) -> Path:
               ("all main-rule signals (2 : 1)", P["src"] == "pool")]
     rows = []
     for name, m in groups:
-        for scope, sm in (("2022 - Oct 2025", P["period"] != "holdout"), ("holdout", P["period"] == "holdout")):
+        for scope, sm in (("2022 - Oct 2025", (P["period"] != "holdout") & (P["exit_time"] < HOLDOUT)), ("holdout", P["period"] == "holdout")):
             g = P[m & sm]
             if g.empty:
                 continue
@@ -460,7 +460,8 @@ def write_report(P: pd.DataFrame, mdl, cols, margins, out_dir: Path) -> Path:
         ("w1", "win % (ML manager)", _pct), ("a1", "avg R (ML manager)", f2), ("ex", "closed early by ML", _pct),
         ("eq0", "account (hold)", acc), ("dd0", "worst drop", dd), ("eq1", "account (ML)", acc), ("dd1", "worst drop", dd)]), ""]
     rows = []
-    for (per,), g in P[(P["src"] == "v31") & P["filtered"] & (P["variant"] == "base")].groupby(["period"]):
+    keep = (P["period"] == "holdout") | (P["exit_time"] < HOLDOUT)
+    for (per,), g in P[(P["src"] == "v31") & P["filtered"] & (P["variant"] == "base") & keep].groupby(["period"]):
         a, b = stats(g["net"].to_numpy()), stats(g["net_ml"].to_numpy())
         rows.append({"per": per, "n": a["n"], "w0": a["win"], "a0": a["avg"], "w1": b["win"], "a1": b["avg"]})
     L += ["## By year (v3.1 filtered, entry at signal, fixed target)", "", _table(pd.DataFrame(rows), [
@@ -485,7 +486,7 @@ def diagnose(cols) -> list[str]:
     S = S.merge(T[["tid", "decision_time", "exit_time", "src"]], on="tid")
     S["w"] = 1.0 / np.sqrt(S["tid"].map(S.groupby("tid").size()))
     tr = S[S["exit_time"] < pd.Timestamp("2023-11-01")]
-    te = S[(S["decision_time"] >= pd.Timestamp("2024-01-01")) & (S["decision_time"] < HOLDOUT)]
+    te = S[(S["decision_time"] >= pd.Timestamp("2024-01-01")) & (S["exit_time"] < HOLDOUT)]
     mdl = lgb.train(PARAMS, lgb.Dataset(tr[cols].to_numpy(float), tr["y"].clip(-4, 4), weight=tr["w"]), ROUNDS)
     p = mdl.predict(te[cols].to_numpy(float))
     te = te.assign(p=p, dec=pd.qcut(p, 10, labels=False) + 1)
@@ -498,7 +499,7 @@ def diagnose(cols) -> list[str]:
            _table(D, [("dec", "group (1 = model most wants to exit)", lambda v: f"{int(v)}"),
                       ("pred", "predicted gain from holding", f2), ("actual", "actual gain from holding", f2),
                       ("n", "4h closes", lambda v: f"{int(v):,}")]), ""]
-    R = S[S["decision_time"] < HOLDOUT]
+    R = S[S["exit_time"] < HOLDOUT]
     rows = []
     for name, on in (("1h failure (lower high, close below pullback low) on this close", R["fail_1h_now"] > 0),
                      ("1h failure after the trade was +0.5R", (R["fail_1h_now"] > 0) & (R["mfe"] >= 0.5)),
