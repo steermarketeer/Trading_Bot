@@ -91,12 +91,36 @@ def concept(t: TF, y, hold, late, years, tf) -> list[str]:
                         ev[conf][0 if side > 0 else 1].append((jd, 1))   # held: claim the trend direction
                     elif np.all(seq <= 0):
                         ev[conf][0 if side > 0 else 1].append((jd, -1))  # failed: claim against it
-            j = q + 1
+            j = q if c[q] > up[q] else q + 1                             # a touch that is also a pump starts a new sequence
+    base = {"touch": 0, "new pump": 0}
+    for side in (1, -1):
+        c, h, l = (t.c, t.h, t.l) if side > 0 else (-t.c, -t.l, -t.h)
+        up, mid = (t.up, t.mid) if side > 0 else (-t.lo, -t.mid)
+        k = 26
+        while k < t.n - 1:
+            # a start: an upper-half candle that is not a pump, does not touch the middle band, no pump in the 20 before
+            if (late[k] or hold[k] or years[k] < 2020 or not np.isfinite(t.a[k]) or not c[k] > mid[k] or c[k] > up[k]
+                    or l[k] <= mid[k] + 0.25 * t.a[k] or np.any(c[k - 20:k] > up[k - 20:k])):
+                k += 1; continue
+            q = k + 1
+            while q < t.n and q - k <= 20 and c[q] > mid[q] and not (l[q] <= mid[q] + 0.25 * t.a[q]) and not c[q] > up[q]:
+                q += 1
+            if q >= t.n or q - k > 20 or q - k - 1 < 3:
+                k = q if q > k else k + 1; continue
+            if c[q] > up[q] and not (l[q] <= mid[q] + 0.25 * t.a[q]):
+                base["new pump"] += 1
+            else:
+                base["touch"] += 1
+            k = q + 1                                                    # no overlapping stretches
     out = [f"### {tf}: the trader's concept, all of it", "",
            f"After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in "
            f"**{first['touch']}** cases, made a new pump (close beyond the outer band) without touching it in **{first['new pump']}**, "
            f"and did neither within 20 candles in {first['neither']}. "
-           f"So it came to the middle band first **{first['touch'] / max(1, first['touch'] + first['new pump']):.0%}** of the time.", ""]
+           f"So it came to within 0.25 ATR of the middle band first {first['touch'] / max(1, first['touch'] + first['new pump']):.0%} of the time. "
+           f"**That is the normal rate, not something the pump causes:** upper-half stretches with no pump in the 20 candles before "
+           f"came to the middle band first {base['touch'] / max(1, base['touch'] + base['new pump']):.0%} of the time "
+           f"({base['touch']} vs {base['new pump']}). The middle band is a 20-candle average and rises toward price during "
+           f"sideways, and a touch (a wick within 0.25 ATR) is easier than a new close beyond the outer band.", ""]
     rows = []
     for conf in (0, 2):
         n = t.n
@@ -119,12 +143,17 @@ def concept(t: TF, y, hold, late, years, tf) -> list[str]:
             okr = ~hold & ~late
             pv = event_pvalue(y[okr], mu[okr], md[okr])
             rows.append({"conf": "touch candle's close" if conf == 0 else "+ 2 confirming closes", "ev": label,
-                         "n": int(rs.sum()), "p": right[rs].mean() if rs.sum() else np.nan, "pv": pv,
+                         "n": int(rs.sum()), "p": right[rs].mean() if rs.sum() else np.nan,
+                         "pv": _pv_fmt(pv, int(mu.sum() + md.sum())),
                          "nh": int(hd.sum()), "ph": right[hd].mean() if hd.sum() else np.nan})
     out += [_table(pd.DataFrame(rows), [("conf", "decided on", str), ("ev", "event", str), ("n", "cases 2020-25", str),
-                                        ("p", "right", _pct), ("pv", "chance it is noise", lambda v: f"{v:.3f}"),
+                                        ("p", "right", _pct), ("pv", "chance it is noise", str),
                                         ("nh", "holdout cases", str), ("ph", "holdout right", _pct)]), ""]
     return out
+
+
+def _pv_fmt(v, n):
+    return "not tested (n < 20)" if n < 20 else f"{v:.3f}"
 
 
 def run_bb_pause(cfg: Config, out_dir: Path) -> Path:

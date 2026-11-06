@@ -27,16 +27,16 @@ From the touch close, over the next 30 candles, until a close below the touch ca
 
 ### 4h: the trader's concept, all of it
 
-After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in **365** cases, made a new pump (close beyond the outer band) without touching it in **77**, and did neither within 20 candles in 6. So it came to the middle band first **83%** of the time.
+After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in **366** cases, made a new pump (close beyond the outer band) without touching it in **77**, and did neither within 20 candles in 6. So it came to within 0.25 ATR of the middle band first 83% of the time. **That is the normal rate, not something the pump causes:** upper-half stretches with no pump in the 20 candles before came to the middle band first 78% of the time (119 vs 33). The middle band is a 20-candle average and rises toward price during sideways, and a touch (a wick within 0.25 ATR) is easier than a new close beyond the outer band.
 
 | decided on | event | cases 2020-25 | right | chance it is noise | holdout cases | holdout right |
 |---|---|---|---|---|---|---|
-| touch candle's close | held the middle band -> claim: pump again | 266 | 49% | 0.813 | 44 | 52% |
+| touch candle's close | held the middle band -> claim: pump again | 267 | 49% | 0.783 | 44 | 52% |
 | touch candle's close | failed to hold -> claim: dump | 86 | 56% | 0.302 | 15 | 47% |
-| touch candle's close | both halves together | 352 | 51% | 0.731 | 59 | 51% |
-| + 2 confirming closes | held the middle band -> claim: pump again | 172 | 41% | 0.017 | 25 | 48% |
+| touch candle's close | both halves together | 353 | 51% | 0.781 | 59 | 51% |
+| + 2 confirming closes | held the middle band -> claim: pump again | 173 | 40% | 0.010 | 25 | 48% |
 | + 2 confirming closes | failed to hold -> claim: dump | 62 | 61% | 0.062 | 9 | 44% |
-| + 2 confirming closes | both halves together | 234 | 46% | 0.314 | 34 | 47% |
+| + 2 confirming closes | both halves together | 235 | 46% | 0.282 | 34 | 47% |
 
 ## 1D
 
@@ -63,7 +63,7 @@ From the touch close, over the next 30 candles, until a close below the touch ca
 
 ### 1D: the trader's concept, all of it
 
-After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in **65** cases, made a new pump (close beyond the outer band) without touching it in **13**, and did neither within 20 candles in 0. So it came to the middle band first **83%** of the time.
+After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in **65** cases, made a new pump (close beyond the outer band) without touching it in **13**, and did neither within 20 candles in 0. So it came to within 0.25 ATR of the middle band first 83% of the time. **That is the normal rate, not something the pump causes:** upper-half stretches with no pump in the 20 candles before came to the middle band first 81% of the time (25 vs 6). The middle band is a 20-candle average and rises toward price during sideways, and a touch (a wick within 0.25 ATR) is easier than a new close beyond the outer band.
 
 | decided on | event | cases 2020-25 | right | chance it is noise | holdout cases | holdout right |
 |---|---|---|---|---|---|---|
@@ -71,7 +71,7 @@ After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touche
 | touch candle's close | failed to hold -> claim: dump | 20 | 55% | 0.666 | 2 | 0% |
 | touch candle's close | both halves together | 64 | 59% | 0.110 | 6 | 17% |
 | + 2 confirming closes | held the middle band -> claim: pump again | 35 | 57% | 0.354 | 3 | 33% |
-| + 2 confirming closes | failed to hold -> claim: dump | 12 | 67% | 1.000 | 0 | - |
+| + 2 confirming closes | failed to hold -> claim: dump | 12 | 67% | not tested (n < 20) | 0 | - |
 | + 2 confirming closes | both halves together | 47 | 60% | 0.165 | 3 | 33% |
 
 Daily up-version events (touch holds after a pump and sideways): 2020-04-13, 2020-05-07, 2020-06-11, 2020-08-19, 2020-10-16, 2020-10-26, 2021-01-11, 2021-05-16, 2021-08-18, 2021-10-27, 2021-11-14, 2022-07-26, 2023-01-29, 2023-03-27, 2023-04-09, 2023-11-14, 2024-01-18, 2024-03-15, 2024-12-09, 2025-05-25, 2025-08-19, 2026-01-19, 2026-04-23, 2026-09-07, 2026-10-02
