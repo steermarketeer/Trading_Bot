@@ -1,6 +1,7 @@
 """
-Execution handlers. Paper execution fills on 5m candles with exactly the backtests' cost model, so paper results are
-comparable with the research numbers. The exchange adapter is an interface with retry / backoff and a market fallback;
+Execution handlers. Paper execution fills on 5m candles with the backtests' cost model (fees, slippage, the limit
+buffer, stop-before-target, the 60-candle time exit, and funding when the live loop calls apply_funding at the funding
+times), so paper results are comparable with the research numbers to within 0.001R per trade. The exchange adapter is an interface with retry / backoff and a market fallback;
 it is wired to nothing unless LIVE=1 is set and an adapter is passed in (no keys live in this repository).
 
 Fill model (same as bot/ml/targets.py): market = taker 0.04% + 5 bps slippage per side; a limit target counts as
@@ -27,6 +28,7 @@ class Order:
     entry: float                   # the next open (reference price)
     stop: float
     target: float
+    expires_at: object = None      # time of the last allowed candle (60 candles of the setup's timeframe); exit at its close
 
 
 @dataclass
@@ -69,7 +71,8 @@ class PaperExecution:
         return f
 
     def on_candle(self, o: float, h: float, l: float, c: float, now) -> list[Fill]:
-        """Check every open order against a closed 5m candle: stop first, then the limit target."""
+        """Check every open order against a closed 5m candle: stop first, then the limit target, then the time exit
+        (at the close of the order's last allowed candle, market cost) - the same order as the backtest replay."""
         out = []
         for key, od in list(self.open.items()):
             d = 1 if od.side == "long" else -1
@@ -84,6 +87,20 @@ class PaperExecution:
             elif hit_t:
                 out.append(Fill(key, "target", od.target, od.qty, od.qty * od.target * 0.0002, now))
                 self.open.pop(key)
+            elif od.expires_at is not None and now >= od.expires_at:
+                px = c * (1 - d * 0.0005)
+                out.append(Fill(key, "time", px, od.qty, od.qty * px * 0.0004, now))
+                self.open.pop(key)
+        self.fills.extend(out)
+        return out
+
+    def apply_funding(self, rate: float, price: float, now) -> list[Fill]:
+        """At each funding time (00:00 / 08:00 / 16:00 UTC): longs pay a positive rate, shorts receive it. Recorded as
+        a Fill of kind "funding" with the signed amount in `fee`, so paper P&L matches the backtests' funding charge."""
+        out = []
+        for key, od in self.open.items():
+            d = 1 if od.side == "long" else -1
+            out.append(Fill(key, "funding", price, od.qty, od.qty * price * rate * d, now))
         self.fills.extend(out)
         return out
 
@@ -91,10 +108,11 @@ class PaperExecution:
 # ---------------------------------------------------------------------- exchange adapter (interface + retry logic)
 class ExchangeClient(Protocol):
     async def post_only_limit(self, side: str, qty: float, price: float) -> str: ...
-    async def market(self, side: str, qty: float) -> str: ...
-    async def is_filled(self, order_id: str) -> bool: ...
-    async def cancel(self, order_id: str) -> None: ...
+    async def market(self, side: str, qty: float) -> tuple[str, float]: ...      # (order id, average fill price)
+    async def filled_qty(self, order_id: str) -> float: ...
+    async def cancel(self, order_id: str) -> float: ...                         # returns the quantity filled so far
     async def set_stop(self, side: str, qty: float, stop: float) -> str: ...
+    async def close_market(self, side: str, qty: float) -> tuple[str, float]: ...
 
 
 async def with_retry(fn, *args, attempts: int = 4, base: float = 0.5, on_error=None):
@@ -119,17 +137,32 @@ class ExchangeExecution:
     on_error: object = None
 
     async def submit(self, order: Order, now) -> Fill:
+        """Post-only limit; after wait_s, cancel and market the UNFILLED remainder; then the stop goes on the exchange.
+        If the stop cannot be placed, the position is closed at market and the error is raised: never open without a
+        stop. The fill price is the real average price read back from the exchange."""
         oid = await with_retry(self.client.post_only_limit, order.side, order.qty, order.entry, on_error=self.on_error)
         deadline = asyncio.get_event_loop().time() + self.wait_s
+        filled, avg_px, fee = 0.0, order.entry, 0.0
         while asyncio.get_event_loop().time() < deadline:
-            if await with_retry(self.client.is_filled, oid, on_error=self.on_error):
-                await with_retry(self.client.set_stop, order.side, order.qty, order.stop, on_error=self.on_error)
-                return Fill(order.key, "entry", order.entry, order.qty, order.qty * order.entry * 0.0002, now)
+            filled = await with_retry(self.client.filled_qty, oid, on_error=self.on_error)
+            if filled >= order.qty * 0.999:
+                break
             await asyncio.sleep(1.0)
-        await with_retry(self.client.cancel, oid, on_error=self.on_error)
-        await with_retry(self.client.market, order.side, order.qty, on_error=self.on_error)
-        await with_retry(self.client.set_stop, order.side, order.qty, order.stop, on_error=self.on_error)
-        return Fill(order.key, "entry", order.entry, order.qty, order.qty * order.entry * C_MKT, now)
+        if filled < order.qty * 0.999:
+            filled = await with_retry(self.client.cancel, oid, on_error=self.on_error)
+            rem = order.qty - filled
+            if rem > 0:
+                _, px = await with_retry(self.client.market, order.side, rem, on_error=self.on_error)
+                avg_px = (filled * order.entry + rem * px) / order.qty
+                fee = filled * order.entry * 0.0002 + rem * px * 0.0004
+        else:
+            fee = order.qty * order.entry * 0.0002
+        try:
+            await with_retry(self.client.set_stop, order.side, order.qty, order.stop, on_error=self.on_error)
+        except Exception:
+            await with_retry(self.client.close_market, order.side, order.qty, on_error=self.on_error)
+            raise
+        return Fill(order.key, "entry", avg_px, order.qty, fee, now)
 
     async def flatten(self, key: str, price: float, now) -> Fill:
         raise NotImplementedError("wired per adapter: close the position at market, cancel its stop")

@@ -3,7 +3,7 @@ Circuit breaker: a small state machine that decides whether the bot may trade, m
 Pure logic (the caller feeds it events: candles, API results, heartbeats, the kill-switch file state). Manual reset only.
 
 States: RUN -> HALT (no new entries, open positions keep their stops) -> FLATTEN (close everything at market).
-Trips to HALT: stale data (missed 5m candles), repeated API errors, a daily / weekly risk stop.
+Trips to HALT: stale data (>= 2 missed 5m candles), repeated API errors, a daily / weekly risk stop.
 Trips to FLATTEN: a flash move (5m range > k x ATR_5m, or a gap > g%), the kill switch, a lost heartbeat.
 """
 from __future__ import annotations
@@ -50,7 +50,8 @@ class CircuitBreaker:
 
     # ------------------------------------------------------------------ events
     def on_candle(self, close_time: datetime, o: float, h: float, l: float, prev_close: float, atr_5m: float) -> None:
-        """A closed 5m candle. Flash move -> FLATTEN. Also clears the stale-data condition."""
+        """A closed 5m candle. atr_5m = ATR(14) of the 14 closed candles BEFORE this one (not including it);
+        prev_close = the previous candle's close. Flash move / gap -> FLATTEN; a data gap of >= 2 missed candles -> HALT."""
         now = close_time
         if self.last_candle_close is not None:
             missed = int((close_time - self.last_candle_close) / timedelta(minutes=5)) - 1

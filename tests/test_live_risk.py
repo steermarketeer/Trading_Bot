@@ -137,3 +137,38 @@ def test_paper_execution_fills_like_the_backtest():
     px = PaperExecution(); asyncio.run(px.submit(o, T0))
     fills = px.on_candle(1970, 1975, 1960, 1965, T0)
     assert fills[0].kind == "stop" and fills[0].price == pytest.approx(1970 * (1 - 0.0005))
+
+
+def test_daily_stop_latches_until_the_roll():
+    rm = RiskManager()
+    st = AccountState(9_550, 10_000, 10_000)                             # down 4.5%
+    assert not rm.check(sig(), st, 0.03).ok
+    st.equity = 9_650                                                    # recovers to -3.5% the same day
+    d = rm.check(sig(), st, 0.03)
+    assert not d.ok and d.reason.startswith("halted: daily stop")
+    rm.roll_day(st)
+    assert rm.check(sig(), st, 0.03).ok
+    # mark() trips the latch without a signal
+    st = AccountState(9_100, 9_100, 10_000)
+    rm.mark(st)
+    assert st.halted_reason.startswith("weekly stop")
+    rm.roll_week(st)
+    assert st.halted_reason is None
+
+
+def test_paper_time_exit_and_funding_match_the_backtest_model():
+    px = PaperExecution()
+    o = Order("k", "long", 1.0, 2000.0, 1980.0, 2040.0, expires_at=T0 + timedelta(hours=10))
+    asyncio.run(px.submit(o, T0))
+    # funding at 08:00: a long pays a positive rate on qty * price
+    f = px.apply_funding(0.0001, 2010.0, T0 + timedelta(hours=8))
+    assert f[0].kind == "funding" and f[0].fee == pytest.approx(1.0 * 2010.0 * 0.0001)
+    # before the deadline nothing happens; at the deadline the trade exits at the close with market cost
+    assert px.on_candle(2005, 2010, 2000, 2008, T0 + timedelta(hours=9, minutes=55)) == []
+    fills = px.on_candle(2005, 2010, 2000, 2008, T0 + timedelta(hours=10))
+    assert fills[0].kind == "time" and fills[0].price == pytest.approx(2008 * (1 - 0.0005))
+    assert px.open == {}
+    # a short receives funding
+    px = PaperExecution(); asyncio.run(px.submit(Order("s", "short", 2.0, 2000.0, 2020.0, 1960.0), T0))
+    f = px.apply_funding(0.0001, 2000.0, T0)
+    assert f[0].fee == pytest.approx(-2.0 * 2000.0 * 0.0001)

@@ -63,7 +63,7 @@ class OpenPosition:
 
 @dataclass
 class AccountState:
-    equity: float
+    equity: float                  # realised + unrealised (mark-to-market), supplied by the live loop every candle
     day_open_equity: float
     week_open_equity: float
     positions: dict = field(default_factory=dict)     # key -> OpenPosition
@@ -107,12 +107,15 @@ class RiskManager:
             return Decision(False, "target is not beyond the entry")
         if sig.stop_pct < self.lim.min_stop_pct:
             return Decision(False, f"stop {sig.stop_pct:.2%} < minimum {self.lim.min_stop_pct:.2%}")
+        # the daily / weekly stops LATCH: once tripped, no entries until the day / week rolls (not on a recovery)
         day_loss = 1 - st.equity / st.day_open_equity if st.day_open_equity > 0 else 0.0
         if day_loss >= self.lim.daily_stop:
-            return Decision(False, f"daily stop: down {day_loss:.1%} today")
+            st.halted_reason = f"daily stop: down {day_loss:.1%} today"
+            return Decision(False, st.halted_reason)
         week_loss = 1 - st.equity / st.week_open_equity if st.week_open_equity > 0 else 0.0
         if week_loss >= self.lim.weekly_stop:
-            return Decision(False, f"weekly stop: down {week_loss:.1%} this week")
+            st.halted_reason = f"weekly stop: down {week_loss:.1%} this week"
+            return Decision(False, st.halted_reason)
         key = f"{sig.decision_time}|{sig.side}"
         if key in st.positions:
             return Decision(False, "one position per move: already in this move")
@@ -165,3 +168,12 @@ class RiskManager:
         st.week_open_equity = st.equity
         if st.halted_reason and st.halted_reason.startswith("weekly stop"):
             st.halted_reason = None
+
+    def mark(self, st: AccountState) -> None:
+        """Call after every equity update: trips the daily / weekly latch even when no signal arrives."""
+        day_loss = 1 - st.equity / st.day_open_equity if st.day_open_equity > 0 else 0.0
+        week_loss = 1 - st.equity / st.week_open_equity if st.week_open_equity > 0 else 0.0
+        if not st.halted_reason and week_loss >= self.lim.weekly_stop:
+            st.halted_reason = f"weekly stop: down {week_loss:.1%} this week"
+        elif not st.halted_reason and day_loss >= self.lim.daily_stop:
+            st.halted_reason = f"daily stop: down {day_loss:.1%} today"

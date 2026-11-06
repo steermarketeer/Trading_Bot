@@ -48,7 +48,9 @@ target T = entry + d * 2 * |entry - S|
 ```
 strong daily zone Z (3+ swings or a weekly swing) tested >= 4 times; touch candle t with bounce volume >= 0.8 x touch
 confirmed by the next daily close on the bounce side;  entry = next open
-stop S = min(L_t, F_0.786 of the 1h leg) * (1 - 0.001)   # bounce stop below the 0.786 (PROVEN: +0.71 -> +0.79R)
+stop S = F_0.786 of the 1h leg - d * 0.001 * entry     # the 0.786 REPLACES the v3.1 stop (tighter in 37 of 62
+                                                        # bounces); v3.1 stop only if the 0.786 is not beyond the entry
+                                                        # PROVEN: +0.71 -> +0.79R, holdout +0.68 -> +1.02R
 target T = entry + d * 3 * |entry - S|
 ```
 
@@ -91,7 +93,7 @@ difference here is the **HTF pool**: price must have taken real liquidity. This 
 - PROVEN (strategy rule): skip when ATR% is in the bottom 20% of the timeframe's research distribution.
 - LEAD: volatility shock (signal candle >= 2.5 ATR) - no edge in our trades; the 27 Mar 2023 "wait it out" is judgment.
 - NONE as a signal, LEAD as context: squeeze (BandWidth in the lowest 20% of 120) → the breakout is often a head
-  fake; bulge / expanding bands → continuation (`bollinger.md` 62% vs 47%). Used as a context flag in logs.
+  fake; a bulge (BandWidth in the top 20%) → continuation (`bollinger.md` 62% vs 47%; expanding bands alone: no edge). Used as a context flag in logs.
 - Donchian / Bollinger "squeeze release" as an entry: UNTESTED; add to the fair-test queue, not to the engine.
 
 ### 1.6 Patterns
@@ -106,12 +108,13 @@ risk fraction  r = 0.02 (breakout, bounce), 0.04 (A+ breakout)          # PROVEN
 stop distance  Δ = |entry - S|  (price-action stop; never a fixed % or ATR multiple)
 quantity       q = r * E / Δ                                               # fixed-fractional, volatility-adaptive via Δ
 leverage cap   q * entry <= 5 * E   (then q is cut)                        # PROVEN (strategy rule)
-Kelly check    f* = p - (1 - p) / b   with p = 0.59, b = avg win / avg loss ≈ 2.1  →  f* ≈ 0.39
+Kelly check    f* = p - (1 - p) / b   with p = 0.59, b = avg win / avg loss = 2.08 / 1.06 ≈ 2.0  →  f* ≈ 0.38
                we use ~1/20 Kelly: p on 162 trades is uncertain by ±8 points, and 1/4 Kelly would still be ~10%
-daily stop     halt new entries when (realised + unrealised) loss today >= 4% of the day's opening equity
-weekly stop    halt when the week's loss >= 8%
+daily stop     halt new entries when (realised + unrealised) loss today >= 4% of the day's opening equity; LATCHED
+               until the day rolls (a recovery during the day does not re-enable entries)
+weekly stop    the same at 8% of the week's opening equity, latched until the week rolls
 exposure       sum of open notional <= 5 * E;  one position per move (same candle + direction deduplicated)
-VaR (1 day)    VaR_99 = Σ notional_i * 2.33 * σ_daily,  σ_daily ≈ ATR_1D / price;  cap VaR_99 at 35% of E (= the 5x
+VaR (1 day)    VaR_99 = Σ notional_i * 2.326 * σ_daily,  σ_daily ≈ ATR_1D / price;  cap VaR_99 at 35% of E (= the 5x
                cap at 3% volatility; in higher volatility it bites first and cuts the size, never below 25% of plan)
 trailing stop  Chandelier: S_t = max(S_{t-1}, HH_n - 3 * ATR_1D) for longs (mirror for shorts), armed only after
                the trade reached +1R.  UNTESTED on our trades; the evidence so far says fixed targets beat early
@@ -127,18 +130,20 @@ DataHandler       bot/refresh.py + bot/data.py (REST klines, funding, OI; retrie
 StrategyEngine    bot/live/v3.py generate_signals on closed candles → Signal(setup, side, entry, stop, target, tf,
                   context flags: breaking-candle quality, ceiling, squeeze/bulge, 4h-close confirmation)
 RiskManager       bot/live/risk.py: size, limits, daily/weekly stops, exposure, VaR, (Chandelier, off)
-ExecutionHandler  bot/live/execution.py: PaperExecution (5m-candle fills with the same cost model as the backtests:
-                  taker 0.04% + 5 bps slippage, limit targets need 0.02% through) and a Binance adapter behind a flag
-                  (post-only limit at the next open with a market fallback after N seconds; retries with backoff)
+ExecutionHandler  bot/live/execution.py: PaperExecution (5m-candle fills with the backtests' cost model: taker 0.04% +
+                  5 bps slippage, limit targets need 0.02% through, stop before target, the 60-candle time exit, funding
+                  at 00/08/16 UTC) and a Binance adapter behind a flag (post-only limit at the next open, market for the
+                  unfilled remainder after N seconds, the real fill price read back, the stop placed at once or the
+                  position closed; retries with backoff)
 CircuitBreaker    bot/live/breaker.py: stale data, API errors, flash move, kill-switch file → HALT / FLATTEN
 ```
 One engine for backtest and shadow stays the law (`CLAUDE.md`): the live loop replays the same functions on the
-same closed candles, so paper results are comparable with the backtests to the tick.
+same closed candles, so paper results are comparable with the backtests to within 0.001R per trade.
 
 ## Module 4: backtesting and anti-overfitting (in force since the start)
 - No look-ahead: every detector uses candles closed at the decision time; swings count only once confirmed
   (`cf <= last closed`); the cloud / weekly / daily contexts use the last *closed* higher-tf candle; entries at the next
-  open; 23 audit rounds specifically hunted look-ahead (and found and fixed it three times).
+  open; 24 audit rounds specifically hunted look-ahead (and found and fixed it twice).
 - Research 2020/2022 - Oct 2025, **holdout Nov 2025 on, never used to choose**. Walk-forward by year with a 62-day
   gap for every ML. Rules chosen by t-score with >= 60 trades and >= 3 of 4 good years.
 - Significance: time-shifted copies (400) for event studies; calendar-month block bootstrap for multi-coin tests;
@@ -153,8 +158,8 @@ same closed candles, so paper results are comparable with the backtests to the t
   TimescaleDB optional later; Redis is not needed at this cadence. Secrets only in the environment (never in the
   repo or chat); Binance keys trade-only, no withdrawals, IP-restricted. Paper mode is the default; live needs an
   explicit `LIVE=1` and a signed config fingerprint.
-- Circuit breaker (`bot/live/breaker.py`): trips to HALT (no new entries) on stale data (> 2 missed 5m candles),
-  3 API errors in 5 minutes, or a daily/weekly stop; trips to FLATTEN (close everything at market) on a flash move
+- Circuit breaker (`bot/live/breaker.py`): trips to HALT (no new entries) on stale data (>= 2 missed 5m candles) or
+  3 API errors in 5 minutes (the daily / weekly stops are latched in the RiskManager and clear at the roll, not here); trips to FLATTEN (close everything at market) on a flash move
   (5m range > 6 x ATR_5m or price gap > 3%), a kill-switch file, or a lost heartbeat for 3 minutes. Manual reset only.
 
 ## Build order (each step: code → tests → audit → shadow)
