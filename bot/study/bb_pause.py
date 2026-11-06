@@ -53,6 +53,80 @@ def masks(t: TF, side: int):
     return holds, breaks, plain & ~holds
 
 
+def concept(t: TF, y, hold, late, years, tf) -> list[str]:
+    """The trader's concept in full: sideways in the upper half -> price comes to the middle band -> holds = pump again,
+    fails = dump. (1) after a pump and 3+ closes above the middle band, does price touch the middle band (within 20
+    candles of the pump) before it closes beyond the outer band again? (2) at that touch, 'the close decides': a close
+    back above the middle band claims up, a close below claims down; also with 2 more confirming closes (decision at the
+    2nd; a hold = both closes above the middle band, a failure = both below)."""
+    first = {"touch": 0, "new pump": 0, "neither": 0}
+    ev = {0: ([], []), 2: ([], [])}
+    for side in (1, -1):
+        c, h, l = (t.c, t.h, t.l) if side > 0 else (-t.c, -t.l, -t.h)
+        up, mid = (t.up, t.mid) if side > 0 else (-t.lo, -t.mid)
+        j = 25
+        while j < t.n - 1:
+            if not (np.isfinite(t.a[j]) and c[j] > up[j]):
+                j += 1; continue
+            k = j                                                      # pump close; find the sideways and what comes first
+            q = k + 1
+            while q < t.n and q - k <= 20 and c[q] > mid[q] and not (l[q] <= mid[q] + 0.25 * t.a[q]) and not c[q] > up[q]:
+                q += 1
+            if q >= t.n or q - k > 20:
+                first["neither"] += (q - k - 1 >= 3) * (not late[k] and not hold[k]); j = q; continue
+            side_ok = q - k - 1 >= 3
+            if c[q] > up[q] and not (l[q] <= mid[q] + 0.25 * t.a[q]):
+                if side_ok and not late[k] and not hold[k] and years[k] >= 2020:
+                    first["new pump"] += 1
+                j = q; continue                                          # a new pump restarts the count from q
+            if side_ok:
+                if not late[k] and not hold[k] and years[k] >= 2020:
+                    first["touch"] += 1
+                for conf in (0, 2):
+                    jd = q + conf
+                    if jd >= t.n:
+                        continue
+                    seq = c[q:jd + 1] - mid[q:jd + 1]
+                    if np.all(seq > 0):
+                        ev[conf][0 if side > 0 else 1].append((jd, 1))   # held: claim the trend direction
+                    elif np.all(seq <= 0):
+                        ev[conf][0 if side > 0 else 1].append((jd, -1))  # failed: claim against it
+            j = q + 1
+    out = [f"### {tf}: the trader's concept, all of it", "",
+           f"After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touched the middle band first in "
+           f"**{first['touch']}** cases, made a new pump (close beyond the outer band) without touching it in **{first['new pump']}**, "
+           f"and did neither within 20 candles in {first['neither']}. "
+           f"So it came to the middle band first **{first['touch'] / max(1, first['touch'] + first['new pump']):.0%}** of the time.", ""]
+    rows = []
+    for conf in (0, 2):
+        n = t.n
+        # split by hold / fail
+        for label, want in (("held the middle band -> claim: pump again", 1), ("failed to hold -> claim: dump", -1), ("both halves together", 0)):
+            mu, md = np.zeros(n, bool), np.zeros(n, bool)
+            for side_idx, lst in enumerate(ev[conf]):
+                side = 1 if side_idx == 0 else -1
+                for jd, cl in lst:
+                    if late[jd] or (want != 0 and cl != want):
+                        continue
+                    if side * cl > 0:
+                        mu[jd] = True
+                    else:
+                        md[jd] = True
+            right = np.concatenate([y[mu], 1 - y[md]]); hd = np.concatenate([hold[mu], hold[md]])
+            yr = np.concatenate([years[mu], years[md]])
+            ok = ~np.isnan(right); right, hd, yr = right[ok], hd[ok], yr[ok]
+            rs = ~hd & (yr >= 2020)
+            okr = ~hold & ~late
+            pv = event_pvalue(y[okr], mu[okr], md[okr])
+            rows.append({"conf": "touch candle's close" if conf == 0 else "+ 2 confirming closes", "ev": label,
+                         "n": int(rs.sum()), "p": right[rs].mean() if rs.sum() else np.nan, "pv": pv,
+                         "nh": int(hd.sum()), "ph": right[hd].mean() if hd.sum() else np.nan})
+    out += [_table(pd.DataFrame(rows), [("conf", "decided on", str), ("ev", "event", str), ("n", "cases 2020-25", str),
+                                        ("p", "right", _pct), ("pv", "chance it is noise", lambda v: f"{v:.3f}"),
+                                        ("nh", "holdout cases", str), ("ph", "holdout right", _pct)]), ""]
+    return out
+
+
 def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
     df5u, _ = load_klines_5m(cfg.data_dir, cfg.symbol)
     L = ["# Pump -> sideways in the upper half -> first touch of the middle band: does the trend resume?", "",
@@ -125,6 +199,7 @@ def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
                                            ("q25", "run: lower quarter (ATR)", lambda v: f"{v:.1f}"), ("med", "run: median (ATR)", lambda v: f"{v:.1f}"),
                                            ("q75", "run: upper quarter (ATR)", lambda v: f"{v:.1f}"), ("pct", "median run %", lambda v: f"{v:.1%}"),
                                            ("big", "runs >= 3 ATR", _pct)]), ""]
+        L += concept(t, y, hold, late, years, tf)
         if tf == "1D":
             hu = np.nonzero(M[1][0])[0]
             L += ["Daily up-version events (touch holds after a pump and sideways): " +
