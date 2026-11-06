@@ -84,3 +84,25 @@ never breaks anything. Everything is known only after the candle that shows it h
 
 Retracements 0.236 / 0.382 / 0.5 / 0.618 / 0.786 and extensions 1.272 / 1.618 of the last leg: lowest low → highest
 high after it (longs), using only candles closed before the decision.
+
+## 9. Failures (where a failure happens is an entry for the other side)
+
+**The close is the key.** A wick shows where liquidity was taken; the close shows who won. Every failure below is defined
+by closes. Only stops are price orders (they fill on a wick) and sit beyond the failure's extreme.
+
+| Failure | Definition (closes) | As an exit | As an entry |
+|---|---|---|---|
+| Failed breakout (trap) | A close beyond the level (breakout rule), then a close back inside within 3 candles | close the trade that broke out | trade the other way: the trapped breakout traders' stops are the fuel (Brooks) |
+| Busted pattern | A pattern breaks out on a close, moves < 10%, then closes beyond the opposite boundary | close | trade the second breakout (Bulkowski: often the larger move) |
+| Sweep / swing failure (SFP) | Wick beyond a pool or swing, the same candle closes back inside | close | enter after the close or on the retest; stop beyond the wick tip |
+| Failure to make a new high / low | No close above the last swing high, and the next swing high is lower (mirrored for lows) | close the long | short after the close below the last higher low |
+| Double / triple top / bottom | Confirmed by a close beyond the neckline | close | trade toward the liquidity on the other side |
+| RSI failure swing | RSI above 70 fails to make a higher peak, then closes below its prior trough (Wilder); mirrored below 30 | warning / close | supporting only, never alone |
+| Bollinger failure | A close outside the band, a close back inside, confirmed by a close through the middle band | close | supporting only, needs a level and context |
+
+Which close counts: the signal is the close on the timeframe where the failure happened; confirmation is the next
+close of the higher timeframe (2h / 1h → 4h, 4h → 1D) agreeing.
+
+Context decides whether a failure is tradeable (all sources agree): it must happen **at a higher-timeframe level or
+pool**, must **trap** traders (a real close beyond, not a small wick), and is judged against the higher-timeframe trend
+(in a strong trend a "failure" is often only a pullback).
