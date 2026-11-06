@@ -4,7 +4,7 @@ Goal: a simple system that takes correct decisions, built to stop the three fail
 **false breakouts (traps), stops placed inside liquidity, and missed reversals at key pivots** (the short that should
 have been taken at 27 Mar 2023, 16 Dec 2024, 7 Jun 2024).
 
-Every rule below carries an evidence tag from the audited studies (23 audit rounds, zero open result-impacting issues):
+Every rule below carries an evidence tag from the audited studies (25 audit rounds, zero open result-impacting issues):
 
 - **PROVEN**: passed the project's test (p < 0.01 and the holdout agrees) or is the research-chosen strategy rule.
 - **MARKER**: a strong statistical marker on our trades but not a tradeable rule by itself (e.g. known only after entry).
@@ -76,18 +76,23 @@ vol_j >= 2 * mean(vol_{j-20..j-1});   d * (C_j - L) >= 1 * ATR_tf
 - NONE: entering on a trendline retest (`trendline_trade.md`: -0.13R per trade on 4h); the squeeze breakout as a
   signal (46 - 47%); CVD / VWAP breakouts as signals (no edge in `journal_ml.md`).
 
-### 1.4 Catching the missed reversals: the failure-to-short setup (UNTESTED as a trade; three journal examples)
-The misses were all the same shape, and the definitions already exist (`docs/trading_definitions.md` section 9):
+### 1.4 Catching the missed reversals: the top-failure setup (UNTESTED as a trade; three journal examples)
+The misses share one shape: **a failure at a higher-timeframe pool, then a close below the failure structure's low**.
+Two sub-shapes (definitions in `docs/trading_definitions.md` sections 2 and 9):
 ```
-HTF pool P = an untaken daily / weekly swing high or equal highs (buy-side liquidity)
-sweep (SFP): H_j > P and C_j < P            # wick through the pool, same candle closes back
-confirmation: next close of the higher tf (4h -> 1D) also < P
-entry = next open after the confirming close; stop = H_j * 1.001; target = first untaken swing low >= 1.2R, else 2R
+HTF pool P = an untaken daily / weekly swing high, or daily equal highs (buy-side liquidity)
+(a) sweep (SFP):     H_j > P and C_j < P                                   # wick through the pool, closes back below
+(b) failed pushes:   price within 0.5 ATR of P without a close above it, 2+ pushes with lower highs
+trigger:  the first 4h close below the lowest low of the failure structure (the neckline)
+confirm:  the next close of the higher timeframe (1D) also below the neckline
+entry = next open after the trigger (or the confirmation); stop = the structure's high * 1.001;
+target = the first untaken swing low >= 1.2R below, else 2R
 ```
-Examples: 16 Dec 2024 (4,110 wick over 4,099, close 3,985 → 3,100), 27 Mar 2023 (third failure at 1,770 → 1,684),
-7 Jun 2024 (close below 3,705 → 2,800). The plain "three failures" version is a coin flip (`three_failures.md`); the
-difference here is the **HTF pool**: price must have taken real liquidity. This is the first thing to build and test
-(six coins, costs, walk-forward) in the review sessions.
+Examples: 16 Dec 2024 (a), the 4,110 wick over the 4,099 top, close 3,985 → 3,100; 7 Jun 2024 (b), failed pushes
+3,980 / 3,934 / 3,892 under 4,099, close 3,680 below the 3,705 pullback low → 2,800; 27 Mar 2023 (b on the 1h), three
+pushes at 1,765 - 1,770 under the 1,782 / 1,800 highs, the 13:00 close below the push low → 1,684. The plain "three
+failures anywhere" version is a coin flip (`three_failures.md`); what these have in common is the **HTF pool**. Built
+and tested step by step: detector first (shown on the three dates), then the fair test on six coins, then the trade test.
 
 ### 1.5 Regime filter
 - PROVEN (strategy rule): skip when ATR% is in the bottom 20% of the timeframe's research distribution.
@@ -112,7 +117,7 @@ Kelly check    f* = p - (1 - p) / b   with p = 0.59, b = avg win / avg loss = 2.
                we use ~1/20 Kelly: p on 162 trades is uncertain by ±8 points, and 1/4 Kelly would still be ~10%
 daily stop     halt new entries when (realised + unrealised) loss today >= 4% of the day's opening equity; LATCHED
                until the day rolls (a recovery during the day does not re-enable entries)
-weekly stop    the same at 8% of the week's opening equity, latched until the week rolls
+weekly stop    the same at 8% of the week's opening equity, an independent latch cleared only by the week roll
 exposure       sum of open notional <= 5 * E;  one position per move (same candle + direction deduplicated)
 VaR (1 day)    VaR_99 = Σ notional_i * 2.326 * σ_daily,  σ_daily ≈ ATR_1D / price;  cap VaR_99 at 35% of E (= the 5x
                cap at 3% volatility; in higher volatility it bites first and cuts the size, never below 25% of plan)
@@ -138,12 +143,13 @@ ExecutionHandler  bot/live/execution.py: PaperExecution (5m-candle fills with th
 CircuitBreaker    bot/live/breaker.py: stale data, API errors, flash move, kill-switch file → HALT / FLATTEN
 ```
 One engine for backtest and shadow stays the law (`CLAUDE.md`): the live loop replays the same functions on the
-same closed candles, so paper results are comparable with the backtests to within 0.001R per trade.
+same closed candles, so paper results are comparable with the backtests to within 0.002R per trade (funding and the 60-candle time exit
+are charged when the live loop calls apply_funding / passes expires_at, in the order stated in `execution.py`).
 
 ## Module 4: backtesting and anti-overfitting (in force since the start)
 - No look-ahead: every detector uses candles closed at the decision time; swings count only once confirmed
   (`cf <= last closed`); the cloud / weekly / daily contexts use the last *closed* higher-tf candle; entries at the next
-  open; 24 audit rounds specifically hunted look-ahead (and found and fixed it twice).
+  open; 25 audit rounds specifically hunted look-ahead (and found and fixed it twice).
 - Research 2020/2022 - Oct 2025, **holdout Nov 2025 on, never used to choose**. Walk-forward by year with a 62-day
   gap for every ML. Rules chosen by t-score with >= 60 trades and >= 3 of 4 good years.
 - Significance: time-shifted copies (400) for event studies; calendar-month block bootstrap for multi-coin tests;

@@ -1,7 +1,9 @@
 """
 Execution handlers. Paper execution fills on 5m candles with the backtests' cost model (fees, slippage, the limit
 buffer, stop-before-target, the 60-candle time exit, and funding when the live loop calls apply_funding at the funding
-times), so paper results are comparable with the research numbers to within 0.001R per trade. The exchange adapter is an interface with retry / backoff and a market fallback;
+times), so paper results are comparable with the research numbers to within 0.002R per trade (the backtests charge costs
+as fractions of the entry price; paper charges them on the exit price). Call order per 5m candle closing at T:
+on_candle(T) first, then apply_funding(T) if T is a funding time, then submit() entries that fill at the open T. The exchange adapter is an interface with retry / backoff and a market fallback;
 it is wired to nothing unless LIVE=1 is set and an adapter is passed in (no keys live in this repository).
 
 Fill model (same as bot/ml/targets.py): market = taker 0.04% + 5 bps slippage per side; a limit target counts as
@@ -28,7 +30,8 @@ class Order:
     entry: float                   # the next open (reference price)
     stop: float
     target: float
-    expires_at: object = None      # time of the last allowed candle (60 candles of the setup's timeframe); exit at its close
+    expires_at: object = None      # CLOSE time of the last allowed candle = entry open + 60 x the setup's timeframe;
+                                   # on_candle(now = the candle's close time) exits at that candle's close
 
 
 @dataclass
@@ -148,15 +151,15 @@ class ExchangeExecution:
             if filled >= order.qty * 0.999:
                 break
             await asyncio.sleep(1.0)
+        rem, px = 0.0, order.entry
         if filled < order.qty * 0.999:
-            filled = await with_retry(self.client.cancel, oid, on_error=self.on_error)
-            rem = order.qty - filled
+            filled = await with_retry(self.client.cancel, oid, on_error=self.on_error)   # may report a full fill
+            rem = max(0.0, order.qty - filled)
             if rem > 0:
                 _, px = await with_retry(self.client.market, order.side, rem, on_error=self.on_error)
-                avg_px = (filled * order.entry + rem * px) / order.qty
-                fee = filled * order.entry * 0.0002 + rem * px * 0.0004
-        else:
-            fee = order.qty * order.entry * 0.0002
+        filled = order.qty - rem
+        avg_px = (filled * order.entry + rem * px) / order.qty
+        fee = filled * order.entry * 0.0002 + rem * px * 0.0004           # maker on the limit part, taker on the rest
         try:
             await with_retry(self.client.set_stop, order.side, order.qty, order.stop, on_error=self.on_error)
         except Exception:

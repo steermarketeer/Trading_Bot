@@ -67,7 +67,8 @@ class AccountState:
     day_open_equity: float
     week_open_equity: float
     positions: dict = field(default_factory=dict)     # key -> OpenPosition
-    halted_reason: str | None = None
+    halted_reason: str | None = None                  # daily latch (cleared by roll_day)
+    weekly_halt: str | None = None                    # weekly latch (cleared by roll_week); independent of the daily
 
 
 @dataclass(frozen=True)
@@ -99,23 +100,17 @@ class RiskManager:
     # ------------------------------------------------------------------ checks
     def check(self, sig: Signal, st: AccountState, sigma_daily: float) -> Decision:
         """Evaluate a signal against every limit. sigma_daily = ATR_1D / price (for VaR)."""
+        self.mark(st)                                                     # evaluate both latches first
+        if st.weekly_halt:
+            return Decision(False, f"halted: {st.weekly_halt}")
         if st.halted_reason:
             return Decision(False, f"halted: {st.halted_reason}")
         if (sig.entry - sig.stop) * sig.d <= 0:
             return Decision(False, "stop is not beyond the entry")
         if (sig.target - sig.entry) * sig.d <= 0:
             return Decision(False, "target is not beyond the entry")
-        if sig.stop_pct < self.lim.min_stop_pct:
+        if sig.setup != "1D bounce" and sig.stop_pct < self.lim.min_stop_pct:   # strategy rule: breakouts only
             return Decision(False, f"stop {sig.stop_pct:.2%} < minimum {self.lim.min_stop_pct:.2%}")
-        # the daily / weekly stops LATCH: once tripped, no entries until the day / week rolls (not on a recovery)
-        day_loss = 1 - st.equity / st.day_open_equity if st.day_open_equity > 0 else 0.0
-        if day_loss >= self.lim.daily_stop:
-            st.halted_reason = f"daily stop: down {day_loss:.1%} today"
-            return Decision(False, st.halted_reason)
-        week_loss = 1 - st.equity / st.week_open_equity if st.week_open_equity > 0 else 0.0
-        if week_loss >= self.lim.weekly_stop:
-            st.halted_reason = f"weekly stop: down {week_loss:.1%} this week"
-            return Decision(False, st.halted_reason)
         key = f"{sig.decision_time}|{sig.side}"
         if key in st.positions:
             return Decision(False, "one position per move: already in this move")
@@ -160,20 +155,19 @@ class RiskManager:
     @staticmethod
     def roll_day(st: AccountState) -> None:
         st.day_open_equity = st.equity
-        if st.halted_reason and st.halted_reason.startswith("daily stop"):
-            st.halted_reason = None
+        st.halted_reason = None                                           # the daily latch only
 
     @staticmethod
     def roll_week(st: AccountState) -> None:
         st.week_open_equity = st.equity
-        if st.halted_reason and st.halted_reason.startswith("weekly stop"):
-            st.halted_reason = None
+        st.weekly_halt = None                                             # the weekly latch only
 
     def mark(self, st: AccountState) -> None:
-        """Call after every equity update: trips the daily / weekly latch even when no signal arrives."""
+        """Call after every equity update (equity = realised + unrealised): trips the daily and the weekly latch
+        independently, even when no signal arrives. A latch stays until its own roll (not on a recovery)."""
         day_loss = 1 - st.equity / st.day_open_equity if st.day_open_equity > 0 else 0.0
         week_loss = 1 - st.equity / st.week_open_equity if st.week_open_equity > 0 else 0.0
-        if not st.halted_reason and week_loss >= self.lim.weekly_stop:
-            st.halted_reason = f"weekly stop: down {week_loss:.1%} this week"
-        elif not st.halted_reason and day_loss >= self.lim.daily_stop:
+        if day_loss >= self.lim.daily_stop and not st.halted_reason:
             st.halted_reason = f"daily stop: down {day_loss:.1%} today"
+        if week_loss >= self.lim.weekly_stop and not st.weekly_halt:
+            st.weekly_halt = f"weekly stop: down {week_loss:.1%} this week"

@@ -42,11 +42,11 @@ def test_daily_and_weekly_stops_halt_entries_and_roll():
     rm = RiskManager()
     st = AccountState(9_500, 10_000, 10_000)                             # down 5% today
     d = rm.check(sig(), st, 0.03)
-    assert not d.ok and d.reason.startswith("daily stop")
+    assert not d.ok and d.reason.startswith("halted: daily stop")
     rm.roll_day(st)
     assert rm.check(sig(), st, 0.03).ok
     st = AccountState(9_100, 9_100, 10_000)                              # down 9% this week
-    assert rm.check(sig(), st, 0.03).reason.startswith("weekly stop")
+    assert rm.check(sig(), st, 0.03).reason.startswith("halted: weekly stop")
 
 
 def test_exposure_var_and_one_position_per_move():
@@ -172,3 +172,18 @@ def test_paper_time_exit_and_funding_match_the_backtest_model():
     px = PaperExecution(); asyncio.run(px.submit(Order("s", "short", 2.0, 2000.0, 2020.0, 1960.0), T0))
     f = px.apply_funding(0.0001, 2000.0, T0)
     assert f[0].fee == pytest.approx(-2.0 * 2000.0 * 0.0001)
+
+
+def test_weekly_latch_is_independent_of_the_daily_latch():
+    rm = RiskManager()
+    st = AccountState(9_550, 10_000, 10_000)
+    rm.mark(st)                                                          # -4.5% today -> daily latch
+    st.equity = 9_100                                                    # -9% for the week
+    rm.mark(st)
+    assert st.halted_reason.startswith("daily stop") and st.weekly_halt.startswith("weekly stop")
+    rm.roll_day(st)
+    st.equity = 9_300                                                    # recovered to -7% for the week
+    d = rm.check(sig(), st, 0.03)
+    assert not d.ok and d.reason.startswith("halted: weekly stop")
+    rm.roll_week(st)
+    assert rm.check(sig(), st, 0.03).ok
