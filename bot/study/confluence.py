@@ -40,6 +40,7 @@ from .indicators import ema, rsi
 from .mtf import resample
 from .sr2_run import _pct, _table
 from .three_failures import setups as tf_setups
+from .fixes import trendline_in_way
 
 HOLDOUT = pd.Timestamp("2025-11-01")
 RISK = {"A+ breakout": 0.04, "breakout": 0.02, "1D bounce": 0.02}
@@ -62,8 +63,6 @@ def votes(cfg: Config) -> pd.DataFrame:
     T, _ = pd.read_pickle(ROOT / "results" / "manager_states.pkl")
     T = T[(T["src"] == "v31") & T["filtered"] & (T["variant"] == "S786")].copy()
     X = pd.read_pickle(ROOT / "results" / "defs_review.pkl").reset_index(drop=True)
-    F = pd.read_pickle(ROOT / "results" / "fixes.pkl")
-    tl = F[(F["entry"] == "now") & (F["exit"] == "none") & (F["fib"] == "none")].set_index("entry_time")["TL"]
     rows = []
     for r in T.itertuples():
         et, d = pd.Timestamp(r.decision_time), int(r.d)
@@ -100,8 +99,8 @@ def votes(cfg: Config) -> pd.DataFrame:
         v["V5 liquidity within 1 ATR ahead"] = int(len(lv) > 0 and np.any((o(lv - e) > 0) & (o(lv - e) <= a1)))
         # V6, V7
         v["V6 ceiling before the target"] = -int(bool(x["ceiling"]))
-        tlv = tl.get(pd.Timestamp(r.entry_time), False)
-        v["V7 trendline in the way"] = -int(bool(tlv.iloc[0] if hasattr(tlv, "iloc") else tlv))
+        # trendline in the way, with this trade's own entry and target (the 0.786-stop version), as in fixes.py
+        v["V7 trendline in the way"] = -int(bool(trendline_in_way(h1, et, r.e, r.tg, d) or trendline_in_way(t4, et, r.e, r.tg, d)))
         # V8 weekly has no room
         hiw = w1.h[jw] if d > 0 else -w1.l[jw]
         upw = w1.up[jw] if d > 0 else -w1.lo[jw]
@@ -141,37 +140,44 @@ def run_confluence(cfg: Config, out_dir: Path) -> Path:
     for c in vc:
         for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
             g = D[pm]
+            if c.startswith("V3"):
+                g = g[g["setup"] != "1D bounce"]                         # V3 exists for breakouts only
             on, off = g[g[c] != 0], g[g[c] == 0]
             rows.append({"v": c, "per": per, "n": len(on), "w": (on["net"] > 0).mean() if len(on) else np.nan,
                          "a": on["net"].mean() if len(on) else np.nan, "n0": len(off), "w0": (off["net"] > 0).mean(),
                          "a0": off["net"].mean()})
-    srows = []
-    for lab, lo, hi in (("score <= -2", -99, -2), ("score -1", -1, -1), ("score 0", 0, 0), ("score +1", 1, 1), ("score >= +2", 2, 99)):
-        for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
-            g = D[pm & (D["score"] >= lo) & (D["score"] <= hi)]
-            s_ = stats(g["net"].to_numpy())
-            srows.append({"lab": lab, "per": per, **s_})
-    arows = []
-    for lab, m in (("all trades", D["score"] > -99), ("skip score <= -1", D["score"] >= 0), ("skip score <= -2", D["score"] >= -1)):
-        for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
-            g = D[pm & m].reset_index(drop=True)
-            s_ = stats(g["net"].to_numpy())
-            eq, dd = account(g, "net", "exit_time", RISK) if len(g) else (np.nan, np.nan)
-            arows.append({"lab": lab, "per": per, **s_, "eq": eq, "dd": dd})
+    fam = np.where(D["setup"] == "1D bounce", "1D bounces", "breakouts")
+    srows, arows = [], []
+    for fl in ("breakouts", "1D bounces"):
+        Fm = fam == fl
+        for lab, lo, hi in (("score <= -2", -99, -2), ("score -1", -1, -1), ("score 0", 0, 0), ("score +1", 1, 1), ("score >= +2", 2, 99)):
+            for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
+                g = D[pm & Fm & (D["score"] >= lo) & (D["score"] <= hi)]
+                s_ = stats(g["net"].to_numpy())
+                srows.append({"fam": fl, "lab": lab, "per": per, **s_})
+        for lab, m in (("all trades", D["score"] > -99), ("skip score <= -1", D["score"] >= 0), ("skip score <= -2", D["score"] >= -1)):
+            for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
+                g = D[pm & Fm & m].reset_index(drop=True)
+                s_ = stats(g["net"].to_numpy())
+                eq, dd = account(g, "net", "exit_time", RISK) if len(g) else (np.nan, np.nan)
+                arows.append({"fam": fl, "lab": lab, "per": per, **s_, "eq": eq, "dd": dd})
     L = ["# Confluence: all the studied concepts voting on the bot's own trades", "",
          "162 ETH trades of the research-chosen version (v3.1 + journal filters + 0.786 bounce stop). Each concept votes +1 "
-         "(for) or -1 (against) at the entry; the directions were fixed from the studies before looking at these trades. "
+         "(for) or -1 (against) at the entry; the directions come from the studies, not from these trades, except that V10 was "
+         "prompted by one of them (27 Mar 2023), V6 comes from a review of holdout trades and V8 is post hoc. V3 is compared "
+         "within breakouts only. "
          "**win % = profit after costs.** Small samples: this shows the direction, not proof.", "",
          "## Each vote", "", _table(pd.DataFrame(rows), [
              ("v", "vote", str), ("per", "period", str), ("n", "trades with the vote", str), ("w", "win %", _pct),
              ("a", "avg R", f2), ("n0", "trades without", str), ("w0", "win %", _pct), ("a0", "avg R", f2)]), "",
-         "## By total score", "", _table(pd.DataFrame(srows), [
-             ("lab", "score", str), ("per", "period", str), ("n", "trades", str), ("win", "win %", _pct), ("avg", "avg R", f2),
+         "## By total score, per setup family (bounces score lower by construction: V3 is breakouts only and V6 fires on "
+         "almost every 3R bounce, so the families are shown apart)", "", _table(pd.DataFrame(srows), [
+             ("fam", "setup", str), ("lab", "score", str), ("per", "period", str), ("n", "trades", str), ("win", "win %", _pct), ("avg", "avg R", f2),
              ("pf", "profit factor", lambda v: "" if v != v else f"{v:.2f}")]), "",
-         "## Using the score as a filter", "", _table(pd.DataFrame(arows), [
-             ("lab", "rule", str), ("per", "period", str), ("n", "trades", str), ("win", "win %", _pct), ("avg", "avg R", f2),
+         "## Using the score as a filter, per setup family", "", _table(pd.DataFrame(arows), [
+             ("fam", "setup", str), ("lab", "rule", str), ("per", "period", str), ("n", "trades", str), ("win", "win %", _pct), ("avg", "avg R", f2),
              ("eq", "account", lambda v: "" if v != v else f"{v:.2f}x"), ("dd", "worst drop", lambda v: "" if v != v else f"-{v:.0%}")]), "",
-         "Audit: pending."]
+         "Audit: round 22 (setup-family split, V3 within breakouts, V7 with each trade's own target; no vote bug)."]
     path = out_dir / "confluence.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path
