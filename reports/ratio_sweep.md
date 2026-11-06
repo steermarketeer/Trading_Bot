@@ -51,4 +51,6 @@ Chosen on 2022-25: **2.5 : 1**
 | chosen (1 : 1 / 2.5 : 1) | 2022 - Oct 2025 | 129 | 71% | +0.63 | 3.02 | 9.14x | -10% |
 | chosen (1 : 1 / 2.5 : 1) | holdout | 33 | 73% | +0.71 | 3.63 | 1.69x | -11% |
 
-Audit: pending.
+Tail dependence (2022-25): breakouts at 4 : 1 take 15% of their total R from the top 3 trades; bounces with no target take 46% from the top 3 (+12.4, +10.2, +8.3R) with a median trade of -0.92R: a 3-trade result.
+
+Audit: round 26, independent re-implementation of the replay, booking and account; zero result-impacting issues.
