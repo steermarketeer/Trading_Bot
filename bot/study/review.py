@@ -171,7 +171,7 @@ def build_review(cfg: Config, out_dir: Path, which: str = "holdout") -> Path:
 
 
 # ----------------------------------------------------------------------------- one trade, large charts
-BIG_BEFORE = {"15m": 160, "1h": 150, "4h": 150, "1D": 150}
+BIG_BEFORE = {"15m": 90, "1h": 90, "4h": 90, "1D": 110}
 
 
 def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray, path: Path, liqmap=None,
@@ -192,10 +192,10 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
     i_e = int(np.searchsorted(d.ct, et, side="right"))
     i_x = max(i_e, int(np.searchsorted(d.ot, xt, side="right")) - 1)
     lo = max(0, i_e - BIG_BEFORE[tf])
-    hi = min(b.n, max(i_x + 20, i_e + 20), i_e + 80)
+    hi = min(b.n, max(i_x + 15, i_e + 15), i_e + 60)
     x = np.arange(lo, hi)
-    fig = plt.figure(figsize=(18, 10))
-    gs = fig.add_gridspec(4, 2, height_ratios=[6, 1.2, 1.5, 1.5], width_ratios=[11, 1.7], hspace=0.06, wspace=0.02)
+    fig = plt.figure(figsize=(14, 17))
+    gs = fig.add_gridspec(4, 2, height_ratios=[8, 1.4, 1.8, 1.8], width_ratios=[10, 1.6], hspace=0.07, wspace=0.03)
     ax = fig.add_subplot(gs[0, 0])
     axv, axm, axr = (fig.add_subplot(gs[k, 0], sharex=ax) for k in (1, 2, 3))
     axl = fig.add_subplot(gs[0, 1], sharey=ax) if liqmap is not None else None
@@ -212,12 +212,20 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
     ax.plot(x, e50[lo:hi], color="#1e88e5", linewidth=1.6, label="EMA 50")
     ax.plot(x, e200[lo:hi], color="#8e24aa", linewidth=1.8, label="EMA 200")
     e, s, g = t["entry"], t["stop"], t["target"]
-    ymin, ymax = min(l.min(), s, g), max(h.max(), s, g)
+    ymin, ymax = min(l.min(), s, e), max(h.max(), s, e)
+    rng0 = ymax - ymin
+    target_off = not (ymin - 0.3 * rng0 <= g <= ymax + 0.3 * rng0)          # a far target would squash the candles
+    if not target_off:
+        ymin, ymax = min(ymin, g), max(ymax, g)
     pad = (ymax - ymin) * 0.05
-    for z in zones:
+    last_lab = -np.inf
+    for z in sorted(zones):
         if ymin - pad <= z <= ymax + pad:
             ax.axhspan(z * 0.998, z * 1.002, color="#ab47bc", alpha=0.16, zorder=1)
-            ax.text(hi - 0.5, z, f" S/R {z:,.0f}", va="center", fontsize=9, color="#7b1fa2")
+            if z - last_lab >= 0.035 * (ymax - ymin):                         # keep labels apart
+                ax.text(hi - 1, z, f"S/R {z:,.0f} ", ha="right", va="center", fontsize=12, color="#7b1fa2",
+                        bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.75))
+                last_lab = z
     sh = [(i, p) for i, p, cf in b.sh if cf < i_e and i >= lo - 80]
     sl = [(i, p) for i, p, cf in b.sl if cf < i_e and i >= lo - 80]
     for pts, col, name in ((sh, "#e65100", "trendline (highs)"), (sl, "#00796b", "trendline (lows)")):
@@ -233,7 +241,7 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
             if not taken and i >= lo:
                 ax.hlines(p, i, i_e - 0.5, color="#424242", linestyle=(0, (3, 2)), linewidth=1)
                 ax.plot(i, p, marker="v" if side > 0 else "^", color="#424242", markersize=6)
-                ax.text(i, p, f" liq {p:,.0f}", fontsize=8, color="#424242",
+                ax.text(i, p, f" liq {p:,.0f}", fontsize=13, color="#424242",
                         va="bottom" if side > 0 else "top")
                 liq.append((side, p))
     # equal highs / lows: two untaken swings within 0.15% = stops resting there
@@ -244,7 +252,7 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
                 m_ = (p1 + p2) / 2
                 ax.axhspan(m_ * 0.9993, m_ * 1.0007, color="#ffca28", alpha=0.45, zorder=1.4)
                 ax.text(i_e - 1, m_, f"EQUAL {'HIGHS' if side > 0 else 'LOWS'} {m_:,.0f}: stops rest here ",
-                        ha="right", va="bottom" if side > 0 else "top", fontsize=9, fontweight="bold", color="#bf360c")
+                        ha="right", va="bottom" if side > 0 else "top", fontsize=13, fontweight="bold", color="#bf360c")
     # estimated liquidation levels (real open interest), in their own panel on the right (same price scale)
     if axl is not None:
         (lp, lw), (sp_, sw_) = liqmap
@@ -258,10 +266,10 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
         axl.axhline(e, color="#1565c0", linewidth=1.1)
         axl.axhline(s, color="#c62828", linewidth=1.1, linestyle=(0, (4, 2)))
         axl.axhline(g, color="#2e7d32", linewidth=1.1, linestyle=(0, (4, 2)))
-        axl.set_title("liquidations at entry\n(est. from open interest)", fontsize=9)
+        axl.set_title("liquidations at entry\n(est. from open interest)", fontsize=14)
         axl.tick_params(labelleft=False, labelsize=7)
-        axl.set_xlabel("% of open interest", fontsize=8)
-        axl.legend(loc="upper right", fontsize=7)
+        axl.set_xlabel("% of open interest", fontsize=13)
+        axl.legend(loc="upper right", fontsize=12)
         axl.grid(alpha=0.15)
     # Fibonacci: the last leg in the trade direction inside the window, using only candles closed before entry.
     # Long: lowest low of the window -> highest high after it; retracements measured down from that high,
@@ -289,62 +297,69 @@ def plot_big(df5u: pd.DataFrame, tf: str, rule: str, t: dict, zones: np.ndarray,
             fib[f"ret_{r_:g}"] = float(v)
             ax.hlines(v, start, hi - 1, color="#f9a825", linewidth=1.0 if r_ in (0.5, 0.618) else 0.7,
                       linestyle="-" if r_ in (0.5, 0.618) else "--", alpha=0.9, zorder=1.5)
-            ax.text(hi - 12, v, f"Fib {r_:g}  {v:,.0f}", fontsize=8.5, color="#e65100", va="bottom",
-                    bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
+            if ymin - pad <= v <= ymax + pad:
+                ax.text(lo + 0.6 * (hi - lo), v, f"Fib {r_:g}  {v:,.0f}", fontsize=12, color="#e65100", va="bottom",
+                        bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.75))
         for r_ in (1.272, 1.618):
             v = ext_of(r_)
             fib[f"ext_{r_:g}"] = float(v)
             if ymin - pad <= v <= ymax + pad:
                 ax.hlines(v, end_, hi - 1, color="#f57f17", linewidth=0.9, linestyle="-.")
-                ax.text(hi - 12, v, f"Fib ext {r_:g}  {v:,.0f}", fontsize=8.5, color="#e65100", va="bottom",
-                        bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
+                ax.text(lo + 0.6 * (hi - lo), v, f"Fib ext {r_:g}  {v:,.0f}", fontsize=12, color="#e65100", va="bottom",
+                        bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.75))
         fib["leg"] = (float(f_lo), float(f_hi), pd.Timestamp(d.ot[start]).strftime("%d %b %Y %H:%M"),
                       pd.Timestamp(d.ot[end_]).strftime("%d %b %Y %H:%M"))
-    for lv, col, name in ((e, "#1565c0", "entry"), (s, "#c62828", "stop"), (g, "#2e7d32", "target")):
+    if target_off:
+        ax.text(lo + 1, ymax + pad * 0.4, f" target {g:,.2f} is above the chart \u2191 " if (g - e) > 0 else f" target {g:,.2f} is below the chart \u2193 ",
+                fontsize=14, color="#2e7d32", fontweight="bold", va="top",
+                bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="#2e7d32", lw=0.8), zorder=6)
+    for lv, col, name in ((e, "#1565c0", "entry"), (s, "#c62828", "stop")) + (() if target_off else ((g, "#2e7d32", "target"),)):
         ax.axhline(lv, color=col, linewidth=1.3, linestyle="-" if name == "entry" else (0, (4, 2)))
-        ax.text(lo + 1, lv, f" {name} {lv:,.2f} ", ha="left", va="center", fontsize=9, color=col, fontweight="bold",
+        ax.text(lo + 1, lv, f" {name} {lv:,.2f} ", ha="left", va="center", fontsize=15, color=col, fontweight="bold",
                 bbox=dict(boxstyle="round,pad=0.15", fc="white", ec=col, lw=0.8, alpha=0.9), zorder=6)
     for a_ in (ax, axv, axm, axr):
         a_.axvline(i_e - 0.5, color="black", linestyle="--", linewidth=1.3)
         if i_x < hi:
             a_.axvline(i_x, color="#616161", linestyle=":", linewidth=1.3)
         a_.grid(alpha=0.15)
-    ax.text(i_e - 0.5, ymax + pad * 0.6, " ENTRY", fontsize=9, fontweight="bold")
+    ax.text(i_e - 0.5, ymax + pad * 0.6, " ENTRY", fontsize=15, fontweight="bold")
     for mt, mlab, mcol in (marks or []):
         k_ = int(np.searchsorted(d.ot, pd.Timestamp(mt).to_datetime64(), side="right")) - 1
         if lo <= k_ < hi:
             for a_ in (ax, axv, axm, axr):
                 a_.axvline(k_, color=mcol, linestyle="-.", linewidth=1.6)
-            ax.text(k_, ymin + (ymax - ymin) * 0.5, f" {mlab}", fontsize=9, color=mcol, fontweight="bold", rotation=90,
+            ax.text(k_, ymin + (ymax - ymin) * 0.5, f" {mlab}", fontsize=14, color=mcol, fontweight="bold", rotation=90,
                     va="center", bbox=dict(boxstyle="round,pad=0.15", fc="white", ec=mcol, lw=0.8, alpha=0.9))
     if i_x < hi:
-        ax.text(i_x, ymin - pad * 0.6, " EXIT (" + str(t.get("exit_label", "stop")) + ")", fontsize=9, color="#616161",
+        ax.text(i_x, ymin - pad * 0.6, " EXIT (" + str(t.get("exit_label", "stop")) + ")", fontsize=15, color="#616161",
                 fontweight="bold")
     ax.set_ylim(ymin - pad, ymax + pad)
-    ax.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=8.5, ncol=6, frameon=False)
+    for a_ in (ax, axv, axm, axr):
+        a_.tick_params(axis="y", labelsize=13)
+    ax.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), fontsize=13, ncol=6, frameon=False)
     off = "" if i_x < hi else "   (exit is later, beyond the right edge)"
-    ax.set_title(f"{tf} chart{off}", fontsize=14, loc="left", fontweight="bold")
+    ax.set_title(f"{tf} chart{off}", fontsize=20, loc="left", fontweight="bold", pad=58)
     axv.bar(x, b.v[lo:hi], color=np.where(up, "#26a69a", "#ef5350"), width=0.72)
     axv.plot(x, vavg[lo:hi], color="#424242", linewidth=1, label="20-candle average")
-    axv.legend(loc="upper left", fontsize=8)
+    axv.legend(loc="upper left", fontsize=13)
     hist = (d.ml - d.ms)[lo:hi]
     axm.bar(x, hist, color=np.where(hist >= 0, "#26a69a", "#ef5350"), width=0.72)
     axm.plot(x, d.ml[lo:hi], color="#1e88e5", linewidth=1, label="MACD 12,26")
     axm.plot(x, d.ms[lo:hi], color="#fb8c00", linewidth=1, label="signal 9")
-    axm.legend(loc="upper left", fontsize=8)
+    axm.legend(loc="upper left", fontsize=13)
     axr.plot(x, b.r[lo:hi], color="#6a1b9a", linewidth=1.2)
     for lv in (70, 50, 30):
         axr.axhline(lv, color="#9e9e9e", linewidth=0.7, linestyle="--")
     axr.set_ylim(0, 100)
     for a_, lab in ((axv, "Volume"), (axm, "MACD"), (axr, "RSI 14")):
-        a_.set_ylabel(lab, fontsize=10)
+        a_.set_ylabel(lab, fontsize=15)
     for a_ in (ax, axv, axm):
         a_.tick_params(labelbottom=False)
-    idx = np.linspace(lo, hi - 1, 9).astype(int)
+    idx = np.linspace(lo, hi - 1, 6).astype(int)
     fmt = "%d %b %Y" if tf == "1D" else "%d %b %Y\n%H:%M"
     axr.set_xticks(idx)
-    axr.set_xticklabels([pd.Timestamp(d.ot[i]).strftime(fmt) for i in idx], fontsize=9)
-    fig.savefig(path, dpi=110, bbox_inches="tight")
+    axr.set_xticklabels([pd.Timestamp(d.ot[i]).strftime(fmt) for i in idx], fontsize=14)
+    fig.savefig(path, dpi=120, bbox_inches="tight")
     plt.close(fig)
     j = i_e - 1                                                     # last candle closed at entry
     return {"tf": tf, "close": float(b.c[j]), "ema20": float(e20[j]), "ema50": float(e50[j]), "ema200": float(e200[j]),
