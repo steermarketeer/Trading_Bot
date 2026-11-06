@@ -47,3 +47,24 @@ Start: v3.1 ETH trades (one position per move) with the two journal filters. **w
 | retest entry + failure exit (any) + no trendline in the way + strong breaking candle | 22 | 41% | +0.06 | 0.46 | 1 | 4 | 75% | +0.88 |
 | retest entry + failure exit (any) + strong breaking candle | 32 | 44% | +0.03 | 0.41 | 1 | 9 | 67% | +0.56 |
 
+## Fibonacci confluence (same trades in every row)
+
+| Fibonacci | exit | filter | trades 2022-25 | win % | avg R | trades holdout | win % holdout | avg R holdout |
+|---|---|---|---|---|---|---|---|---|
+| no Fibonacci | fixed / Fib target |  | 129 | 57% | +0.71 | 33 | 58% | +0.68 |
+| no Fibonacci | fixed / Fib target | strong breaking candle | 100 | 56% | +0.72 | 27 | 63% | +0.85 |
+| no Fibonacci | + failure exit |  | 129 | 67% | +0.37 | 33 | 67% | +0.33 |
+| no Fibonacci | + failure exit | strong breaking candle | 100 | 71% | +0.37 | 27 | 74% | +0.39 |
+| target at a Fib extension that coincides with liquidity | fixed / Fib target |  | 129 | 55% | +0.66 | 33 | 55% | +0.57 |
+| target at a Fib extension that coincides with liquidity | fixed / Fib target | strong breaking candle | 100 | 55% | +0.68 | 27 | 59% | +0.72 |
+| target at a Fib extension that coincides with liquidity | + failure exit |  | 129 | 66% | +0.35 | 33 | 64% | +0.24 |
+| target at a Fib extension that coincides with liquidity | + failure exit | strong breaking candle | 100 | 71% | +0.37 | 27 | 70% | +0.27 |
+| bounces: stop below Fib 0.786 | fixed / Fib target |  | 129 | 59% | +0.79 | 33 | 64% | +1.02 |
+| bounces: stop below Fib 0.786 | fixed / Fib target | strong breaking candle | 100 | 59% | +0.83 | 27 | 70% | +1.28 |
+| bounces: stop below Fib 0.786 | + failure exit |  | 129 | 67% | +0.36 | 33 | 70% | +0.48 |
+| bounces: stop below Fib 0.786 | + failure exit | strong breaking candle | 100 | 72% | +0.37 | 27 | 78% | +0.56 |
+| both | fixed / Fib target |  | 129 | 57% | +0.73 | 33 | 61% | +0.86 |
+| both | fixed / Fib target | strong breaking candle | 100 | 58% | +0.77 | 27 | 67% | +1.08 |
+| both | + failure exit |  | 129 | 67% | +0.35 | 33 | 67% | +0.38 |
+| both | + failure exit | strong breaking candle | 100 | 72% | +0.37 | 27 | 74% | +0.45 |
+

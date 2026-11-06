@@ -87,6 +87,12 @@ never breaks anything. Everything is known only after the candle that shows it h
 Retracements 0.236 / 0.382 / 0.5 / 0.618 / 0.786 and extensions 1.272 / 1.618 of the last leg: lowest low → highest
 high after it (longs), using only candles closed before the decision.
 
+| Term | Definition |
+|---|---|
+| Fibonacci confluence | A Fibonacci level within max(0.25 ATR(1h), 0.2%) of a strong zone or an untaken 1h / 4h / 1D swing. A Fibonacci level alone is not used. |
+| Fibonacci target | The nearest extension (1.272, then 1.618) that is in confluence with liquidity ahead and at least 1.2R away; otherwise the setup's own target. |
+| Bounce stop | Below the 1h leg's 0.786 retracement (0.1% beyond), when that is beyond the entry. |
+
 ## 9. Failures (where a failure happens is an entry for the other side)
 
 **The close is the key.** A wick shows where liquidity was taken; the close shows who won. Every failure below is defined

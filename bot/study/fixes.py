@@ -33,6 +33,8 @@ from ..config import ROOT, Config
 from ..data import load_klines_5m
 from ..ml.targets import C_LMT, C_MKT, LIMIT_BUFFER, MAX_TF_BARS, _funding_cum, account, stats
 from .defs import TF
+from .fibliq import Swings, plan as fib_plan
+from .levels import _level_table, strong_levels
 from .mtf import resample
 from .sr2_run import _pct, _table
 
@@ -109,6 +111,8 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
     X = X[~X["eq_highs_ahead"].astype(bool) & ~X["rej_3plus"].astype(bool)].reset_index(drop=True)
     rows = []
     t5 = ctx["t5"]
+    swf = {k_: Swings(df5u, r_) for k_, r_ in (("15m", "15min"), ("1h", "1h"), ("4h", "4h"), ("1D", "1D"))}
+    table = _level_table(df5u)
     for k, r in X.iterrows():
         et, d, e, rk = pd.Timestamp(r["entry_time"]), int(r["direction"]), float(r["px"]), float(r["risk"])
         s, tg = e - d * rk, e + d * TGT[r["setup"]] * rk
@@ -156,15 +160,48 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
                 a_ = np.searchsorted(ft, t5[i0], side="right"); b_ = np.searchsorted(ft, x_t.to_datetime64(), side="left")
                 sp = abs(ent - s) / abs(ent)
                 cost = C_MKT + (C_LMT if kind == "target" else C_MKT) + ((fc[b_] - fc[a_]) * d if b_ > a_ else 0.0)
-                rows.append({**base, "entry": entry_mode, "exit": exit_mode or "none", "net": R - cost / sp, "kind": kind,
+                rows.append({**base, "entry": entry_mode, "exit": exit_mode or "none", "fib": "none", "net": R - cost / sp, "kind": kind,
                              "stop_pct": sp, "decision_time": pd.Timestamp(t5[i0]), "exit_time": x_t,
+                             "entry_time": et, "direction": d, "tf": r["tf"]})
+        # Fibonacci confluence variants (entry at the signal)
+        fp = fib_plan(r, swf)
+        if fp is None:
+            continue
+        e0 = ctx["O"][st]
+        a1 = tf["1h"].a[tf["1h"].closed_before(et) - 1]
+        tolf = max(0.25 * a1, 0.002 * e0)
+        side_t = "H" if d > 0 else "L"
+        ahead = [v for kk in ("1h", "4h", "1D") for v in swf[kk].untaken(et, side_t)] + list(strong_levels(table, et.tz_localize("UTC")))
+        ahead = np.array([v for v in ahead if (v - e0) * d > 0])
+        tg_f = None
+        for x_ in sorted([fp["x1272"], fp["x1618"]], key=lambda v: (v - e0) * d):
+            if (x_ - e0) * d > 0 and len(ahead) and np.min(np.abs(ahead - x_)) <= tolf and (x_ - e0) * d >= 1.2 * rk:
+                tg_f = x_; break
+        s_f = fp["f786"] - d * 0.001 * e0 if r["setup"] == "1D bounce" else None
+        if s_f is not None and (e0 - s_f) * d <= 0:
+            s_f = None
+        end = min(len(t5), st + MAX_TF_BARS * bpt)
+        for fib_mode in ("FCX", "S786", "FCX+S786"):
+            s2 = s_f if ("S786" in fib_mode and s_f is not None) else s
+            tg2 = tg_f if ("FCX" in fib_mode and tg_f is not None) else (e0 + d * TGT[r["setup"]] * abs(e0 - s2))
+            if (tg2 - e0) * d / abs(e0 - s2) < 1.2:
+                tg2 = e0 + d * 1.2 * abs(e0 - s2)
+            for exit_mode in (None, "XF"):
+                R, xi, kind = replay(ctx, st, end, d, e0, s2, tg2, exit_mode, tf["1h"])
+                mkt_open = kind == "failure exit"
+                x_t = pd.Timestamp(t5[xi]) + (pd.Timedelta(0) if mkt_open else FIVE)
+                a_ = np.searchsorted(ft, t5[st], side="right"); b_ = np.searchsorted(ft, x_t.to_datetime64(), side="left")
+                sp = abs(e0 - s2) / abs(e0)
+                cost = C_MKT + (C_LMT if kind == "target" else C_MKT) + ((fc[b_] - fc[a_]) * d if b_ > a_ else 0.0)
+                rows.append({**base, "entry": "now", "exit": exit_mode or "none", "fib": fib_mode, "net": R - cost / sp,
+                             "kind": kind, "stop_pct": sp, "decision_time": pd.Timestamp(t5[st]), "exit_time": x_t,
                              "entry_time": et, "direction": d, "tf": r["tf"]})
     R_ = pd.DataFrame(rows)
     R_.to_pickle(ROOT / "results" / "fixes.pkl")
     res_ok = ~R_["hold"] & (R_["exit_time"] < HOLDOUT)
     combos = []
     for entry_mode, exit_mode, use_tl, use_bq in itertools.product(("now", "RT"), ("none", "XF", "XA"), (False, True), (False, True)):
-        m = (R_["entry"] == entry_mode) & (R_["exit"] == exit_mode)
+        m = (R_["entry"] == entry_mode) & (R_["exit"] == exit_mode) & (R_["fib"] == "none")
         if use_tl:
             m &= ~R_["TL"]
         if use_bq:
@@ -210,6 +247,25 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
         ("name", "rules", str), ("n_r", "trades 2022-25", str), ("w_r", "win %", _pct), ("a_r", "avg R", f2),
         ("t", "t-score", lambda v: f"{v:.2f}"), ("years", "good years /4", str), ("n_h", "holdout trades", str),
         ("w_h", "holdout win %", _pct), ("a_h", "holdout avg R", f2)]), ""]
+    rows = []
+    names = {"none": "no Fibonacci", "FCX": "target at a Fib extension that coincides with liquidity",
+             "S786": "bounces: stop below Fib 0.786", "FCX+S786": "both"}
+    for fib_mode in ("none", "FCX", "S786", "FCX+S786"):
+        for exit_mode in ("none", "XF"):
+            for bq in (False, True):
+                m = (R_["entry"] == "now") & (R_["exit"] == exit_mode) & (R_["fib"] == fib_mode)
+                if fib_mode == "none":
+                    m &= R_["sig"].isin(R_.loc[R_["fib"] == "FCX", "sig"].unique())     # same trades as the Fib rows
+                if bq:
+                    m &= R_["BQ"]
+                r_, h_ = R_[m & res_ok], R_[m & R_["hold"]]
+                rows.append({"fib": names[fib_mode], "exit": {"none": "fixed / Fib target", "XF": "+ failure exit"}[exit_mode],
+                             "bq": "strong breaking candle" if bq else "", "n_r": len(r_), "w_r": (r_["net"] > 0).mean(),
+                             "a_r": r_["net"].mean(), "n_h": len(h_), "w_h": (h_["net"] > 0).mean(), "a_h": h_["net"].mean()})
+    L += ["## Fibonacci confluence (same trades in every row)", "", _table(pd.DataFrame(rows), [
+        ("fib", "Fibonacci", str), ("exit", "exit", str), ("bq", "filter", str), ("n_r", "trades 2022-25", str),
+        ("w_r", "win %", _pct), ("a_r", "avg R", f2), ("n_h", "trades holdout", str), ("w_h", "win % holdout", _pct),
+        ("a_h", "avg R holdout", f2)]), ""]
     if best is not None:
         R_.loc[best["mask"]].to_pickle(ROOT / "results" / "fixes_chosen.pkl")
     path = out_dir / "fixes.md"
