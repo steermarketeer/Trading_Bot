@@ -6,7 +6,7 @@ Events and outcomes exactly as bot/study/bb_pause_why.py (pump -> 3+ sideways cl
 hold / fail; the fair 1.5 ATR test; the trader's far target with a failure level 0.5 ATR beyond the middle band). Coins
 move together, so events on the same dates are not independent: confidence intervals and p-values come from a bootstrap
 that resamples whole calendar months (all coins' events in a month stay together). Conditions are compared at the same
-distances (strata: coin x timeframe x distance quintiles), as in the ETH study. The open-interest conditions are ETH only.
+distances (groups: timeframe x distance quintiles, pooled across coins; distances are in ATR). The open-interest conditions are ETH only.
 Research 2020 - Oct 2025 (each coin from its first data), holdout Nov 2025 on.
 """
 from __future__ import annotations
@@ -85,7 +85,7 @@ def run_bb_pause_coins(cfg: Config, out_dir: Path) -> Path:
     E = E[E["right"].notna()].reset_index(drop=True)
     E["hold"] = E["time"] >= HOLDOUT
     E["res"] = ~E["hold"] & (E["time"].dt.year >= 2020) & (E["time"] < HOLDOUT - E["tf"].map(LATE))
-    E["tf_c"] = E["coin"] + "-" + E["tf"]                               # strata include the coin
+    E["tf_c"] = E["coin"] + "-" + E["tf"]                               # coin-timeframe label (not used as a stratum)
     E.to_pickle(ROOT / "results" / "bb_pause_coins.pkl")
     L = ["# The middle-band hold after a pump, on six coins (4h and daily)", "",
          "Same events and outcomes as `reports/bb_pause_why.md`. **right** = the fair test (1.5 ATR either way; a coin flip = "

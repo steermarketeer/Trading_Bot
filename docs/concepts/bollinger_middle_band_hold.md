@@ -117,7 +117,8 @@ The split points the way the trader says, but it is weaker than it looks:
   Within those weeks the room effect is 49% vs 34%; within the others 61% vs 42% (12 cases);
 - at the same distances to the target and the failure level the far-target difference is +5 points (p 0.48);
 - it is one of six weekly readings plus a combination, inside a study of about 50 conditions, after the data was seen;
-- the holdout points the other way (42% vs 69%, on 26 and 16 cases); on the 4h the weekly makes no difference.
+- the daily holdout points the other way (42% vs 69%, on 26 and 16 cases); on the 4h the weekly makes no difference in
+  2020 - 25 (+3 points), while the 4h holdout does split (57% vs 40%, on 242 and 38 cases).
 So it is a hypothesis to test on new data, not a finding.
 
 **Follow the weekly.** The trader's next reading (also post hoc): after the touch, price follows the weekly trend whatever the touch
