@@ -118,7 +118,7 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
     names = {"R1": "R1 weak band touch at entry", "R2": "R2 fading momentum (buy RSI < 30 / sell RSI > 70)",
              "R3": "R3 squeeze breakout against the daily trend", "R4": "R4 breakout on thin volume",
              "R5": "R5 against the daily EMA 200 (information)",
-             "R6": "R6 breakout volume below 2x (deep study: 2x works, 1-2x fails)",
+             "R6": "R6 breakout volume below 2x (2x proven to help; 1-2x failing is not proven)",
              "R7": "R7 bearish RSI divergence at a breakout (4h)",
              "R8": "R8 1D bounce after only a shallow 4h pullback (< 0.45 of the leg)"}
     rows = []

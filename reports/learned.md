@@ -27,8 +27,8 @@ Rules written from the general studies (docs/indicators.md) before looking at th
 | R4 breakout on thin volume | holdout | 0 | 0 | 0 | +0.00 | 27 | 70% | +1.28 |
 | R5 against the daily EMA 200 (information) | 2022 - Oct 2025 | 35 | 16 | 19 | +22.80 | 65 | 62% | +0.92 |
 | R5 against the daily EMA 200 (information) | holdout | 14 | 5 | 9 | +14.22 | 13 | 77% | +1.56 |
-| R6 breakout volume below 2x (deep study: 2x works, 1-2x fails) | 2022 - Oct 2025 | 4 | 2 | 2 | +1.84 | 96 | 59% | +0.84 |
-| R6 breakout volume below 2x (deep study: 2x works, 1-2x fails) | holdout | 1 | 0 | 1 | +1.94 | 26 | 69% | +1.25 |
+| R6 breakout volume below 2x (2x proven to help; 1-2x failing is not proven) | 2022 - Oct 2025 | 4 | 2 | 2 | +1.84 | 96 | 59% | +0.84 |
+| R6 breakout volume below 2x (2x proven to help; 1-2x failing is not proven) | holdout | 1 | 0 | 1 | +1.94 | 26 | 69% | +1.25 |
 | R7 bearish RSI divergence at a breakout (4h) | 2022 - Oct 2025 | 7 | 2 | 5 | +7.55 | 93 | 58% | +0.81 |
 | R7 bearish RSI divergence at a breakout (4h) | holdout | 4 | 2 | 2 | +1.80 | 23 | 74% | +1.42 |
 | R8 1D bounce after only a shallow 4h pullback (< 0.45 of the leg) | 2022 - Oct 2025 | 45 | 18 | 27 | +46.36 | 55 | 58% | +0.66 |
