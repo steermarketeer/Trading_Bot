@@ -80,7 +80,8 @@ def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
             pv = event_pvalue(y[okr], bu[okr], be[okr])
             gy = sum(1 for yy in range(2020, 2026) if (m := ~hd & (yr == yy)).sum() >= 5 and right[m].mean() > 0.5)
             ny = sum(1 for yy in range(2020, 2026) if (~hd & (yr == yy)).sum() >= 5)
-            rows.append({"ev": name, "n": int((~hd).sum()), "p": right[~hd].mean(), "pv": pv, "yrs": f"{gy}/{ny}",
+            rs = ~hd & (yr >= 2020)                                       # research rows: 2020 - Oct 2025 (data starts Nov 2019)
+            rows.append({"ev": name, "n": int(rs.sum()), "p": right[rs].mean(), "pv": pv, "yrs": f"{gy}/{ny}",
                          "nh": int(hd.sum()), "ph": right[hd].mean() if hd.sum() else np.nan})
         L += [f"## {tf}", "", _table(pd.DataFrame(rows), [
             ("ev", "event", str), ("n", "cases 2020-25", str), ("p", "right", _pct), ("pv", "chance it is noise", lambda v: f"{v:.3f}"),

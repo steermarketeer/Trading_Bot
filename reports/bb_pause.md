@@ -6,9 +6,9 @@ Fair test: 1.5 ATR in the claimed direction before 1.5 ATR against (30 candles).
 
 | event | cases 2020-25 | right | chance it is noise | years above 50% | holdout cases | holdout right |
 |---|---|---|---|---|---|---|
-| touch holds (closes back above the middle band): claim the trend resumes | 268 | 49% | 0.783 | 3/6 | 44 | 52% |
-| touch breaks (closes below the middle band): claim the pause turns | 88 | 56% | 0.302 | 3/6 | 15 | 47% |
-| any middle-band touch-and-hold in a rising band, without the pump-and-sideways | 555 | 45% | 0.052 | 1/6 | 78 | 49% |
+| touch holds (closes back above the middle band): claim the trend resumes | 267 | 49% | 0.783 | 3/6 | 44 | 52% |
+| touch breaks (closes below the middle band): claim the pause turns | 86 | 56% | 0.302 | 3/6 | 15 | 47% |
+| any middle-band touch-and-hold in a rising band, without the pump-and-sideways | 544 | 45% | 0.052 | 1/6 | 78 | 49% |
 
 ## 1D
 
