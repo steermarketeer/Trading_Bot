@@ -38,9 +38,9 @@ within 0.25 ATR is an easy touch. So part 1 is a property of the bands, not evid
 "touches" did not actually reach the band; they came within the tolerance.)
 
 ### Parts 2 and 3: "holds -> pump again, fails -> dump": not on average
-On the fair test (1.5 ATR either way), a hold is right 48% (1h + 4h + 1D together, 1,444 cases; holdout 49%) and a
+On the fair test (1.5 ATR either way), a hold is right 47% (1h + 4h + 1D together, 1,449 cases; holdout 49%) and a
 failure 51%: **on average the close at the middle band does not tell the direction.** The daily alone looks better
-(holds 61%, 44 cases), but it is not proven (about 9% chance of noise, 3 holdout cases).
+(holds 61%, 44 cases), but it is not proven (about 9% chance of noise; 4 holdout cases, 1 right).
 
 ### Why it works and why it does not: what the data can and cannot show
 The trader's own definition, "pump again" = a new high above everything so far, is measured before a close 0.5 ATR below
@@ -57,17 +57,19 @@ condition is compared **within groups of the same timeframe and the same two dis
 | Swept the sideways low (a real sweep / spring) | -6 pts | -3 pts | not proven |
 | RSI down to 40 – 50 | -16 pts | -4 pts | geometry: the old high is further away |
 | Daily above its EMA 200 | +9 pts | +5 pts (p 0.08) | a tendency, not proven |
-| **Bands contracted during the sideways** (width <= 0.8x the pump's) | +10 pts | **+8 pts (p 0.02, holdout +6)** | **likely** |
+| Bands contracted during the sideways (width <= 0.8x the pump's) | +10 pts | +8 pts (p 0.02) | a lead only: all from the 1h (4h -1 pt, daily too few); holdout at the same distances +1 pt; the best of ~20 conditions |
 | Crowd leaning long at the touch (long / short ratio above its 30-day median) | -6 pts | -9 pts (p 0.03) | the holdout points the other way: not proven |
 
-On the failures the same squeeze matters the other way: when the bands contracted during the sideways, a failed hold dumped
-to the sideways low **less** often (-12 points at the same distances, p 0.002; 83 cases, 12 in the holdout). Nothing else
-about the pump, the sideways or the touch candle passes once the geometry is removed. On the fair test (1.5 ATR either
-way) none of the conditions moves the result.
+On the failures nothing passes either. (Measured with a target that includes the touch candle's own low, the same way the
+hold's target includes its high; an earlier run left the touch low out, so in 82% of failures the target had already
+been hit by the touch candle itself, which made "a sweep of the sideways low" and "the squeeze" look decisive. They are
+not: +1 pt and -1 pt once measured symmetrically. One condition, a deep touch, shows +21 pts at p 0.04, but with ~20
+conditions tested one such result is expected by chance.) On the fair test (1.5 ATR either way) no condition moves the
+result on either side.
 
 An earlier version of this document credited the wick, the touch volume and a deep touch with a clean gradient (24% ->
 54% new highs). That was measured with a failure level at the touch candle's own low, which those conditions push
-further away; it was geometry, not buyers defending (audit round 12).
+further away; it was geometry, not buyers defending (audit rounds 12 and 13).
 
 ### How big the next move is
 When the daily hold is confirmed by two more closes above the middle band, price made a new top before failing about half
@@ -78,23 +80,22 @@ In about 6 of 10 cases the hold failed within 30 days. Big when it works, not al
 
 - **What is solid:** after a pump and sideways, price does come back to the middle band (but that is how the bands
   behave anyway), and on the daily a hold was followed by the trend 61% of the time (44 cases, not yet proven).
-- **The one condition the data supports:** the move continues more often when the bands **contract** during the sideways
-  pause. That is Bollinger's squeeze inside a trend: volatility is stored and released in the trend's direction. When the
-  bands stay wide during the pause, the market is still fighting, and the middle band is less reliable.
-- **What the data cannot confirm:** that a wick, volume or a sweep at the middle band (buyers defending, Wyckoff
-  absorption, an ICT sweep) makes the pump more likely. Once the distance to the old high and to the failure level are
-  held equal, none of them shows an effect. This does not prove the theory wrong; it means our measurements of
-  "defense" do not capture it, or the samples are too small.
-- **The close at the middle band alone decides nothing** on 1h / 4h (47 – 51% on the fair test). The daily looks better but
-  has only 44 + 20 cases.
+- **What the data cannot confirm:** any reason **why** one hold pumps and another fails. Once the distance to the old
+  high and to the failure level are held equal, none of the pump, sideways or touch conditions makes a difference that
+  survives: not the wick, the volume, a deep touch or a sweep (the buyers-defending / Wyckoff absorption / ICT sweep
+  story), not the daily trend, not the RSI. The only lead is a squeeze during the pause on the 1h (Bollinger's idea that
+  stored volatility is released in the trend's direction), and it is not seen on the 4h or in the holdout.
+- This does not prove the theory wrong. It means either our measurements of "defense" do not capture what a trader sees,
+  or ETH alone has too few clean cases, above all on the daily, where the concept looks strongest.
+- **The close at the middle band alone decides nothing** on 1h / 4h (47 – 51% on the fair test).
 
 ## 4. Next steps
 
 1. **More daily cases:** ETH has only ~65 daily events. The same test on BTC and the other coins in `data/klines` would
    multiply the daily sample and show whether the daily effect (61%) is real.
-2. **Test on the trades,** before any use: (a) no trade against a daily trend pausing above its middle band while the bands
-   contract; (b) the entry from a daily hold with contracting bands, stop below the failure level, target the old high,
-   in R with costs.
+2. **Test on the trades,** before any use: (a) no trade against a daily trend pausing above its middle band; (b) the entry from a daily
+   hold, stop below the failure level, target the old high, in R with costs. (The squeeze is not used: it is a 1h-only
+   lead.)
 
-Audit: reports/bb_pause.md audited in rounds 9 – 11; reports/bb_pause_why.md and this document in round 12 (its main
-finding, the geometry, is fixed here) and round 13.
+Audit: reports/bb_pause.md audited in rounds 9 – 11; reports/bb_pause_why.md and this document in rounds 12 and 13 (the
+geometry and the fail-side target are fixed here) and round 14.

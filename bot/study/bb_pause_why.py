@@ -95,7 +95,7 @@ def events(t: TF, ht: TF, d1: TF, m, tf: str) -> list[dict]:
             held = c[q] > mid[q]
             sw = slice(k + 1, q)
             top = max(h[max(0, k - 20):q + 1].max(), h[q])
-            sw_low = l[sw].min()
+            sw_low = min(l[sw].min(), l[q])                              # includes the touch low, as `top` includes its high
             end = min(t.n, q + 1 + WIN)
             if q + WIN >= t.n:
                 j = q + 1; continue                                      # window would be cut by the data end
@@ -182,8 +182,11 @@ def run_bb_pause_why(cfg: Config, out_dir: Path) -> Path:
          "flip 50%) and the trader's **far target** (hold: a new high above everything so far; fail: the sideways low; before a "
          "close 0.5 ATR beyond the middle band, within 30 candles). The far-target difference is shown raw and **at the same "
          "distances** (within groups of the same timeframe, distance to the target and distance to the failure level); only "
-         "the same-distance column removes the geometry. **real** = p < 0.01 at the same distances and the holdout points the "
-         "same way.", ""]
+         "the same-distance column removes the geometry. **real** = p < 0.01 at the same distances and the holdout (also at the "
+         "same distances) points the same way. **Many conditions are tested in each table (about 20): one with p < 0.05 is "
+         "expected by chance alone,** so a single 'likely' is a lead, not a finding. The fail-side target includes the touch "
+         "candle's own low (the hold-side target includes its high), so a touch that already traded beyond the sideways low "
+         "does not count as reaching the target by itself.", ""]
     for kind, hm in (("hold -> does it pump again?", True), ("fail -> does it dump?", False)):
         for scope, sm in (("1h + 4h + 1D together", None), ("4h", "4h"), ("1D", "1D")):
             g = E[E["held"] == hm] if sm is None else E[(E["held"] == hm) & (E["tf"] == sm)]
@@ -200,13 +203,13 @@ def run_bb_pause_why(cfg: Config, out_dir: Path) -> Path:
     return path
 
 
-def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400):
+def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400, min_n: int = 60):
     """Difference in 'far' (condition present minus absent) within groups of the same timeframe x distance to the target
     (quintile) x distance to the failure level (quintile), weighted by group size; p by shuffling the condition within the
     groups. Removes the geometry: a condition that only moves the close nearer the target or further from the failure level
     shows nothing here."""
     x = g[g[cn].notna()].copy()
-    if len(x) < 60:
+    if len(x) < min_n:
         return np.nan, np.nan
     x["cnd"] = x[cn].astype(bool)
     x["s"] = x["tf"] + "|" + x.groupby("tf")["d_target"].transform(lambda v: pd.qcut(v.rank(method="first"), 5, labels=False)).astype(str) \
@@ -226,8 +229,8 @@ def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400):
 
     cv = x["cnd"].to_numpy()
     obs = diff(cv)
-    if not np.isfinite(obs):
-        return np.nan, np.nan
+    if not np.isfinite(obs) or n_perm == 0:
+        return obs, np.nan
     rng = np.random.default_rng(3)
     cnt = 0
     for _ in range(n_perm):
@@ -249,7 +252,7 @@ def cond_table(res, hol, conds) -> list[str]:
         pv_fair = shift_pvalue(res, cn) if len(res) >= 60 else np.nan
         d_far = a_["far"].mean() - a0["far"].mean()
         d_st, pv_st = strat_test(res, cn)
-        d_h = (b_["far"].mean() - b0["far"].mean()) if len(b_) >= 5 and len(b0) >= 5 else np.nan
+        d_h = strat_test(hol, cn, n_perm=0, min_n=20)[0] if len(b_) >= 5 and len(b0) >= 5 else np.nan   # same distances
         real = ""
         if pv_st == pv_st and pv_st < 0.01 and d_h == d_h and np.sign(d_h) == np.sign(d_st):
             real = "yes"
@@ -266,7 +269,7 @@ def cond_table(res, hol, conds) -> list[str]:
                        ("df", "fair test: difference", f2), ("pf", "fair test: noise", fp),
                        ("dfar", "far target: raw difference", f2), ("dst", "far target: same distances", f2),
                        ("pst", "same distances: noise", fp), ("nh", "holdout cases with it", str),
-                       ("dh", "holdout far difference (raw)", f2),
+                       ("dh", "holdout, same distances", f2),
                        ("real", "real (p<0.01 at same distances, holdout agrees) / likely (p<0.05)", str)]), ""]
 
 if __name__ == "__main__":
