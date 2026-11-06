@@ -12,18 +12,18 @@ Fair test: 1.5 ATR in the claimed direction before 1.5 ATR against (30 candles).
 
 ### 4h: how big is the move after the touch?
 
-From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold failed). **new top** = price trades above the pump's top first. Run = the furthest price got, in ATR of the touch candle.
+From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold failed). **new top** = price trades above the pump's top (or any higher high made before the decision) first. Run = the furthest price got after the decision, in ATR of the decision candle.
 
 | event | period | cases | new top before failing | hold failed within 30 | run: lower quarter (ATR) | run: median (ATR) | run: upper quarter (ATR) | median run % | runs >= 3 ATR |
 |---|---|---|---|---|---|---|---|---|---|
-| touch holds after a pump and sideways | 2020 - Oct 2025 | 274 | 34% | 78% | 0.3 | 1.0 | 2.6 | 2.4% | 22% |
-| touch holds after a pump and sideways | holdout | 44 | 34% | 77% | 0.2 | 0.6 | 2.9 | 1.2% | 23% |
-| ... and the next 2 closes stay above the middle band (measured from the 2nd) | 2020 - Oct 2025 | 177 | 42% | 72% | 0.3 | 1.0 | 2.7 | 2.2% | 24% |
-| ... and the next 2 closes stay above the middle band (measured from the 2nd) | holdout | 25 | 56% | 60% | 0.4 | 1.6 | 5.5 | 2.6% | 36% |
+| touch holds after a pump and sideways | 2020 - Oct 2025 | 274 | 33% | 78% | 0.3 | 1.0 | 2.6 | 2.4% | 22% |
+| touch holds after a pump and sideways | holdout | 43 | 35% | 77% | 0.2 | 0.6 | 2.9 | 1.3% | 23% |
+| ... and the next 2 closes stay above the middle band (measured from the 2nd) | 2020 - Oct 2025 | 174 | 38% | 72% | 0.3 | 1.0 | 2.9 | 2.2% | 25% |
+| ... and the next 2 closes stay above the middle band (measured from the 2nd) | holdout | 24 | 58% | 58% | 0.4 | 1.8 | 5.5 | 2.8% | 38% |
 | touch-and-hold without the sequence | 2020 - Oct 2025 | 554 | 36% | 80% | 0.1 | 0.8 | 2.2 | 1.6% | 18% |
-| touch-and-hold without the sequence | holdout | 79 | 32% | 82% | 0.1 | 0.5 | 1.8 | 0.8% | 18% |
-| ... without the sequence, next 2 closes above the middle band | 2020 - Oct 2025 | 345 | 54% | 70% | 0.4 | 1.2 | 2.9 | 2.5% | 24% |
-| ... without the sequence, next 2 closes above the middle band | holdout | 42 | 60% | 69% | 0.2 | 1.0 | 2.7 | 1.8% | 21% |
+| touch-and-hold without the sequence | holdout | 78 | 31% | 82% | 0.1 | 0.5 | 1.9 | 0.8% | 18% |
+| ... without the sequence, next 2 closes above the middle band | 2020 - Oct 2025 | 328 | 50% | 69% | 0.4 | 1.3 | 3.0 | 2.7% | 25% |
+| ... without the sequence, next 2 closes above the middle band | holdout | 41 | 56% | 68% | 0.2 | 1.0 | 2.7 | 1.5% | 22% |
 
 ### 4h: the trader's concept, all of it
 
@@ -48,18 +48,18 @@ After a pump and 3+ closes above the middle band (2020 - Oct 2025): price touche
 
 ### 1D: how big is the move after the touch?
 
-From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold failed). **new top** = price trades above the pump's top first. Run = the furthest price got, in ATR of the touch candle.
+From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold failed). **new top** = price trades above the pump's top (or any higher high made before the decision) first. Run = the furthest price got after the decision, in ATR of the decision candle.
 
 | event | period | cases | new top before failing | hold failed within 30 | run: lower quarter (ATR) | run: median (ATR) | run: upper quarter (ATR) | median run % | runs >= 3 ATR |
 |---|---|---|---|---|---|---|---|---|---|
 | touch holds after a pump and sideways | 2020 - Oct 2025 | 45 | 38% | 67% | 0.5 | 1.0 | 4.6 | 7.7% | 33% |
-| touch holds after a pump and sideways | holdout | 4 | 0% | 100% | 0.3 | 0.5 | 0.7 | 2.0% | 0% |
-| ... and the next 2 closes stay above the middle band (measured from the 2nd) | 2020 - Oct 2025 | 35 | 49% | 60% | 0.2 | 1.2 | 4.5 | 8.3% | 37% |
-| ... and the next 2 closes stay above the middle band (measured from the 2nd) | holdout | 3 | 0% | 100% | 0.1 | 0.1 | 0.5 | 0.4% | 0% |
+| touch holds after a pump and sideways | holdout | 3 | 0% | 100% | 0.2 | 0.4 | 0.5 | 1.4% | 0% |
+| ... and the next 2 closes stay above the middle band (measured from the 2nd) | 2020 - Oct 2025 | 34 | 47% | 59% | 0.2 | 1.0 | 4.8 | 7.3% | 38% |
+| ... and the next 2 closes stay above the middle band (measured from the 2nd) | holdout | 2 | 0% | 100% | 0.2 | 0.5 | 0.7 | 1.9% | 0% |
 | touch-and-hold without the sequence | 2020 - Oct 2025 | 94 | 36% | 76% | 0.1 | 0.7 | 3.7 | 3.6% | 28% |
-| touch-and-hold without the sequence | holdout | 17 | 24% | 94% | 0.1 | 0.3 | 1.5 | 1.8% | 6% |
-| ... without the sequence, next 2 closes above the middle band | 2020 - Oct 2025 | 55 | 51% | 64% | 0.3 | 1.3 | 4.9 | 6.1% | 36% |
-| ... without the sequence, next 2 closes above the middle band | holdout | 9 | 44% | 89% | 0.3 | 0.4 | 1.4 | 1.9% | 11% |
+| touch-and-hold without the sequence | holdout | 14 | 29% | 93% | 0.2 | 0.4 | 1.7 | 2.5% | 7% |
+| ... without the sequence, next 2 closes above the middle band | 2020 - Oct 2025 | 54 | 50% | 63% | 0.3 | 1.3 | 5.0 | 6.3% | 37% |
+| ... without the sequence, next 2 closes above the middle band | holdout | 9 | 33% | 89% | 0.3 | 0.4 | 1.4 | 1.9% | 11% |
 
 ### 1D: the trader's concept, all of it
 

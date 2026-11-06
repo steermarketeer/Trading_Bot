@@ -173,15 +173,17 @@ def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
                 for jt in np.nonzero(M[side][k])[0]:
                     if jt + conf + 1 >= t.n or not np.all(c_[jt + 1:jt + conf + 1] > mid_[jt + 1:jt + conf + 1]):
                         continue
+                    if conf and not np.all(c_[jt + 1:jt + conf + 1] >= l_[jt]):
+                        continue                                        # a confirming close already failed the hold
                     j = jt + conf                                       # decision at the confirming close
-                    if late[j]:
-                        continue
-                    top = h_[max(0, jt - 20):jt].max()                   # the pump's top (highest high of the 20 before the touch)
+                    if late[j] or j + 30 >= t.n:
+                        continue                                        # (also: no window cut short by the data end)
+                    top = max(h_[max(0, jt - 20):jt].max(), h_[jt:j + 1].max())   # pump top, or any high made up to the decision
                     end = min(t.n, j + 31)
                     fail = next((q for q in range(j + 1, end) if c_[q] < l_[jt]), end)   # a close below the touch low
                     seg = h_[j + 1:fail] if fail > j + 1 else np.array([c_[j]])
                     run = seg.max() - c_[j]
-                    out.append({"hold": bool(hold[j]), "yr": int(years[j]), "new_top": bool(seg.max() > top),
+                    out.append({"hold": bool(hold[j]), "yr": int(years[j]), "new_top": bool(fail > j + 1 and seg.max() > top),
                                 "run_atr": run / t.a[j], "run_pct": run / abs(c_[j]), "failed": fail < end})
             O_ = pd.DataFrame(out)
             for per, pm in (("2020 - Oct 2025", ~O_["hold"] & (O_["yr"] >= 2020)), ("holdout", O_["hold"])):
@@ -193,7 +195,8 @@ def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
                               "pct": g["run_pct"].median(), "big": (g["run_atr"] >= 3).mean()})
         L += [f"### {tf}: how big is the move after the touch?", "",
               "From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold "
-              "failed). **new top** = price trades above the pump's top first. Run = the furthest price got, in ATR of the touch candle.", "",
+              "failed). **new top** = price trades above the pump's top (or any higher high made before the decision) first. Run = the "
+              "furthest price got after the decision, in ATR of the decision candle.", "",
               _table(pd.DataFrame(srows), [("ev", "event", str), ("per", "period", str), ("n", "cases", str),
                                            ("top", "new top before failing", _pct), ("fail", "hold failed within 30", _pct),
                                            ("q25", "run: lower quarter (ATR)", lambda v: f"{v:.1f}"), ("med", "run: median (ATR)", lambda v: f"{v:.1f}"),
