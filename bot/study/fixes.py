@@ -272,6 +272,9 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
         ("fib", "Fibonacci", str), ("exit", "exit", str), ("bq", "filter", str), ("n_r", "trades 2022-25", str),
         ("w_r", "win %", _pct), ("a_r", "avg R", f2), ("n_h", "trades holdout", str), ("w_h", "win % holdout", _pct),
         ("a_h", "avg R holdout", f2)]), ""]
+    L += ["Audit: round 27 (after the 5 : 1 bounce target), chosen row and selection rule reproduced from results/fixes.pkl; "
+          "zero result-impacting issues in this report. Round 27 also found that bot/live/v3.py does not yet implement the "
+          "0.786 bounce stop or the journal filters of this chosen version (see its docstring)."]
     if best is not None:
         R_.loc[best["mask"]].to_pickle(ROOT / "results" / "fixes_chosen.pkl")
     path = out_dir / "fixes.md"

@@ -185,7 +185,7 @@ def run_failure_study(cfg: Config, out_dir: Path) -> Path:
         rr = ", ".join(k for k in ENTRY_REASONS if D.loc[r.Index, k])
         aa = ", ".join(k for k in AFTER_REASONS if D.loc[r.Index, k])
         L.append(f"| {r.entry_time:%Y-%m-%d %H:%M} | {r.setup} | {r.dir} | {r.net:+.2f} | {r.kind} | {rr or '-'} | {aa or '-'} |")
-    L += ["", "Audit: pending."]
+    L += ["", "Audit: rounds 27 and 28; round 27 found the liquidity-at-stop flag evaluated at the old v3.1 stop for bounces (fixed: now the trade's own 0.786 stop), round 28 reproduced every number; zero open issues."]
     path = out_dir / "failure_study.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

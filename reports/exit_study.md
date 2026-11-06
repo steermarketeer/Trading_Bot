@@ -61,4 +61,12 @@ Chosen on 2022-25 (t-score): **half at +2R, rest to break-even and run**; most p
 | 4h swing trail, no target | 51 | 59% | +0.64 | 2.73 | 2.82 | 4 | 1.82x | -12% | 12.8 | 91% | +2.32 | 1.59x | -2% |
 | entry filter: skip all three liquidity reasons | 38 | 55% | +1.39 | 3.90 | 3.30 | 3 | 2.46x | -16% | 28.9 | 75% | +1.89 | 1.32x | -2% |
 
-Audit: pending.
+## Reading
+
+- Breakouts (2 : 1): nothing beats the fixed target by more than noise; break-even after +2R and the partial exit are the same trade as the fixed target (2R = the target). The trails after +1R add +0.01 .. +0.02R.
+- 1D bounces (5 : 1): **break-even after +2R** is the only exit that improves both the profit and the t-score on 2022-25 (+1.19R vs +1.09R, 2.86x vs 2.59x, drop -14% vs -16%) without hurting the holdout (+2.07R vs +2.08R). It changes 5 research trades (losers that had run 2R and came back to the stop, now ~0R) and 1 holdout trade. Five trades is a logical, small edge, not a proof.
+- Every early exit on a 4h signal against the trade (first 4h close against, Chandelier, swing trail) wins more often but earns less per trade: the trades it saves are smaller than the winners it cuts.
+- No target + trailing stop loses in both periods (fewer, bigger winners do not pay for the many trail stops).
+- Skipping the 'all three liquidity reasons' trades raises the average R but lowers the account (fewer trades) and deepens the drawdown; it is a post-hoc hypothesis and stays out.
+
+Audit: round 28, independent re-implementation of the replay for all 162 trades x 11 exits, the booking, every table line and the SKIP3 flags; zero result-impacting issues.

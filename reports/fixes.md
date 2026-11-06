@@ -92,3 +92,4 @@ Start: v3.1 ETH trades (one position per move) with the two journal filters. **w
 | both | + failure exit |  | 129 | 67% | +0.35 | 33 | 67% | +0.44 |
 | both | + failure exit | strong breaking candle | 100 | 72% | +0.36 | 27 | 74% | +0.52 |
 
+Audit: round 27 (after the 5 : 1 bounce target), chosen row and selection rule reproduced from results/fixes.pkl; zero result-impacting issues in this report. Round 27 also found that bot/live/v3.py does not yet implement the 0.786 bounce stop or the journal filters of this chosen version (see its docstring).

@@ -110,4 +110,4 @@
 | 2026-06-04 00:00 | 1D bounce | short | -0.39 | time | ceiling, liq at stop | - |
 | 2025-03-10 18:00 | A+ breakout | short | -0.26 | time | ceiling, weekly no room, stretched | - |
 
-Audit: pending.
+Audit: rounds 27 and 28; round 27 found the liquidity-at-stop flag evaluated at the old v3.1 stop for bounces (fixed: now the trade's own 0.786 stop), round 28 reproduced every number; zero open issues.

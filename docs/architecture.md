@@ -68,7 +68,13 @@ vol_j >= 2 * mean(vol_{j-20..j-1});   d * (C_j - L) >= 1 * ATR_tf
 - MARKER: trades whose **first 4h close after entry is back against the entry** win 29% vs 59% (`selfreview.md`).
   Known only after entry, so it becomes the **early-exit rule**: if the first 4h close after entry is on the wrong side
   of the entry price, exit at the next open (tested as "failure exit": raises win % to 67 - 72%, lowers avg R to
-  +0.37; see 2.4 before adopting).
+  +0.37; see 2.4 before adopting). DECIDED (`exit_study.md`, audited): not adopted. On the chosen version it earns
+  +0.67R vs +0.88R and 10.4x vs 19.3x; the trades it saves are smaller than the winners it cuts.
+- EXIT STUDY (`exit_study.md`, 162 trades, 11 exits, 2022-25 choice, holdout once): break-even, 4h-against exit,
+  Chandelier 2/3 ATR, 4h swing trail, partial profit, no-target trails. Breakouts: nothing beats the fixed 2 : 1 by more
+  than noise. 1D bounces: **break-even after +2R** (stop to the entry once the trade has run 2R; target 5 : 1 stays)
+  improves 2022-25 (+1.19R vs +1.09R, 2.86x vs 2.59x) and leaves the holdout unchanged (+2.07R vs +2.08R); it rests on
+  5 research trades, so it is a candidate, not yet a rule. No target + trail loses in both periods.
 - MARKER: a **ceiling (resistance / untaken 4h high) between entry and target** → 43% vs 68% win. Already enforced
   through the journal filters for double tops; a general "liquidity target" (first untaken HTF swing >= 1.2R) replaces
   a fixed ratio only when it is at least as far as 2R - tested, not better (`bounce_fix.md`), so targets stay fixed and
@@ -122,9 +128,9 @@ exposure       sum of open notional <= 5 * E;  one position per move (same candl
 VaR (1 day)    VaR_99 = Σ notional_i * 2.326 * σ_daily,  σ_daily ≈ ATR_1D / price;  cap VaR_99 at 35% of E (= the 5x
                cap at 3% volatility; in higher volatility it bites first and cuts the size, never below 25% of plan)
 trailing stop  Chandelier: S_t = max(S_{t-1}, HH_n - 3 * ATR_1D) for longs (mirror for shorts), armed only after
-               the trade reached +1R.  UNTESTED on our trades; the evidence so far says fixed targets beat early
-               exits (failure exit: win 72% but avg R +0.37 vs +0.83; the ML manager found no exit that beats holding).
-               It ships OFF and is tested before it is switched on.
+               the trade reached +1R.  TESTED (exit_study.md): wins more often, earns less (+0.82R vs +0.88R all
+               trades; bounces +0.92R vs +1.09R). It ships OFF. The only exit that helped is break-even after +2R
+               on bounces (candidate, 5 trades).
 ```
 
 ## Module 3: system architecture (`bot/live/`)
@@ -171,6 +177,8 @@ are charged when the live loop calls apply_funding / passes expires_at, in the o
 ## Build order (each step: code → tests → audit → shadow)
 1. `bot/live/risk.py`, `bot/live/breaker.py`, `bot/live/execution.py` (paper) with unit tests - done in this commit.
 2. The failure-to-short setup (1.4): fair test on six coins, then the trade test.
-3. Early-exit rule (1.3) decision: adopt or not, on 2022 - 25 only.
+3. Early-exit rule (1.3) decision: DONE, not adopted (exit_study.md). Open: whether to adopt break-even after +2R on
+   bounces (user decision; 5 trades). Before paper trading, wire the chosen version into bot/live/v3.py: journal
+   filters, one position per move, the 0.786 bounce stop (audit 27).
 4. Live loop (`bot/live/run.py`): closed-candle events → v3.1 signals → RiskManager → PaperExecution; shadow for weeks.
 5. Monte Carlo + metrics report; then the Binance adapter on testnet.
