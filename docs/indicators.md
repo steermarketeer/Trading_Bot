@@ -7,10 +7,13 @@ conditions make it work or fail). Applied to the trades: `reports/learned.md`.
 **Fair test:** at the signal close, does price move 1.5 ATR the way the signal claims before 1.5 ATR against (30 candles)?
 A coin flip is 50%. **Real or noise:** each result is compared with 400 copies of the same signal moved to random dates
 (the clustering of nearby events is kept). A result counts as **real** only if fewer than 1% of the copies match it
-(p < 0.01) **and** the holdout (Nov 2025 on) points the same way. Of 635 detailed conditions tested (621 distinct),
-**22 pass; noise alone would pass about 3.** Everything below that is not marked real is a tendency the data cannot prove.
+(p < 0.01) **and** the holdout (Nov 2025 on) points the same way. Of 851 detailed conditions tested (834 distinct),
+**26 pass; noise alone would pass about 4.** Everything below that is not marked real is a tendency the data cannot prove.
 
 The main rules (structure, levels, liquidity, closes) come first; indicators only support them.
+
+Audit: seven independent rounds (code and every number in this document); all result-impacting findings fixed. The
+Ichimoku part is audited in round 8.
 
 ## The short answer
 
@@ -24,6 +27,7 @@ The main rules (structure, levels, liquidity, closes) come first; indicators onl
 | **Trendlines** | **mixed, no rule** | steep rejections fail on 4h (40%, holdout 35%) but do better on 1h (51% vs 47%, holdout +5): opposite on the two timeframes, so no usable rule. Rejections overall are 47 – 48% on 1h / 4h (52% on the daily) | "3 touches = strong" (not proven; the tendency is the opposite) |
 | **Market structure** | price action is the main rule | no BOS / CHoCH condition passes (on 1h with ~900 cases each; on 4h / daily the samples are smaller) | |
 | **Fibonacci** | only at confluence | none proven in this test | a level by itself |
+| **Ichimoku** | **promising on the daily, not proven** | on 1h a Kijun bounce works with RSI > 60 (57% vs 47%, holdout 57%) or expanding bands (53% vs 46%) and fails above a thick cloud (44% vs 54%, holdout 45%); entering the cloud from below does worse with the Chikou free (46% vs 52%) | daily cloud breakout 62% (p 0.007) and the full Hosoda breakout (Chikou free, bullish future cloud) 69% (36 cases, p 0.010), 4h kumo twist 57% (p 0.002): all strong in 2020 - 25 but **against in the holdout** (42%, 40%, 44% on 12, 5, 55 cases); TK crosses 51 – 54%; Kijun bounces 47 – 49% on 1h / 4h |
 | **MACD** | **drop** | nothing on 4h / daily. On 1h a cross is right 52% (real but too small to use); it does better with expanding bands, volume or liquidity ahead (+5 – 6 pts), which is the context, not MACD | every MACD signal on its own; it repeats the EMAs (0.94) and RSI (0.87) |
 | **ATR** | use for distances | | direction |
 
@@ -50,8 +54,8 @@ divergence: not proven either way.
 
 ### Volume
 Participation. Edwards & Magee: real breakouts expand volume. **Proven:** >= 2x volume and a close > 1 ATR beyond the
-range make a 4h breakout work (58 – 62%); the strategy's strong-breaking-candle rule already uses volume on the breaking
-candle.
+range make a 4h breakout work (58 – 62%). The strong-breaking-candle filter (>= 1.2x volume, body >= 60%, range >= 1.5
+ATR) is not in the research-chosen version (see the last section).
 
 ### Bollinger bands (John Bollinger)
 Two readings: %b (where price is; the same as RSI) and BandWidth (volatility; new information). Bollinger's rules: tags
@@ -78,6 +82,18 @@ does better (56%). On the 1h the engulfing at the lower band does slightly worse
 Mixed: steep lines fail as support on 4h (40%) but hold slightly better on 1h (51%). No usable steepness rule.
 Tendency: more touches = more likely to break, because stops gather under the line (liquidity).
 
+### Ichimoku (Goichi Hosoda)
+Five lines: Tenkan (9-candle midpoint), Kijun (26), the cloud (Senkou A = Tenkan/Kijun midpoint, Senkou B = 52-candle
+midpoint, both drawn 26 candles ahead) and the Chikou (the close drawn 26 back). Hosoda's reading: price above the cloud =
+uptrend; a TK cross is strong above the cloud, neutral inside, weak below; a cloud breakout needs the Chikou clear of the
+old candles and a bullish cloud ahead; the Kijun is the equilibrium price that pullbacks return to; a price inside the
+cloud tends to travel to the other edge. **On ETH:** the lines repeat the averages (price vs Kijun correlates 0.93 with
+price vs EMA 20, price vs the cloud 0.95 with price vs EMA 50, 4h). The daily cloud breakout, the full Hosoda breakout
+and the 4h kumo twist were strong in 2020 - 25 (57 – 69%) but went the other way in the holdout on few cases, so they are
+promising, not proven. Proven only on the 1h: the Kijun bounce needs momentum (RSI > 60) or expanding bands and fails above a thick
+cloud.
+The TK cross, the Kijun bounce on 4h, edge-to-edge and the Chikou cross are coin flips.
+
 ### MACD (Appel; histogram by Aspray)
 Two EMAs' difference: the same information as the EMAs and RSI. Nothing on 4h / daily; the 1h cross (52%) is real but too
 small to trade, and it only improves with context that works without MACD. Dropped.
@@ -94,8 +110,8 @@ middle band holds on the close (2,200). That matches the trader's read.
 ## What this means for the bot (tested on the trades, `reports/learned.md`)
 The version the selection rule picks on 2022 - Oct 2025 is **v3.1 + the journal filters + the 1D-bounce stop below the
 0.786** (129 trades, 59% win, +0.79R; holdout 33 trades, 64%, +1.02R; `reports/fixes.md`). The strong-breaking-candle
-filter is **not** part of it: on 2022 - 25 it changes avg R only from +0.71 to +0.72 (t-score 4.96 -> 4.34) and helps
-only in the holdout, which cannot be used to choose it.
+filter is **not** part of it: on that version it cuts 2022 - 25 trades from 129 to 100 for +0.79 -> +0.83R, so the
+t-score falls (5.53 -> 4.98); its clear gain is only in the holdout (+1.02 -> +1.28R), which cannot be used to choose it.
 
 Every lesson above was turned into a filter before looking at the trades and run on that version. **None improved it in a
 meaningful way.** By the 2022 - 25 t-score the base scores 5.53; the best filter, the weak band touch, scores 5.62 by

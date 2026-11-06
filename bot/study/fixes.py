@@ -200,15 +200,21 @@ def run_fixes(cfg: Config, out_dir: Path) -> Path:
     R_.to_pickle(ROOT / "results" / "fixes.pkl")
     res_ok = ~R_["hold"] & (R_["exit_time"] < HOLDOUT)
     combos = []
-    for entry_mode, exit_mode, use_tl, use_bq in itertools.product(("now", "RT"), ("none", "XF", "XA"), (False, True), (False, True)):
-        m = (R_["entry"] == entry_mode) & (R_["exit"] == exit_mode) & (R_["fib"] == "none")
+    fib_names = {"none": "", "FCX": "Fib extension target at liquidity", "S786": "bounce stop below Fib 0.786",
+                 "FCX+S786": "Fib extension target + bounce stop below 0.786"}
+    for entry_mode, exit_mode, use_tl, use_bq, fib_mode in itertools.product(("now", "RT"), ("none", "XF", "XA"), (False, True),
+                                                                             (False, True), tuple(fib_names)):
+        if fib_mode != "none" and (entry_mode == "RT" or exit_mode == "XA"):
+            continue                                                    # Fibonacci variants exist for these only
+        m = (R_["entry"] == entry_mode) & (R_["exit"] == exit_mode) & (R_["fib"] == fib_mode)
         if use_tl:
             m &= ~R_["TL"]
         if use_bq:
             m &= R_["BQ"]
         name = " + ".join([x for x, on in (("retest entry" if entry_mode == "RT" else "enter at signal", True),
                                            ({"none": "fixed target", "XF": "failure exit (in profit)", "XA": "failure exit (any)"}[exit_mode], True),
-                                           ("no trendline in the way", use_tl), ("strong breaking candle", use_bq)) if on])
+                                           ("no trendline in the way", use_tl), ("strong breaking candle", use_bq),
+                                           (fib_names[fib_mode], fib_mode != "none")) if on])
         r_ = R_[m & res_ok]; h_ = R_[m & R_["hold"]]
         yrs = sum(1 for y in (2022, 2023, 2024, 2025) if r_.loc[r_["year"] == y, "net"].mean() > 0)
         tsc = r_["net"].mean() / (r_["net"].std(ddof=1) / math.sqrt(len(r_))) if len(r_) > 2 and r_["net"].std() > 0 else 0
