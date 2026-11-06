@@ -151,9 +151,9 @@ def test_daily_stop_latches_until_the_roll():
     # mark() trips the latch without a signal
     st = AccountState(9_100, 9_100, 10_000)
     rm.mark(st)
-    assert st.halted_reason.startswith("weekly stop")
+    assert st.weekly_halt.startswith("weekly stop") and st.halted_reason is None
     rm.roll_week(st)
-    assert st.halted_reason is None
+    assert st.weekly_halt is None
 
 
 def test_paper_time_exit_and_funding_match_the_backtest_model():
