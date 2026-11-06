@@ -161,7 +161,8 @@ def run_three_failures(cfg: Config, out_dir: Path) -> Path:
                                     ("rr", "median reward:risk", lambda v: "" if v != v else f"{v:.1f}"),
                                     ("fair", "fair test", f1), ("flo", "90% low", f1), ("fhi", "90% high", f1),
                                     ("nh", "holdout trades", str), ("wh", "holdout win %", f1), ("ah", "holdout avg R", f2)]), "",
-         "Audit: pending."]
+         "Funding is included for ETH only (no funding data for the other coins).", "",
+         "Audit: round 21, no result-impacting issue."]
     path = out_dir / "three_failures.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

@@ -29,4 +29,6 @@ Six coins, 15m and 1h, mirrored. **win % = profit after costs.** Fair test = 1.5
 | 15m | neckline | liquidity | long (failures to go down) | 23192 | 34% | -0.20 | 2.1 | 48% | 48% | 49% | 3846 | 32% | -0.30 |
 | 15m | neckline | liquidity | both | 46273 | 33% | -0.20 | 2.2 | 49% | 49% | 50% | 7854 | 34% | -0.23 |
 
-Audit: pending.
+Funding is included for ETH only (no funding data for the other coins).
+
+Audit: round 21, no result-impacting issue.
