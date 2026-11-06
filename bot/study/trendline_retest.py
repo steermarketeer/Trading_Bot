@@ -59,21 +59,23 @@ def breaks(t: TF, side: int, y: np.ndarray, coin: str, tf: str) -> list[dict]:
             used.add((i1, i2)); continue                                # the line was already broken earlier
         used.add((i1, i2))
         touches = sum(1 for ii, pp, _ in arr[max(0, k1 - 6):k1] if abs(pp - line(ii)) <= 0.25 * a[int(ii)])
-        rt, run, run_bt, rt_far, away = None, 0.0, np.nan, None, False
+        run = (line(j) - l[j]) / a[j]                                  # the break candle counts
+        rt, run_bt, rt_far, away = None, np.nan, None, run >= 1.0
         for k in range(j + 1, j + 1 + WIN):
             touch = h[k] >= line(k) - 0.25 * a[k]
-            if away and touch:
+            if touch and rt is None:
+                rt, run_bt = k, run                                     # the first retest; the run strictly before it
+            if touch and away:
                 rt_far = k                                              # a retest AFTER price first moved >= 1 ATR away
-                if rt is None:
-                    rt, run_bt = k, max(run, (line(k) - l[k]) / a[j])   # it is also the first retest
                 break
             run = max(run, (line(k) - l[k]) / a[j])
-            if rt is None and touch:
-                rt, run_bt = k, run                                     # the first retest and the run before it
-            if (line(k) - l[k]) / a[j] >= 1.0:
+            if run >= 1.0:
                 away = True
         run = run_bt
+        yb = y[j]
         rec = {"coin": coin, "tf": tf, "side": side, "time": pd.Timestamp(t.ot[j]), "touches": touches,
+               "bdist": (line(j) - c[j]) / a[j], "next": rt is not None and rt == j + 1,
+               "at_break": np.nan if not np.isfinite(yb) else (1 - yb if side > 0 else yb),
                "steep": sl_ / a[j] > 0.15, "retest": rt is not None, "wait": (rt - j) if rt is not None else np.nan,
                "run": run, "result": "", "after": np.nan, "retest_far": rt_far is not None,
                "wait_far": (rt_far - j) if rt_far is not None else np.nan}
@@ -123,13 +125,16 @@ def run_trendline_retest(cfg: Config, out_dir: Path) -> Path:
                 r = x[x["retest"]]
                 rej = r[r["result"] == "rejected"]
                 fr = rej[rej["after"].notna()]
-                fm = month_boot(fr.assign(right=fr["after"]), "right")[0] if len(fr) else np.nan
+                fm, flo, fhi, _ = month_boot(fr.assign(right=fr["after"]), "right") if len(fr) else (np.nan,) * 4
+                xb = x[x["at_break"].notna()]
+                bm = month_boot(xb.assign(right=xb["at_break"]), "right")[0] if len(xb) else np.nan
                 out.append({"tf": tf, "lab": lab, "per": per, "n": len(x),
                             "r5": (x["wait"] <= 5).mean(), "r10": (x["wait"] <= 10).mean(), "r20": x["retest"].mean(),
                             "wait": r["wait"].median() if len(r) else np.nan, "run": r["run"].median() if len(r) else np.nan,
                             "rej": (r["result"] == "rejected").mean() if len(r) else np.nan,
                             "rec": (r["result"] == "reclaimed").mean() if len(r) else np.nan,
                             "on": (r["result"] == "closed on the line").mean() if len(r) else np.nan, "after": fm,
+                            "alo": flo, "ahi": fhi, "brk": bm, "nxt": x["next"].mean(),
                             "far": x["retest_far"].mean()})
     L = ["# Trendline breaks: how often does price come back to retest the line?", "",
          "Six coins (BTC, ETH, BNB, SOL, XRP, DOGE). A break = the first close beyond the line by >= 0.25 ATR; a retest = "
@@ -142,9 +147,26 @@ def run_trendline_retest(cfg: Config, out_dir: Path) -> Path:
                                     ("run", "median run away before it (ATR)", lambda v: "" if v != v else f"{v:.1f}"),
                                     ("rej", "retest rejected (closes back on the broken side)", f1),
                                     ("rec", "line reclaimed (break failed)", f1), ("on", "closed on the line", f1),
-                                    ("after", "after a rejected retest: right", f1),
+                                    ("after", "after a rejected retest: right", f1), ("alo", "90% low", f1),
+                                    ("ahi", "90% high", f1), ("brk", "same test taken at the break itself", f1),
+                                    ("nxt", "retested on the very next candle", f1),
                                     ("far", "retest after first moving >= 1 ATR away (within 20)", f1)]), "",
-         "Audit: pending."]
+         "**Most quick retests are mechanical.** A break only has to close 0.25 ATR beyond the line, and a retest is a wick "
+         "back within 0.25 ATR: when the break closes close to the line, the very next candle reaches it about as often as any "
+         "ordinary candle reaches the same distance (round 18 audit: 40 - 44% observed vs 42 - 43% for ordinary candles), and "
+         "it closes back on the broken side about as often as an ordinary candle at that level does. The meaningful number is "
+         "the strict retest (price first moves >= 1 ATR away, then comes back). Below, by how far the break closed beyond the "
+         "line:", ""]
+    rows = []
+    for tf in ("4h", "1h", "1D"):
+        g = E[(E["tf"] == tf) & E["res"]]
+        for lab, lo_, hi_ in (("0.25 - 0.5 ATR", 0.25, 0.5), ("0.5 - 1 ATR", 0.5, 1.0), ("1 ATR or more", 1.0, 99)):
+            x = g[(g["bdist"] >= lo_) & (g["bdist"] < hi_)]
+            rows.append({"tf": tf, "lab": lab, "n": len(x), "nxt": x["next"].mean(), "r20": x["retest"].mean(),
+                         "far": x["retest_far"].mean()})
+    L += [_table(pd.DataFrame(rows), [("tf", "timeframe", str), ("lab", "break close beyond the line", str), ("n", "breaks 2020-25", str),
+                                      ("nxt", "retested on the next candle", f1), ("r20", "retested within 20", f1),
+                                      ("far", "strict retest", f1)]), "", "Audit: round 18 (findings applied), round 19 pending."]
     path = out_dir / "trendline_retest.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

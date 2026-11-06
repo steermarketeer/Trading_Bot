@@ -6,11 +6,12 @@ Events: the 'touch holds' events of bot/study/bb_pause.py masks() (a pump close 
 the middle band, the first touch of the middle band, closing back above it). "Keeps on the upper side": the next N closes
 (N = 1, 2, 3, 5) are all above the middle band; the decision is made at the N-th close (nothing after it is used).
 Outcomes from the decision close:
-  pump     a new high above every high since 20 candles before the pump (including everything up to the decision)
+  pump     a new high above every high of the 40 candles before the touch and everything up to the decision (this covers
+           the pump and 20 candles before it; the same window is used for the comparison group, which has no pump)
            before a close 0.5 ATR below the middle band, within 30 candles
   fair     1.5 ATR up before 1.5 ATR down, within 30 candles (a coin flip = 50%)
-Comparison: any candle where price has stayed above the middle band for the same number of closes after a touch of it,
-WITHOUT a pump and sideways first (does the trader's sequence add anything?).
+Comparison: every other touch of the middle band that closes above it (not a first touch after a pump and sideways),
+followed by the same number of closes above the middle band (does the trader's sequence add anything?).
 Research 2020 - Oct 2025, holdout Nov 2025 on; 90% intervals from a bootstrap of calendar months (coins move together).
 """
 from __future__ import annotations
