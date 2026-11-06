@@ -23,4 +23,12 @@ Six coins, 15m / 1h / 4h, mirrored for bottoms. Strict textbook = three consecut
 | 4h | holdout | textbook (3 failed pushes, then the line breaks) | 403 | 74% | 59% | 54% | 10% | 394 | 53% | 48% | 57% | 54% | 48% | 60% | 218 | 219 | 37% | -0.16 | 15% | -0.06 | 9.7 |
 | 4h | holdout | other breaks (no 3 pushes) | 117 | 80% | 64% | 58% | 13% | 126 | 40% | 30% | 51% | 41% | 31% | 52% | 68 | 68 | 19% | -0.74 | - |  |  |
 
-Audit: pending.
+## Reading
+
+- The loose group (a three-failures trigger within 30 candles) is the base rate: such a trigger exists near 65% of ALL candles, so 76% of breaks carry one and the loose split (52% vs 51%) says nothing.
+- The strict textbook (three confirmed swing highs at one cap, the line breaking within 20 candles of the third): the line is retested 7 times in 10 and the retest is rejected about half the time, exactly as the textbook draws it. What follows is a coin flip: 1.5 ATR away before 1.5 ATR back 54% from the break and 53% after the rejected retest on the 15m (intervals 53 - 56%), 51 - 52% in the holdout; 1h 53% / 52%; 4h 59% / 55% on 52 cases (47 - 71%). The short at the rejected retest loses after costs on every timeframe (-0.75R 15m, -0.39R 1h, -0.28R 4h).
+- Nothing was tuned: the 20-candle rule (10 .. 40 candles) and the 30-candle window (10 .. 60) move the 15m result by less than a point; 2020 - 21 data would not have helped either.
+- The three tops add nothing to the line break and the line break adds nothing to the three tops. The pattern describes what a top looks like once it has happened; it does not say that one is happening. On 22 Nov 2024 the fall came, the same shape appeared four more times in three days without the fall, and the daily trend decided which was which.
+- The descriptive columns of the strict group (retested / rejected) pool cases whose third top was confirmed after the break; the headline columns are unaffected (after the rejected retest 53.3% pooled vs 53.2% with the top confirmed before the break).
+
+Audit: round 30, independent re-implementation of the join, the strict triple-top detector, 200 retest trades and every table line; zero result-impacting issues.

@@ -33,3 +33,11 @@ Nov 2025 on, audited round 29b).
 Hold through the sideways. Do not exit on the test of the high. A held retest of the pump's close says stay; a failed
 one is a coin flip. Still to test: entering on the held retest (a pullback entry) instead of at the pump's close, and
 the stop under the retest low.
+
+## Addendum: the textbook top (three failed tops, the line breaks, the retest fails, the price falls)
+Study `bot/study/textbook_top.py`, report `reports/textbook_top.md` (six coins, 15m / 1h / 4h, audited round 30).
+The structure is common and well drawn: after three confirmed swing highs at one cap the rising line breaks, is retested
+7 times in 10 and the retest is rejected half the time. The fall afterwards is a coin flip (53 - 54% on the 15m, 51 - 52%
+in the holdout; 1h 52 - 53%; 4h 55 - 59% on 52 cases) and the short at the rejected retest loses after costs on every
+timeframe. Three tops add nothing to the line break and the line break adds nothing to three tops. The pattern says what
+a top looks like after the fact; the higher-timeframe side and the liquidity below decide whether the fall comes.
