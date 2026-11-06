@@ -99,31 +99,48 @@ months because coins move together): 52 tested, 7 reach p < 0.05 (about 3 expect
 false-discovery correction**. Leads on the 4h only, not proven: equal highs left at the top of the sideways (holds +15 pts,
 holdout +25), a wick rejection at the touch (+11, holdout +20).
 
-**The weekly chart** (`reports/bb_pause_weekly.md`). The trader's explanation: the daily pause is followed by a new pump
-when *the weekly has not yet reached its highest value*. Tested before looking, three ways, on the six coins' daily holds:
+**The weekly chart** (`reports/bb_pause_weekly.md`; weeks open Monday 00:00 UTC). First split (W1 - W3): daily holds
+*with* a bullish weekly did worse (43% vs 61% for the weekly middle band). After seeing that, the trader explained it: the
+daily pause is followed by a new pump when *the weekly has not yet reached its highest value*. That explanation was
+turned into three readings and tested once; it is **post hoc** (proposed after the first split was seen):
 
 | Daily holds, six coins (fair test) | The weekly has room | It does not |
 |---|---|---|
-| the weekly candle has not reached its upper band | 55% (131) | 44% (90) |
-| an older weekly high (5 – 52 weeks back) is still above price | 52% (163) | 33% (39) |
-| weekly RSI below 70 | 54% (179) | 36% (42) |
-| **all three** (2020 – Oct 2025) | **55% (116)** | **38% (86)** |
+| the weekly candle has not reached its upper band | 56% (137) | 42% (85) |
+| an older weekly high (5 – 52 weeks back) is still above price | 52% (162) | 32% (40) |
+| weekly RSI below 70 | 53% (183) | 41% (39) |
+| **all three** (2020 – Oct 2025) | **57% (120)** | **35% (82)** |
 | all three, holdout (Nov 2025 on) | 42% (26) | 69% (16) |
 
-In 2020 – 25 the weekly-room split is the largest effect found in this whole study (+17 points on the fair test; a
-calendar-month bootstrap gives +3 to +30 points), and it points the way the trader says: a daily hold works when the
-weekly still has room, and fails when the weekly is already stretched (at its band, overbought, or above its old highs).
-It matches the earlier finding that holds with everything aligned bullish (weekly x3 and the higher timeframe) did worse:
-those are mostly weeks that are already stretched. **But it is not proven:** at the same distances the far-target
-difference is +9 points (p 0.29), and the holdout points the other way (42% vs 69%, on 26 and 16 cases). On the 4h the
-weekly makes no difference. It was also proposed after the first weekly split had been seen, so it is a new hypothesis
-to watch on new data, not a confirmed one.
+The split points the way the trader says, but it is weaker than it looks:
+- it largely re-describes the first split: 70 of the 82 "no room" holds are weeks above a rising weekly middle band.
+  Within those weeks the room effect is 49% vs 34%; within the others 61% vs 42% (12 cases);
+- at the same distances to the target and the failure level the far-target difference is +5 points (p 0.48);
+- it is one of six weekly readings plus a combination, inside a study of about 50 conditions, after the data was seen;
+- the holdout points the other way (42% vs 69%, on 26 and 16 cases); on the 4h the weekly makes no difference.
+So it is a hypothesis to test on new data, not a finding.
 
-**Follow the weekly.** The trader's next reading: after the touch, price follows the weekly trend whatever the touch
+**Follow the weekly.** The trader's next reading (also post hoc): after the touch, price follows the weekly trend whatever the touch
 candle does (a bearish weekly turns a daily pump down at the middle band; a bullish weekly turns a daily dump up). On the
-six coins, following the weekly after the touch was right **44 – 45% on the daily** (222 – 281 cases, 2020 - Oct 2025) and
-48 – 49% on the 4h; the holdout, mostly a falling market, was 63 – 64% on the daily and 53% on the 4h. The two periods
+six coins, following the weekly after the touch was right **44% on the daily** (221 – 281 cases, 2020 - Oct 2025) and
+48 – 49% on the 4h; the holdout, mostly a falling market, was 63 – 64% on the daily and 51 – 52% on the 4h. The two periods
 disagree, so this is not a rule either (`reports/bb_pause_weekly.md`).
+
+**"Touches the middle, keeps on the upper side, then the pump comes"** (`reports/bb_pause_stay.md`). Decided after the
+first N closes after the touch all stay above the middle band:
+
+| New high above everything so far (six coins, 2020 - Oct 2025) | 1 close above | 2 | 3 | 5 |
+|---|---|---|---|---|
+| daily, after a pump and sideways | 36% | 40% | 46% | 48% |
+| daily, holdout | 38% | 43% | 46% | 56% |
+| 4h, after a pump and sideways | 37% | 40% | 44% | 49% |
+| 4h, holdout | 36% | 42% | 47% | 59% |
+
+The longer price keeps on the upper side, the more often the new high comes, in both periods. But each close above the
+middle also brings price closer to the old high (median 1.9 -> 1.4 ATR) and further from the failure level, and at the
+same distances the trader's sequence does **not** beat an ordinary middle-band hold (-0 to -8 points; holdout -3 to +8).
+On the fair test (1.5 ATR either way) all of these are 48 – 56%. So "it keeps on the upper side" describes a move that is
+already working; it does not add a prediction beyond how far the old high is.
 
 ## 5. Next steps
 

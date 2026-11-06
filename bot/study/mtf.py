@@ -32,6 +32,8 @@ HINTS = ["trend", "slope", "macd", "macd_fade", "rsi_ext", "cloud", "bb_ext", "s
 
 
 def resample(df5: pd.DataFrame, rule: str) -> pd.DataFrame:
+    if rule == "1W":
+        rule = "W-MON"                                                  # weeks open Monday 00:00 UTC (Binance / TradingView)
     x = df5.set_index("open_time")
     b = x.resample(rule, label="left", closed="left").agg(
         {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}

@@ -48,11 +48,11 @@ Same events and outcomes as `reports/bb_pause_why.md`. **right** = the fair test
 | touch: deep (> 0.25 ATR below the middle band) | 34 | -5 pts | -5 pts | -10 pts | 0.465 |  |
 | context: daily above its EMA 200 | 160 | -23 pts | -6 pts | -8 pts | 0.545 | +31 pts |
 | sideways: 3+ rejections at the upper band | 41 | -4 pts | +2 pts | -7 pts | 0.680 |  |
+| context: higher timeframe above its EMA 50 | 139 | -17 pts | -8 pts | -6 pts | 0.325 | +24 pts |
 | sideways: a higher high than the pump candle | 137 | -8 pts | +1 pts | -6 pts | 0.480 | -6 pts |
 | touch: wick rejection (close in the top half) | 104 | -10 pts | +3 pts | -5 pts | 0.770 | +15 pts |
-| context: higher timeframe above its EMA 50 | 139 | -15 pts | -6 pts | -4 pts | 0.500 | +17 pts |
 | sideways: 6+ candles | 131 | -3 pts | -7 pts | -4 pts | 0.400 | -5 pts |
-| context: higher timeframe at / above its upper band | 92 | -11 pts | -6 pts | -3 pts | 0.580 | +32 pts |
+| context: higher timeframe at / above its upper band | 87 | -14 pts | -5 pts | -1 pts | 0.720 | +23 pts |
 | sideways: bands contracted (width <= 0.8x the pump's) | 46 | -5 pts | +5 pts | -0 pts | 0.905 | -38 pts |
 | pump: close > 0.5 ATR beyond the band | 57 | -3 pts | +1 pts | +1 pts | 0.915 |  |
 | sideways: volume dried up (<= 0.6x the pump's) | 102 | +4 pts | +1 pts | +5 pts | 0.650 | -29 pts |
@@ -74,8 +74,8 @@ Same events and outcomes as `reports/bb_pause_why.md`. **right** = the fair test
 | pump: leg into the pump >= 4 ATR | 64 | +31 pts | +2 pts |  | not tested (too few mixed rows) |  |
 | touch: deep (> 0.25 ATR below the middle band) | 66 | +7 pts | -6 pts |  | not tested (too few mixed rows) |  |
 | touch: RSI 40-50 | 43 | +6 pts | +20 pts |  | not tested (too few mixed rows) |  |
-| context: higher timeframe above its EMA 50 | 50 | -4 pts | -5 pts |  | not tested (too few mixed rows) |  |
-| context: higher timeframe at / above its upper band | 21 | -11 pts | -18 pts |  | not tested (too few mixed rows) |  |
+| context: higher timeframe above its EMA 50 | 51 | -1 pts | -9 pts |  | not tested (too few mixed rows) |  |
+| context: higher timeframe at / above its upper band | 20 | -8 pts | -14 pts |  | not tested (too few mixed rows) |  |
 
 ## 4h · hold -> pump again: conditions, all coins (1500 cases)
 

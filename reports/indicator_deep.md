@@ -1006,8 +1006,8 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
+| higher timeframe above its EMA 50 (context) | 32 | 41% | 57% | -17 pts | 0.262 | 7 | 57% |  |  |
 | below the cloud (weak cross) | 34 | 41% | 55% | -14 pts | 0.177 | 8 | 75% |  |  |
-| higher timeframe above its EMA 50 (context) | 33 | 42% | 56% | -14 pts | 0.404 | 7 | 57% |  |  |
 | thick cloud (> 1 ATR) | 57 | 46% | 58% | -13 pts | 0.302 | 13 | 54% |  |  |
 | close in the top quarter of the candle (context) | 26 | 46% | 51% | -5 pts | 0.813 | 6 | 50% |  |  |
 | with the daily trend (EMA 200) (context) | 42 | 48% | 51% | -4 pts | 0.768 | 9 | 67% |  |  |
@@ -1023,7 +1023,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
 | with the daily trend (EMA 200) (context) | 130 | 47% | 61% | -14 pts | 0.167 | 12 | 25% | -48 pts |  |
-| higher timeframe above its EMA 50 (context) | 116 | 47% | 61% | -13 pts | 0.195 | 12 | 25% | -48 pts |  |
+| higher timeframe above its EMA 50 (context) | 119 | 49% | 59% | -10 pts | 0.319 | 12 | 25% | -48 pts |  |
 | steep (> 0.15 ATR per candle) | 61 | 46% | 55% | -9 pts | 0.464 | 8 | 38% |  |  |
 | 3+ touches (a valid line) | 49 | 47% | 54% | -7 pts | 0.519 | 0 | - |  |  |
 | structure up (HH + HL) (context) | 148 | 51% | 54% | -3 pts | 0.823 | 8 | 50% |  |  |
@@ -1040,7 +1040,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | steep (> 0.15 ATR per candle) | 42 | 40% | 60% | -19 pts | 0.080 | 12 | 75% |  |  |
 | structure up (HH + HL) (context) | 64 | 45% | 62% | -17 pts | 0.244 | 8 | 75% |  |  |
 | with the daily trend (EMA 200) (context) | 56 | 48% | 56% | -8 pts | 0.436 | 11 | 91% |  |  |
-| higher timeframe above its EMA 50 (context) | 57 | 51% | 51% | -0 pts | 1.000 | 12 | 92% |  |  |
+| higher timeframe above its EMA 50 (context) | 56 | 50% | 52% | -2 pts | 0.898 | 12 | 92% |  |  |
 | bands expanding (context) | 42 | 57% | 48% | +9 pts | 0.481 | 6 | 83% |  |  |
 | volume >= 1.5x (context) | 22 | 64% | 49% | +15 pts | 0.377 | 2 | 100% |  |  |
 | break candle volume >= 1.5x | 22 | 64% | 49% | +15 pts | 0.377 | 2 | 100% |  |  |
@@ -1049,7 +1049,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
-| higher timeframe above its EMA 50 (context) | 31 | 48% | 50% | -2 pts | 1.000 | 5 | 40% |  |  |
+| higher timeframe above its EMA 50 (context) | 30 | 50% | 49% | +1 pts | 1.000 | 5 | 40% |  |  |
 | EMA 50 above EMA 200 (pullback in an uptrend) | 38 | 53% | 45% | +8 pts | 0.564 | 6 | 50% |  |  |
 | close in the top quarter of the candle (context) | 62 | 52% | 41% | +11 pts | 0.322 | 10 | 50% |  |  |
 | with the daily trend (EMA 200) (context) | 38 | 55% | 43% | +12 pts | 0.284 | 6 | 50% |  |  |
@@ -1069,8 +1069,8 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | volume >= 1.5x (context) | 41 | 51% | 50% | +1 pts | 1.000 | 5 | 80% |  |  |
 | structure up (HH + HL) (context) | 103 | 53% | 49% | +4 pts | 0.506 | 16 | 75% | +35 pts |  |
 | RSI > 60 (context) | 95 | 54% | 49% | +5 pts | 0.444 | 16 | 62% | +18 pts |  |
-| higher timeframe above its EMA 50 (context) | 152 | 53% | 48% | +5 pts | 0.479 | 35 | 37% | -34 pts |  |
 | liquidity ahead within 1 ATR (context) | 67 | 55% | 49% | +6 pts | 0.411 | 12 | 58% | +11 pts |  |
+| higher timeframe above its EMA 50 (context) | 151 | 54% | 47% | +7 pts | 0.267 | 35 | 37% | -34 pts |  |
 | with the daily trend (EMA 200) (context) | 168 | 56% | 45% | +11 pts | 0.082 | 34 | 38% | -30 pts |  |
 | at the lower band (low <= lower band) | 28 | 64% | 49% | +15 pts | 0.145 | 5 | 40% |  |  |
 
@@ -1084,7 +1084,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | volume >= 1.5x | 25 | 44% | 51% | -7 pts | 0.613 | 1 | 100% |  |  |
 | close in the top quarter of the candle (context) | 82 | 48% | 55% | -7 pts | 0.673 | 12 | 58% |  |  |
 | structure up (HH + HL) (context) | 36 | 50% | 49% | +1 pts | 1.000 | 6 | 33% |  |  |
-| higher timeframe above its EMA 50 (context) | 58 | 52% | 49% | +3 pts | 0.843 | 4 | 50% |  |  |
+| higher timeframe above its EMA 50 (context) | 57 | 51% | 50% | +1 pts | 1.000 | 4 | 50% |  |  |
 | with the daily trend (EMA 200) (context) | 68 | 53% | 45% | +8 pts | 0.394 | 4 | 50% |  |  |
 | RSI > 60 (context) | 49 | 55% | 45% | +10 pts | 0.389 | 2 | 0% |  |  |
 | with the trend (EMA 20 > 50) | 62 | 55% | 43% | +11 pts | 0.175 | 6 | 17% |  |  |
@@ -1101,7 +1101,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
 | Bollinger bulge (context) | 23 | 26% | 54% | -28 pts | 0.030 | 4 | 25% |  |  |
-| higher timeframe above its EMA 50 (context) | 64 | 42% | 57% | -14 pts | 0.299 | 7 | 29% |  |  |
+| higher timeframe above its EMA 50 (context) | 63 | 41% | 57% | -16 pts | 0.252 | 7 | 29% |  |  |
 | structure up (HH + HL) (context) | 36 | 47% | 50% | -3 pts | 0.773 | 2 | 50% |  |  |
 | with the daily trend (EMA 200) (context) | 78 | 49% | 51% | -2 pts | 0.888 | 10 | 50% |  |  |
 | volume >= 1.5x (context) | 30 | 50% | 50% | +0 pts | 1.000 | 3 | 100% |  |  |
@@ -1122,7 +1122,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
-| higher timeframe above its EMA 50 (context) | 34 | 59% | 76% | -17 pts | 0.224 | 6 | 33% |  |  |
+| higher timeframe above its EMA 50 (context) | 33 | 61% | 74% | -13 pts | 0.441 | 6 | 33% |  |  |
 | Kijun flat (5 candles) | 22 | 55% | 65% | -10 pts | 0.454 | 1 | 0% |  |  |
 | RSI > 60 (context) | 27 | 56% | 65% | -10 pts | 0.486 | 5 | 40% |  |  |
 | with the daily trend (EMA 200) (context) | 45 | 60% | 65% | -5 pts | 0.788 | 8 | 38% |  |  |
@@ -1147,7 +1147,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | at the lower band (low <= lower band) | 34 | 41% | 51% | -10 pts | 0.369 | 6 | 83% |  |  |
 | RSI > 60 (context) | 37 | 46% | 50% | -4 pts | 0.721 | 8 | 38% |  |  |
 | close in the top quarter of the candle (context) | 99 | 48% | 50% | -2 pts | 0.880 | 26 | 46% | -17 pts |  |
-| higher timeframe above its EMA 50 (context) | 82 | 50% | 47% | +3 pts | 0.731 | 20 | 35% | -36 pts |  |
+| higher timeframe above its EMA 50 (context) | 84 | 49% | 49% | +0 pts | 1.000 | 20 | 35% | -36 pts |  |
 | structure up (HH + HL) (context) | 51 | 51% | 48% | +3 pts | 0.898 | 9 | 56% |  |  |
 | RSI < 40 | 41 | 51% | 48% | +3 pts | 0.863 | 9 | 67% |  |  |
 | with the daily trend (EMA 200) (context) | 86 | 51% | 47% | +4 pts | 0.651 | 21 | 38% | -31 pts |  |
@@ -1157,7 +1157,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
-| higher timeframe above its EMA 50 (context) | 69 | 43% | 64% | -20 pts | 0.020 | 13 | 38% | -12 pts |  |
+| higher timeframe above its EMA 50 (context) | 70 | 44% | 63% | -19 pts | 0.020 | 13 | 38% | -12 pts |  |
 | level 0.5 | 39 | 49% | 57% | -8 pts | 0.401 | 6 | 50% |  |  |
 | confluence with an old swing (within 0.25 ATR) | 56 | 50% | 57% | -7 pts | 0.394 | 12 | 50% | +9 pts |  |
 | bands expanding (context) | 69 | 51% | 58% | -7 pts | 0.411 | 13 | 46% | +2 pts |  |
@@ -1184,9 +1184,9 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 | Bollinger bulge (context) | 22 | 45% | 54% | -9 pts | 0.539 | 5 | 0% |  |  |
 | volume < 1x | 26 | 50% | 54% | -4 pts | 0.763 | 3 | 100% |  |  |
 | volume >= 2x | 24 | 50% | 53% | -3 pts | 0.843 | 6 | 50% |  |  |
+| higher timeframe above its EMA 50 (context) | 78 | 53% | 53% | -0 pts | 1.000 | 9 | 44% |  |  |
 | volume >= 1.5x (context) | 51 | 53% | 53% | +0 pts | 1.000 | 12 | 42% |  |  |
 | body >= 60% of the range | 85 | 53% | 52% | +0 pts | 1.000 | 15 | 40% |  |  |
-| higher timeframe above its EMA 50 (context) | 77 | 53% | 51% | +2 pts | 0.890 | 9 | 44% |  |  |
 | volume 1 - 2x | 75 | 55% | 50% | +5 pts | 0.746 | 10 | 30% |  |  |
 | after a squeeze | 37 | 57% | 51% | +6 pts | 0.663 | 10 | 60% |  |  |
 | close in the top quarter of the candle (context) | 90 | 54% | 49% | +6 pts | 0.616 | 13 | 38% |  |  |
@@ -1208,7 +1208,7 @@ Same fair test for all: from the event close, 1.5 ATR in the claimed direction b
 
 | when | cases | right when present | right when absent | difference | chance it is noise (2020-25) | holdout cases | holdout right when present | holdout difference | real (p < 0.01) and same sign in holdout |
 |---|---|---|---|---|---|---|---|---|---|
-| higher timeframe above its EMA 50 (context) | 39 | 56% | 67% | -10 pts | 0.638 | 1 | 100% |  |  |
+| higher timeframe above its EMA 50 (context) | 40 | 57% | 65% | -8 pts | 0.591 | 1 | 100% |  |  |
 | RSI > 60 (context) | 46 | 63% | 57% | +6 pts | 0.741 | 8 | 75% |  |  |
 | close outside the upper band | 34 | 68% | 55% | +13 pts | 0.232 | 6 | 67% |  |  |
 | RSI > 70 | 24 | 71% | 56% | +15 pts | 0.277 | 3 | 67% |  |  |

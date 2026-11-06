@@ -118,10 +118,10 @@ Every candle that reaches the upper band (and, mirrored, the lower band) on ETH.
 | not RSI > 75 | 453 | 56% | 0.045 | 73 | 49% |
 | upper wick | 223 | 54% | 0.117 | 32 | 41% |
 | not upper wick | 283 | 61% | 0.117 | 44 | 59% |
-| higher TF at band | 128 | 61% | 0.596 | 8 | 38% |
-| not higher TF at band | 378 | 57% | 0.596 | 68 | 53% |
-| higher TF trend | 262 | 57% | 1.000 | 33 | 52% |
-| not higher TF trend | 195 | 57% | 1.000 | 43 | 51% |
+| higher TF at band | 114 | 61% | 0.591 | 3 | 67% |
+| not higher TF at band | 392 | 57% | 0.591 | 73 | 51% |
+| higher TF trend | 266 | 58% | 0.900 | 33 | 52% |
+| not higher TF trend | 190 | 56% | 0.900 | 43 | 51% |
 
 ### 1D: the two-condition mixes where price failed most and went further most (>= 150 cases)
 
@@ -131,12 +131,12 @@ Every candle that reaches the upper band (and, mirrored, the lower band) on ETH.
 | not volume high + upper wick | 162 | 52% | 27 | 37% |
 | not walk + upper wick | 180 | 52% | 25 | 36% |
 | opposite band turned + not volume high | 183 | 52% | 26 | 35% |
+| not walk + higher TF trend | 196 | 53% | 26 | 50% |
 | not squeeze breakout + not volume high | 249 | 53% | 31 | 35% |
-| not RSI > 75 + upper wick | 215 | 53% | 32 | 41% |
 | not bulge + not upper wick | 246 | 60% | 41 | 61% |
 | not opposite band turned + not upper wick | 166 | 61% | 27 | 67% |
 | close outside + not upper wick | 173 | 62% | 30 | 70% |
 | bands expanding + not upper wick | 221 | 62% | 33 | 58% |
-| not upper wick + higher TF trend | 150 | 62% | 18 | 61% |
+| not upper wick + higher TF trend | 153 | 63% | 18 | 61% |
 | close outside + bands expanding | 174 | 63% | 29 | 62% |
 

@@ -15,7 +15,7 @@ Far target (the trader's definition): 40% made a new high above everything so fa
 | touch: swept the sideways low | 866 | +1 pts | 0.661 | -6 pts | -3 pts | 0.284 | 117 | +1 pts |  |
 | pump: close > 0.5 ATR beyond the band | 282 | +3 pts | 0.449 | -3 pts | -3 pts | 0.446 | 40 | -8 pts |  |
 | sideways: volume dried up (<= 0.6x the pump's) | 814 | +4 pts | 0.209 | -4 pts | -2 pts | 0.304 | 118 | -2 pts |  |
-| context: higher timeframe at / above its upper band | 599 | +2 pts | 0.504 | -2 pts | -1 pts | 0.726 | 75 | -0 pts |  |
+| context: higher timeframe at / above its upper band | 598 | +2 pts | 0.544 | -2 pts | -1 pts | 0.676 | 75 | -0 pts |  |
 | sideways: 3+ rejections at the upper band | 229 | +1 pts | 0.781 | +5 pts | -1 pts | 0.840 | 51 | +2 pts |  |
 | context: higher timeframe above its EMA 50 | 1042 | -2 pts | 0.658 | +1 pts | -0 pts | 0.963 | 143 | +11 pts |  |
 | liquidity: open interest rose > 5% during the sideways | 32 | +4 pts | 0.721 | +0 pts | +0 pts | 0.983 | 2 |  |  |
@@ -67,7 +67,7 @@ Far target (the trader's definition): 48% made a new high above everything so fa
 | sideways: a higher high than the pump candle | 29 | -28 pts | not tested (n < 60) | +2 pts |  | not tested (n < 60) | 2 |  |  |
 | touch: wick rejection (close in the top half) | 15 | -12 pts | not tested (n < 60) | -2 pts |  | not tested (n < 60) | 0 |  |  |
 | touch: swept the sideways low | 26 | +10 pts | not tested (n < 60) | +15 pts |  | not tested (n < 60) | 1 |  |  |
-| context: higher timeframe at / above its upper band | 18 | -11 pts | not tested (n < 60) | -6 pts |  | not tested (n < 60) | 0 |  |  |
+| context: higher timeframe at / above its upper band | 17 | -15 pts | not tested (n < 60) | -11 pts |  | not tested (n < 60) | 0 |  |  |
 
 ## fail -> does it dump? · 1h + 4h + 1D together: 398 cases 2020 - Oct 2025, **right 51%** (fair test); holdout 68, right 47%
 
@@ -86,7 +86,7 @@ Far target (the trader's definition): 76% took out the sideways low before a clo
 | liquidity: crowd leaning with the pump (long/short ratio above its 30-day median) | 96 | -6 pts | 0.364 | -0 pts | +0 pts | 0.978 | 20 |  |  |
 | context: daily above its EMA 200 | 194 | +1 pts | 0.925 | -9 pts | +0 pts | 0.965 | 34 | -3 pts |  |
 | touch: swept the sideways low | 344 | +14 pts | 0.112 | +26 pts | +1 pts | 0.958 | 58 |  |  |
-| context: higher timeframe at / above its upper band | 145 | +3 pts | 0.599 | -6 pts | +1 pts | 0.830 | 39 | +0 pts |  |
+| context: higher timeframe at / above its upper band | 145 | +3 pts | 0.599 | -6 pts | +1 pts | 0.830 | 38 | +0 pts |  |
 | pump: leg into the pump >= 4 ATR | 313 | -1 pts | 0.885 | -4 pts | +2 pts | 0.766 | 62 |  |  |
 | sideways: a higher high than the pump candle | 253 | -2 pts | 0.843 | +0 pts | +2 pts | 0.574 | 36 | -13 pts |  |
 | touch: RSI 40-50 | 218 | -4 pts | 0.509 | +13 pts | +3 pts | 0.586 | 33 | -10 pts |  |
