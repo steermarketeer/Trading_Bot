@@ -1,7 +1,8 @@
 """
 Confluence: all the studied concepts together on the bot's own trades (the research-chosen version: v3.1 + journal
 filters + 0.786 bounce stop; 162 ETH trades). No one rule makes an excellent trade, so each concept VOTES for or against
-the trade at its entry, with the direction of every vote fixed in advance from the studies (no fitting on these trades).
+the trade at its entry, with the direction of every vote taken from the studies (no fitting on these trades; V10 was
+prompted by one of them, V6 comes from a review of holdout trades, V8 is post hoc).
 Everything from candles closed at the entry; oriented to the trade's direction.
 
 For (+1):
@@ -15,7 +16,8 @@ For (+1):
   V5 liquidity close ahead   an untaken 1h swing high (shorts: low) within 1 ATR(1h) ahead of the entry (1h studies)
 Against (-1):
   V6 ceiling before target   a resistance / untaken 4h high between the entry and the target (selfreview: 43% vs 68%)
-  V7 trendline in the way    a valid trendline against the trade between the entry and the target (fixes.py TL flag)
+  V7 trendline in the way    a valid trendline against the trade between the entry and the target (fixes.trendline_in_way on 1h
+                            and 4h, with this trade's own entry and target)
   V8 weekly has no room      the weekly is stretched in the trade's direction: at its band, RSI >= 70 or above its
                             older highs (bb_pause_weekly W4 - W6; a lead, post hoc)
   V9 three failures against  a 1h three-failures trigger AGAINST the trade in the 6 hours before the entry
