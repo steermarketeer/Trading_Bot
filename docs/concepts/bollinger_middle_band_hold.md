@@ -10,16 +10,19 @@ works and why it fails). Events on 1h, 4h and daily ETH, mirrored for dumps, 202
 
 The same pattern appears under different names in every school, and each one explains a part of it.
 
+Sources are mostly secondary (trading-education pages and search summaries of the authors' sites); they were not all
+re-checked against the original books.
+
 | School | Its name for it | What it says happens at the middle |
 |---|---|---|
 | **John Bollinger** | a pause in a band walk; the 20-period average as the trend's base | In a strong trend the middle band is support; tags of the upper band are not sell signals; a close back at / below the middle band after a walk is the sign momentum is fading. ([TradingView](https://in.tradingview.com/support/solutions/43000501840/), [Capital.com](https://capital.com/en-au/learn/technical-analysis/bollinger-bands)) |
-| **Wyckoff** | re-accumulation after a markup; the test / spring; the last point of support (LPS) | After a sign of strength, a pullback to former resistance on smaller spread and volume that holds as a higher low is the LPS before the next markup; a spring dips under support and recovers; a close back below the spring low cancels the read, and a failed test means distribution, not accumulation. ([StockCharts](https://articles.stockcharts.com/article/articles-wyckoff-2016-04-wyckoff-buy-strategies/), [LuxAlgo](https://www.luxalgo.com/library/concept/spring.md)) |
-| **Al Brooks** | the first pullback to the moving average in a strong trend; the 20-gap bar | After many bars on one side of the average, a pullback to it is likely; the first touch is usually followed by a test of the trend's extreme (often only a test, not a big new leg). ([Brooks, Trading Price Action, ch. 13 – 14](https://www.oreilly.com/library/view/trading-price-action/9781118172339/OEBPS/9781118172339_epub_c_14.htm)) |
+| **Wyckoff** | re-accumulation after a markup; the test / spring; the last point of support (LPS) | After a sign of strength, a pullback to former resistance on smaller spread and volume (a test on high volume means supply is still there) that holds as a higher low is the LPS before the next markup; a spring dips under support and recovers; a close back below the spring low cancels the read, and a failed test means distribution, not accumulation. ([StockCharts](https://articles.stockcharts.com/article/articles-wyckoff-2016-04-wyckoff-buy-strategies/), [LuxAlgo](https://www.luxalgo.com/library/concept/spring.md)) |
+| **Al Brooks** | the first pullback to the moving average in a strong trend; the 20-gap bar | After 20 or more bars on one side of the average (a 20-gap bar), a pullback to it is likely; the first touch is usually followed by a test of the trend's extreme (often only a test, not a big new leg). Our events need only 3 sideways candles, so his rule applies only loosely. ([Brooks, Trading Price Action, ch. 13 – 14](https://www.oreilly.com/library/view/trading-price-action/9781118172339/OEBPS/9781118172339_epub_c_14.htm)) |
 | **Bulkowski** | the flag / pennant after a flagpole | Flags continue, but less reliably than people think: a 44% break-even failure rate and a 9% average rise for flags, 54% and 7% for pennants; the best flags have a long, near-vertical pole. ([thepatternsite.com flags](https://thepatternsite.com/flags.html), [pennants](https://thepatternsite.com/pennants.html)) |
 | **ICT / smart money** | equilibrium of the dealing range; a liquidity sweep before continuation | The midpoint of the leg is equilibrium: below it is discount. Price sweeps the liquidity resting under the lows (late buyers' stops), then continues to the liquidity above the old high. ([LuxAlgo](https://www.luxalgo.com/library/concept/premium-and-discount/), [Equiti](https://www.equiti.com/jo-en/news/trading-ideas/ict-50-percent-rule-premium-discount-fvg/)) |
 | Elliott | wave 4 | A sideways, shallow correction after the strongest wave (3), before a final wave 5. |
 
-**One mechanism behind all of them.** The pump brings in late buyers. While price goes sideways, their average entry
+**The mechanism the schools describe** (a theory; section 2 shows how much of it the data can confirm). The pump brings in late buyers. While price goes sideways, their average entry
 price is roughly the 20-candle average, i.e. the middle band. When price comes back to it, the question is whether real
 buyers defend that price (**absorption**: the selling is met, often after the stops just under the level are taken)
 or whether the late buyers give up (**distribution**: no one defends, their stops and liquidations below become the fuel
@@ -39,33 +42,32 @@ On the fair test (1.5 ATR either way), a hold is right 48% (1h + 4h + 1D togethe
 failure 51%: **on average the close at the middle band does not tell the direction.** The daily alone looks better
 (holds 61%, 44 cases), but it is not proven (about 9% chance of noise, 3 holdout cases).
 
-### Why it works and why it does not: the touch candle decides
-Measured on the trader's own definition, "pump again" = a new high above everything so far before a close below the touch
-low, five conditions at the touch are **real** (time-shift test p < 0.01, the holdout agrees), on 1h + 4h + 1D:
+### Why it works and why it does not: what the data can and cannot show
+The trader's own definition, "pump again" = a new high above everything so far, is measured before a close 0.5 ATR below
+the middle band (a failure level that does not depend on the touch candle; 1h + 4h + 1D: 40% of holds made a new high).
+**Geometry first:** how far the close is from the old high, and how far from the failure level, decides a lot by
+itself (closer to the high = more new highs). Conditions like a long wick or a deep touch change those distances, so each
+condition is compared **within groups of the same timeframe and the same two distances**.
 
-| At the touch of the middle band | New high, with it | Without it | Theory |
+| At the touch (holds, 1h + 4h + 1D) | Raw difference | **At the same distances** | Verdict |
 |---|---|---|---|
-| **Wick rejection** (close in the top half of the candle) | **40%** | 26% | Bollinger / Wyckoff: buyers defend the base |
-| **Volume >= 1.5x the sideways average** | **41%** | 29% | Wyckoff absorption: the selling is met |
-| **Deep touch**: pierced > 0.25 ATR below the middle, still closed above | **40%** | 30% | ICT sweep / Wyckoff spring: stops under the level taken, then reclaimed |
-| Daily above its EMA 200 | 35% | 27% | every school: only in a trend |
-| **RSI already down to 40 – 50** | **16%** | 33% | momentum is gone: the pump has lost its force |
+| Wick rejection (close in the top half) | +13 pts | +1 pt | geometry: the close sits nearer the old high |
+| Volume >= 1.5x the sideways average | +6 pts | +3 pts | not proven |
+| Deep touch (pierced > 0.25 ATR below the middle) | -1 pt | +3 pts | not proven |
+| Swept the sideways low (a real sweep / spring) | -6 pts | -3 pts | not proven |
+| RSI down to 40 – 50 | -16 pts | -4 pts | geometry: the old high is further away |
+| Daily above its EMA 200 | +9 pts | +5 pts (p 0.08) | a tendency, not proven |
+| **Bands contracted during the sideways** (width <= 0.8x the pump's) | +10 pts | **+8 pts (p 0.02, holdout +6)** | **likely** |
+| Crowd leaning long at the touch (long / short ratio above its 30-day median) | -6 pts | -9 pts (p 0.03) | the holdout points the other way: not proven |
 
-Together, the three defense signs (wick, volume, depth) give a clear gradient, the same on 1h and 4h and in the holdout:
+On the failures the same squeeze matters the other way: when the bands contracted during the sideways, a failed hold dumped
+to the sideways low **less** often (-12 points at the same distances, p 0.002; 83 cases, 12 in the holdout). Nothing else
+about the pump, the sideways or the touch candle passes once the geometry is removed. On the fair test (1.5 ATR either
+way) none of the conditions moves the result.
 
-| Defense signs at the touch | New high (2020 – Oct 2025) | Holdout |
-|---|---|---|
-| none | 24% (623 cases) | 17% |
-| one | 34% (592) | 28% |
-| two | 45% (179) | 61% |
-| all three | 54% (50) | 46% (13) |
-
-Likely but not proven (p < 0.05): when the crowd leans long at the touch (account long / short ratio above its 30-day
-median), fewer holds pump (fair test 41% vs 48%): crowded late longs are the liquidity that gets flushed.
-
-**Not real** (no difference that passes the test): the size of the pump, how long or how tight the sideways was, whether
-the bands contracted, whether volume dried up during the sideways, a higher high during the sideways, three rejections at
-the top, equal highs left at the top, and rising open interest during the sideways.
+An earlier version of this document credited the wick, the touch volume and a deep touch with a clean gradient (24% ->
+54% new highs). That was measured with a failure level at the touch candle's own low, which those conditions push
+further away; it was geometry, not buyers defending (audit round 12).
 
 ### How big the next move is
 When the daily hold is confirmed by two more closes above the middle band, price made a new top before failing about half
@@ -74,23 +76,25 @@ In about 6 of 10 cases the hold failed within 30 days. Big when it works, not al
 
 ## 3. So, why it happens and why not
 
-- **It pumps again** when the touch shows **real buyers defending the middle**: price pierces below it (taking the stops
-  under the level), is pushed back with a long wick, on high volume, while momentum is still alive (RSI not collapsed to
-  40 – 50), in a daily uptrend. That is Wyckoff's absorption / spring and ICT's sweep below equilibrium, at Bollinger's
-  base. With all three defense signs, a new high comes about half the time (54%), twice as often as with none (24%).
-- **It does not** when price **drifts** into the middle band: small candles, no wick, no volume, RSI already down to
-  40 – 50. Nobody defends; the late buyers are trapped; the hold is an illusion and usually gives way.
-- **The close at the middle band alone decides nothing** (48 – 51% on the fair test). The concept is right, but its signal
-  is **how** the touch happens, not **whether** it closes above.
-- Daily vs 4h: the same mechanism works on both (the gradient holds on 1h and 4h); the daily simply has few cases.
+- **What is solid:** after a pump and sideways, price does come back to the middle band (but that is how the bands
+  behave anyway), and on the daily a hold was followed by the trend 61% of the time (44 cases, not yet proven).
+- **The one condition the data supports:** the move continues more often when the bands **contract** during the sideways
+  pause. That is Bollinger's squeeze inside a trend: volatility is stored and released in the trend's direction. When the
+  bands stay wide during the pause, the market is still fighting, and the middle band is less reliable.
+- **What the data cannot confirm:** that a wick, volume or a sweep at the middle band (buyers defending, Wyckoff
+  absorption, an ICT sweep) makes the pump more likely. Once the distance to the old high and to the failure level are
+  held equal, none of them shows an effect. This does not prove the theory wrong; it means our measurements of
+  "defense" do not capture it, or the samples are too small.
+- **The close at the middle band alone decides nothing** on 1h / 4h (47 – 51% on the fair test). The daily looks better but
+  has only 44 + 20 cases.
 
-## 4. For the bot (not yet tested on the trades)
+## 4. Next steps
 
-Two uses follow, both to be tested on the strategy's trades before anything is adopted:
-1. **Context:** don't take a trade against a daily or 4h move whose middle-band touch shows two or three defense signs
-   (27 Mar 2023: the daily touch pierced, wicked and held; our short went into it).
-2. **Entry:** after a pump and sideways, buy the middle-band touch only with two or three defense signs, stop under the
-   touch low, target the old high. Test it in R with costs before any use.
+1. **More daily cases:** ETH has only ~65 daily events. The same test on BTC and the other coins in `data/klines` would
+   multiply the daily sample and show whether the daily effect (61%) is real.
+2. **Test on the trades,** before any use: (a) no trade against a daily trend pausing above its middle band while the bands
+   contract; (b) the entry from a daily hold with contracting bands, stop below the failure level, target the old high,
+   in R with costs.
 
-Audit: reports/bb_pause.md audited in rounds 9 – 11 (all findings fixed); reports/bb_pause_why.md and this document are
-audited in round 12.
+Audit: reports/bb_pause.md audited in rounds 9 – 11; reports/bb_pause_why.md and this document in round 12 (its main
+finding, the geometry, is fixed here) and round 13.
