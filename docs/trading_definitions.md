@@ -60,6 +60,8 @@ never breaks anything. Everything is known only after the candle that shows it h
 |---|---|---|
 | Trendline | A line through two confirmed swing lows (rising) or highs (falling). Valid from the 3rd touch (within 0.25 ATR) without a close through it. | 2 touches to draw, 3 to confirm |
 | Trendline break | A close beyond the line by at least 0.25 ATR (1% on daily). | Same filter as breakouts |
+| Trendline rejection | Price touches a valid line (within 0.25 ATR) and the candle **closes back** on the line's side (below a falling / resistance line, above a rising / support line). Counted per line. | Close rule, as for level rejections |
+| Trendline in the way | A valid, unbroken trendline against the trade lies between the entry and the target (a ceiling for longs, a floor for shorts). | Same role as a resistance zone |
 
 ## 6. Bollinger bands (20, 2)
 
