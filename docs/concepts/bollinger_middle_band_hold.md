@@ -57,15 +57,15 @@ condition is compared **within groups of the same timeframe and the same two dis
 | Swept the sideways low (a real sweep / spring) | -6 pts | -3 pts | not proven |
 | RSI down to 40 – 50 | -16 pts | -4 pts | geometry: the old high is further away |
 | Daily above its EMA 200 | +9 pts | +5 pts (p 0.08) | a tendency, not proven |
-| Bands contracted during the sideways (width <= 0.8x the pump's) | +10 pts | +8 pts (p 0.02) | a lead only: all from the 1h (4h -1 pt, daily too few); holdout at the same distances +1 pt; the best of ~20 conditions |
+| Bands contracted during the sideways (width <= 0.8x the pump's) | +10 pts | +8 pts (p 0.02) | a lead only: it comes from the 1h (1h alone +11 pts, p 0.005; 4h -1 pt; daily too few); holdout at the same distances +0.4 pt; the best of ~20 conditions x 3 timeframes |
 | Crowd leaning long at the touch (long / short ratio above its 30-day median) | -6 pts | -9 pts (p 0.03) | the holdout points the other way: not proven |
 
 On the failures nothing passes either. (Measured with a target that includes the touch candle's own low, the same way the
-hold's target includes its high; an earlier run left the touch low out, so in 82% of failures the target had already
+hold's target includes its high; an earlier run left the touch low out, so in 86% of failures the target had already
 been hit by the touch candle itself, which made "a sweep of the sideways low" and "the squeeze" look decisive. They are
 not: +1 pt and -1 pt once measured symmetrically. One condition, a deep touch, shows +21 pts at p 0.04, but with ~20
-conditions tested one such result is expected by chance.) On the fair test (1.5 ATR either way) no condition moves the
-result on either side.
+conditions tested one such result is expected by chance.) On the fair test (1.5 ATR either way) no condition passes on either side (the best, the crowd leaning long, has p 0.05
+among ~20 tests).
 
 An earlier version of this document credited the wick, the touch volume and a deep touch with a clean gradient (24% ->
 54% new highs). That was measured with a failure level at the touch candle's own low, which those conditions push
@@ -87,12 +87,37 @@ In about 6 of 10 cases the hold failed within 30 days. Big when it works, not al
   stored volatility is released in the trend's direction), and it is not seen on the 4h or in the holdout.
 - This does not prove the theory wrong. It means either our measurements of "defense" do not capture what a trader sees,
   or ETH alone has too few clean cases, above all on the daily, where the concept looks strongest.
-- **The close at the middle band alone decides nothing** on 1h / 4h (47 – 51% on the fair test).
+- **The close at the middle band alone decides nothing**: 47% / 51% for holds / failures over 1h + 4h + 1D together (4h
+  failures 56%, not proven).
 
-## 4. Next steps
+## 4. Six coins and the weekly chart
 
-1. **More daily cases:** ETH has only ~65 daily events. The same test on BTC and the other coins in `data/klines` would
-   multiply the daily sample and show whether the daily effect (61%) is real.
+**Six coins** (BTC, ETH, BNB, SOL, XRP, DOGE; `reports/bb_pause_coins.md`): the daily hold is right **52%** (236 cases, 90%
+range 46 – 58%) and the 4h hold 50% (1,500 cases); failures 53% / 52%. ETH's daily 61% was the best of the six (BTC 48%,
+XRP 46%). No condition passes p < 0.01 in about 80 tests (four reach p < 0.05, which chance alone gives).
+
+**The weekly chart** (`reports/bb_pause_weekly.md`). The trader's explanation: the daily pause is followed by a new pump
+when *the weekly has not yet reached its highest value*. Tested before looking, three ways, on the six coins' daily holds:
+
+| Daily holds, six coins (fair test) | The weekly has room | It does not |
+|---|---|---|
+| the weekly candle has not reached its upper band | 55% (131) | 44% (90) |
+| an older weekly high (5 – 52 weeks back) is still above price | 52% (163) | 33% (39) |
+| weekly RSI below 70 | 54% (179) | 36% (42) |
+| **all three** (2020 – Oct 2025) | **55% (116)** | **38% (86)** |
+| all three, holdout (Nov 2025 on) | 42% (26) | 69% (16) |
+
+In 2020 – 25 the weekly-room split is the largest effect found in this whole study (+17 points on the fair test; a
+calendar-month bootstrap gives +3 to +30 points), and it points the way the trader says: a daily hold works when the
+weekly still has room, and fails when the weekly is already stretched (at its band, overbought, or above its old highs).
+It matches the earlier finding that holds with everything aligned bullish (weekly x3 and the higher timeframe) did worse:
+those are mostly weeks that are already stretched. **But it is not proven:** at the same distances the far-target
+difference (+15 points) has p 0.19, and the holdout points the other way (42% vs 69%, on 26 and 16 cases). On the 4h the
+weekly makes no difference.
+
+## 5. Next steps
+
+1. **The weekly-room rule** is the lead to follow: watch it on new data (the holdout grows every week) before using it.
 2. **Test on the trades,** before any use: (a) no trade against a daily trend pausing above its middle band; (b) the entry from a daily
    hold, stop below the failure level, target the old high, in R with costs. (The squeeze is not used: it is a 1h-only
    lead.)

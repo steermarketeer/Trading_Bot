@@ -41,21 +41,22 @@ About 20 conditions per table: one p < 0.05 is expected by chance.
 
 | condition | cases with it | fair test: difference | far: raw difference | far: same distances | noise | holdout, same distances |
 |---|---|---|---|---|---|---|
-| pump: leg into the pump >= 4 ATR | 194 | -7 pts | -15 pts | -26 pts | 0.050 | +0 pts |
-| pump: volume >= 2x | 58 | -9 pts | -21 pts | -23 pts | 0.057 | +0 pts |
+| pump: leg into the pump >= 4 ATR | 194 | -7 pts | -15 pts | -26 pts | 0.050 |  |
+| pump: volume >= 2x | 58 | -9 pts | -21 pts | -23 pts | 0.057 |  |
 | sideways: 6+ candles | 131 | -3 pts | -7 pts | -12 pts | 0.195 |  |
-| context: higher timeframe at / above its upper band | 92 | -11 pts | -6 pts | -10 pts | 0.379 | -33 pts |
+| context: higher timeframe at / above its upper band | 92 | -11 pts | -6 pts | -10 pts | 0.379 |  |
 | sideways: 3+ rejections at the upper band | 41 | -4 pts | +2 pts | -10 pts | 0.444 |  |
-| sideways: tight (range <= 2 ATR) | 126 | +13 pts | +10 pts | -3 pts | 0.688 | -50 pts |
+| sideways: tight (range <= 2 ATR) | 126 | +13 pts | +10 pts | -3 pts | 0.688 |  |
 | sideways: volume dried up (<= 0.6x the pump's) | 102 | +4 pts | +1 pts | -2 pts | 0.805 |  |
 | pump: close > 0.5 ATR beyond the band | 57 | -3 pts | +1 pts | -2 pts | 0.870 |  |
-| context: daily above its EMA 200 | 160 | -23 pts | -6 pts | +0 pts | 1.000 | -100 pts |
-| touch: deep (> 0.25 ATR below the middle band) | 34 | -5 pts | -5 pts | +1 pts | 0.973 | +0 pts |
-| sideways: bands contracted (width <= 0.8x the pump's) | 46 | -5 pts | +5 pts | +3 pts | 0.805 | +50 pts |
-| sideways: equal highs at the top (liquidity above) | 216 | +2 pts | +5 pts | +4 pts | 0.925 | +0 pts |
+| context: daily above its EMA 200 | 160 | -23 pts | -6 pts | +0 pts | 1.000 |  |
+| touch: deep (> 0.25 ATR below the middle band) | 34 | -5 pts | -5 pts | +1 pts | 0.973 |  |
+| sideways: bands contracted (width <= 0.8x the pump's) | 46 | -5 pts | +5 pts | +3 pts | 0.805 |  |
+| sideways: equal highs at the top (liquidity above) | 216 | +2 pts | +5 pts | +4 pts | 0.925 |  |
 | sideways: a higher high than the pump candle | 137 | -8 pts | +1 pts | +4 pts | 0.626 |  |
-| touch: volume >= 1.5x the sideways average | 46 | +1 pts | +7 pts | +5 pts | 0.693 | +0 pts |
-| context: higher timeframe above its EMA 50 | 139 | -15 pts | -6 pts | +10 pts | 0.479 | -33 pts |
+| touch: volume >= 1.5x the sideways average | 46 | +1 pts | +7 pts | +5 pts | 0.693 |  |
+| context: higher timeframe above its EMA 50 | 139 | -15 pts | -6 pts | +10 pts | 0.479 |  |
+| touch: swept the sideways low | 152 | +14 pts | +8 pts | +11 pts | 0.312 |  |
 | touch: wick rejection (close in the top half) | 104 | -10 pts | +3 pts | +16 pts | 0.200 |  |
 
 ## 1D · fail -> dump: conditions, all coins (87 cases; strata coin x distances)
@@ -86,6 +87,7 @@ About 20 conditions per table: one p < 0.05 is expected by chance.
 | sideways: volume dried up (<= 0.6x the pump's) | 605 | +1 pts | -3 pts | -4 pts | 0.145 | -18 pts |
 | pump: leg into the pump >= 4 ATR | 1209 | +5 pts | -3 pts | -4 pts | 0.357 | +5 pts |
 | pump: volume >= 2x | 321 | +0 pts | -4 pts | -2 pts | 0.481 | -7 pts |
+| touch: swept the sideways low | 899 | -2 pts | -7 pts | -1 pts | 0.673 | -14 pts |
 | pump: close > 0.5 ATR beyond the band | 294 | +2 pts | -2 pts | -0 pts | 0.990 | -0 pts |
 | context: higher timeframe at / above its upper band | 644 | +3 pts | -4 pts | +1 pts | 0.716 | +1 pts |
 | sideways: bands contracted (width <= 0.8x the pump's) | 283 | +4 pts | +7 pts | +2 pts | 0.666 | -2 pts |
@@ -106,20 +108,21 @@ About 20 conditions per table: one p < 0.05 is expected by chance.
 
 | condition | cases with it | fair test: difference | far: raw difference | far: same distances | noise | holdout, same distances |
 |---|---|---|---|---|---|---|
-| pump: leg into the pump >= 4 ATR | 348 | -7 pts | -12 pts | -13 pts | 0.012 | +25 pts |
-| sideways: bands contracted (width <= 0.8x the pump's) | 75 | -11 pts | -27 pts | -11 pts | 0.130 | +50 pts |
-| context: higher timeframe at / above its upper band | 156 | -8 pts | -9 pts | -7 pts | 0.097 | +18 pts |
-| pump: close > 0.5 ATR beyond the band | 91 | -3 pts | -2 pts | -6 pts | 0.264 | +0 pts |
-| context: higher timeframe above its EMA 50 | 288 | -7 pts | -11 pts | -4 pts | 0.424 | +0 pts |
-| touch: deep (> 0.25 ATR below the middle band) | 365 | +6 pts | -9 pts | -3 pts | 0.751 | +50 pts |
-| sideways: a higher high than the pump candle | 260 | -0 pts | -8 pts | -3 pts | 0.506 | -17 pts |
-| sideways: 6+ candles | 236 | +0 pts | -3 pts | +1 pts | 0.910 | +12 pts |
-| sideways: volume dried up (<= 0.6x the pump's) | 172 | +0 pts | +5 pts | +2 pts | 0.586 | -15 pts |
-| context: daily above its EMA 200 | 222 | -3 pts | -2 pts | +3 pts | 0.603 | +0 pts |
-| sideways: tight (range <= 2 ATR) | 260 | +8 pts | +10 pts | +3 pts | 0.414 | -13 pts |
-| touch: volume >= 1.5x the sideways average | 249 | +4 pts | -4 pts | +4 pts | 0.384 | +0 pts |
-| sideways: 3+ rejections at the upper band | 65 | +3 pts | -3 pts | +4 pts | 0.424 | +25 pts |
-| touch: RSI 40-50 | 257 | +6 pts | +13 pts | +4 pts | 0.444 | -17 pts |
-| pump: volume >= 2x | 109 | +5 pts | +6 pts | +7 pts | 0.177 | -50 pts |
-| sideways: equal highs at the top (liquidity above) | 415 | +19 pts | +22 pts | +20 pts | 0.020 | +0 pts |
+| pump: leg into the pump >= 4 ATR | 348 | -7 pts | -12 pts | -13 pts | 0.012 |  |
+| sideways: bands contracted (width <= 0.8x the pump's) | 75 | -11 pts | -27 pts | -11 pts | 0.130 |  |
+| context: higher timeframe at / above its upper band | 156 | -8 pts | -9 pts | -7 pts | 0.097 |  |
+| pump: close > 0.5 ATR beyond the band | 91 | -3 pts | -2 pts | -6 pts | 0.264 |  |
+| context: higher timeframe above its EMA 50 | 288 | -7 pts | -11 pts | -4 pts | 0.424 |  |
+| touch: deep (> 0.25 ATR below the middle band) | 365 | +6 pts | -9 pts | -3 pts | 0.751 |  |
+| sideways: a higher high than the pump candle | 260 | -0 pts | -8 pts | -3 pts | 0.506 |  |
+| sideways: 6+ candles | 236 | +0 pts | -3 pts | +1 pts | 0.910 |  |
+| sideways: volume dried up (<= 0.6x the pump's) | 172 | +0 pts | +5 pts | +2 pts | 0.586 |  |
+| context: daily above its EMA 200 | 222 | -3 pts | -2 pts | +3 pts | 0.603 |  |
+| sideways: tight (range <= 2 ATR) | 260 | +8 pts | +10 pts | +3 pts | 0.414 |  |
+| touch: volume >= 1.5x the sideways average | 249 | +4 pts | -4 pts | +4 pts | 0.384 |  |
+| sideways: 3+ rejections at the upper band | 65 | +3 pts | -3 pts | +4 pts | 0.424 |  |
+| touch: RSI 40-50 | 257 | +6 pts | +13 pts | +4 pts | 0.444 |  |
+| pump: volume >= 2x | 109 | +5 pts | +6 pts | +7 pts | 0.177 |  |
+| touch: swept the sideways low | 391 | +12 pts | +30 pts | +10 pts | 0.234 |  |
+| sideways: equal highs at the top (liquidity above) | 415 | +19 pts | +22 pts | +20 pts | 0.020 |  |
 

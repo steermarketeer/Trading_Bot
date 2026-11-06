@@ -134,7 +134,7 @@ def events(t: TF, ht: TF, d1: TF, m, tf: str) -> list[dict]:
                  "sideways: equal highs at the top (liquidity above)": eqh,
                  "touch: wick rejection (close in the top half)": rng > 0 and (c[q] - l[q]) >= 0.5 * rng,
                  "touch: deep (> 0.25 ATR below the middle band)": (mid[q] - l[q]) / a[q] > 0.25,
-                 "touch: swept the sideways low": l[q] < sw_low,
+                 "touch: swept the sideways low": l[q] < l[sw].min(),
                  "touch: volume >= 1.5x the sideways average": v[q] >= 1.5 * v[sw].mean(),
                  "touch: RSI 40-50": 40 <= r[q] <= 50,
                  "touch: RSI < 40": r[q] < 40,
@@ -203,7 +203,7 @@ def run_bb_pause_why(cfg: Config, out_dir: Path) -> Path:
     return path
 
 
-def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400, min_n: int = 60):
+def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400, min_n: int = 60, min_mixed: int = 0):
     """Difference in 'far' (condition present minus absent) within groups of the same timeframe x distance to the target
     (quintile) x distance to the failure level (quintile), weighted by group size; p by shuffling the condition within the
     groups. Removes the geometry: a condition that only moves the close nearer the target or further from the failure level
@@ -217,6 +217,9 @@ def strat_test(g: pd.DataFrame, cn: str, n_perm: int = 400, min_n: int = 60):
     y = x["far"].to_numpy(float)
     grp = x["s"].to_numpy()
     idx = [np.nonzero(grp == u)[0] for u in np.unique(grp)]
+    cv0 = x["cnd"].to_numpy()
+    if sum(len(ii) for ii in idx if cv0[ii].any() and not cv0[ii].all()) < min_mixed:
+        return np.nan, np.nan                                            # too few rows in groups with both cases
 
     def diff(cv):
         num = den = 0.0
@@ -252,11 +255,13 @@ def cond_table(res, hol, conds) -> list[str]:
         pv_fair = shift_pvalue(res, cn) if len(res) >= 60 else np.nan
         d_far = a_["far"].mean() - a0["far"].mean()
         d_st, pv_st = strat_test(res, cn)
-        d_h = strat_test(hol, cn, n_perm=0, min_n=20)[0] if len(b_) >= 5 and len(b0) >= 5 else np.nan   # same distances
+        d_h = strat_test(hol, cn, n_perm=0, min_n=20, min_mixed=20)[0] if len(b_) >= 5 and len(b0) >= 5 else np.nan
         real = ""
-        if pv_st == pv_st and pv_st < 0.01 and d_h == d_h and np.sign(d_h) == np.sign(d_st):
+        same = d_h == d_h and d_h * d_st > 0                             # an exactly flat holdout does not confirm
+        opposite = d_h == d_h and d_h * d_st < 0
+        if pv_st == pv_st and pv_st < 0.01 and same:
             real = "yes"
-        elif pv_st == pv_st and pv_st < 0.05 and (d_h != d_h or np.sign(d_h) == np.sign(d_st)):
+        elif pv_st == pv_st and pv_st < 0.05 and not opposite:
             real = "likely"
         tab.append({"c": cn, "n": len(a_), "df": d_fair, "pf": pv_fair, "dfar": d_far, "dst": d_st, "pst": pv_st,
                     "nh": len(b_), "dh": d_h, "real": real})

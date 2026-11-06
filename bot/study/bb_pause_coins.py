@@ -99,7 +99,7 @@ def run_bb_pause_coins(cfg: Config, out_dir: Path) -> Path:
                 if len(a_) < 20 or len(a0) < 20:
                     continue
                 d, pv = strat_test(res, cn)
-                dh = strat_test(hol, cn, n_perm=0, min_n=20)[0]
+                dh = strat_test(hol, cn, n_perm=0, min_n=20, min_mixed=20)[0]
                 tab.append({"c": cn, "n": len(a_), "raw": a_["far"].mean() - a0["far"].mean(), "d": d, "pv": pv, "dh": dh,
                             "fair": a_["right"].mean() - a0["right"].mean()})
             if tab:
