@@ -1,0 +1,37 @@
+entry_time,setup,tf,direction,net,kind,hold,dir,period
+2023-12-05 18:00:00,A+ breakout,2h,1,-1.2054457551341422,stop,False,long,2022-25
+2022-04-25 08:00:00,A+ breakout,2h,-1,-1.138724565379611,stop,False,short,2022-25
+2026-01-05 02:00:00,A+ breakout,2h,1,-1.1090751376211194,stop,True,long,holdout
+2024-06-14 18:00:00,A+ breakout,2h,-1,-1.1056369346280481,stop,False,short,2022-25
+2022-10-24 00:00:00,breakout,2h,1,-1.0935920655155746,stop,False,long,2022-25
+2024-09-23 04:00:00,breakout,2h,1,-1.0870065147671153,stop,False,long,2022-25
+2026-03-13 14:00:00,A+ breakout,2h,1,-1.0777956675095701,stop,True,long,holdout
+2024-05-22 00:00:00,1D bounce,1D,1,-1.0745460629992896,stop,False,long,2022-25
+2023-03-22 20:00:00,breakout,2h,-1,-1.0676813400183587,stop,False,short,2022-25
+2023-02-22 16:00:00,breakout,2h,-1,-1.0629941775555203,stop,False,short,2022-25
+2025-06-06 00:00:00,breakout,4h,-1,-1.0533120403331206,stop,False,short,2022-25
+2024-07-20 00:00:00,1D bounce,1D,1,-1.0530229813303498,stop,False,long,2022-25
+2026-04-08 00:00:00,A+ breakout,2h,1,-1.0528998908644096,stop,True,long,holdout
+2023-10-13 00:00:00,1D bounce,1D,-1,-1.0416859048167058,stop,False,short,2022-25
+2025-01-16 00:00:00,1D bounce,1D,1,-1.0414157427288908,stop,False,long,2022-25
+2025-07-22 00:00:00,1D bounce,1D,1,-1.0378264456048873,stop,False,long,2022-25
+2023-10-02 00:00:00,1D bounce,1D,1,-1.037774065662925,stop,False,long,2022-25
+2024-11-05 00:00:00,1D bounce,1D,-1,-1.0288202186785602,stop,False,short,2022-25
+2023-09-22 00:00:00,1D bounce,1D,-1,-1.0205683221418744,stop,False,short,2022-25
+2026-01-26 00:00:00,1D bounce,1D,-1,-1.0201423536018073,stop,True,short,holdout
+2025-01-14 00:00:00,1D bounce,1D,-1,-1.0191696477828205,stop,False,short,2022-25
+2025-06-23 00:00:00,1D bounce,1D,-1,-1.0150576136360308,stop,False,short,2022-25
+2025-10-18 00:00:00,1D bounce,1D,-1,-1.0091885656001716,stop,False,short,2022-25
+2024-12-23 00:00:00,1D bounce,1D,-1,-0.9885681965150139,stop,False,short,2022-25
+2024-05-02 00:00:00,1D bounce,1D,-1,-0.9813203794372065,stop,False,short,2022-25
+2022-12-17 00:00:00,1D bounce,1D,-1,-0.9809501249297047,stop,False,short,2022-25
+2026-04-14 00:00:00,A+ breakout,4h,1,-0.9806518792278344,failure exit,True,long,holdout
+2025-11-20 18:00:00,A+ breakout,2h,-1,-0.6848101907171317,failure exit,True,short,holdout
+2026-08-08 00:00:00,1D bounce,1D,1,-0.5515200663376023,failure exit,True,long,holdout
+2024-01-11 00:00:00,A+ breakout,1D,1,-0.3312287331219617,failure exit,False,long,2022-25
+2025-01-13 12:00:00,A+ breakout,4h,-1,-0.2910026153014618,failure exit,False,short,2022-25
+2024-11-22 00:00:00,1D bounce,1D,1,-0.1479563767004392,failure exit,False,long,2022-25
+2025-03-19 12:00:00,breakout,2h,1,-0.05791442894673515,failure exit,False,long,2022-25
+2023-07-13 18:00:00,A+ breakout,2h,1,-0.01826770534241324,failure exit,False,long,2022-25
+2025-06-20 20:00:00,A+ breakout,4h,-1,-0.010208838088147536,failure exit,False,short,2022-25
+2022-03-24 16:00:00,A+ breakout,2h,1,-0.002988066200688755,failure exit,False,long,2022-25
