@@ -25,7 +25,7 @@ import pandas as pd
 
 from ..config import ROOT, Config
 from ..data import load_klines_5m
-from .bb_pause_coins import COINS, month_boot
+from .bb_pause_coins import COINS, month_boot, strat_boot
 from .bb_pause_why import strat_test
 from .defs import TF
 from .indicators import ema, rsi
@@ -68,6 +68,52 @@ def weekly_flags(w: TF, t_close, side: int) -> dict:
     return out
 
 
+def follow_weekly(E: pd.DataFrame, W: dict) -> list[str]:
+    """The trader's next reading: price comes to the middle band and then FOLLOWS THE WEEKLY TREND, whatever the touch
+    candle's close (weekly bearish: the daily pump hits the middle and goes down; weekly bullish: the daily dump hits the
+    middle and goes up). Weekly trend at the last weekly candle closed by the touch close, in price terms:
+      middle band  bullish = close above a rising weekly SMA 20 (vs 4 weeks before), bearish = below a falling one
+      EMA 50       bullish = close above the weekly EMA 50, bearish = below
+    The claim after the touch is the weekly's direction; scored with the fair test."""
+    wk = {"mid": [], "ema": []}
+    for r in E.itertuples():
+        w = W[r.coin]
+        e50 = ema(pd.Series(w.c), 50).to_numpy(float)
+        j = w.closed_before(r.time + TFD[r.tf]) - 1
+        if j < 25 or not np.isfinite(w.mid[j - 4]):
+            wk["mid"].append(0); wk["ema"].append(0); continue
+        wk["mid"].append(1 if (w.c[j] > w.mid[j] and w.mid[j] > w.mid[j - 4]) else
+                         (-1 if (w.c[j] < w.mid[j] and w.mid[j] < w.mid[j - 4]) else 0))
+        wk["ema"].append(0 if not np.isfinite(e50[j]) else (1 if w.c[j] > e50[j] else -1))
+    X = E.copy()
+    claim0 = np.where(X["held"], X["side"], -X["side"])                 # the claim the stored 'right' was scored for
+    rows = []
+    f1 = lambda v: "" if v != v else f"{v:.0%}"  # noqa: E731
+    for name, key in (("weekly middle band rising / falling", "mid"), ("weekly EMA 50", "ema")):
+        trend = np.array(wk[key])
+        r_wk = np.where(claim0 == trend, X["right"], 1 - X["right"])
+        X["r_wk"] = r_wk
+        for tf in ("1D", "4h"):
+            for lab, m in (("daily move UP, weekly BEARISH: claim down", (X["side"] == 1) & (trend == -1)),
+                           ("daily move DOWN, weekly BULLISH: claim up", (X["side"] == -1) & (trend == 1)),
+                           ("move UP, weekly BULLISH: claim up", (X["side"] == 1) & (trend == 1)),
+                           ("move DOWN, weekly BEARISH: claim down", (X["side"] == -1) & (trend == -1)),
+                           ("all: follow the weekly", trend != 0)):
+                g = X[(X["tf"] == tf) & m]
+                res, hol = g[g["res"]], g[g["hold"]]
+                mu, lo, hi, p = month_boot(res.assign(right=res["r_wk"]), "right")
+                rows.append({"w": name, "tf": tf, "lab": lab, "n": len(res), "right": mu, "lo": lo, "hi": hi, "p": p,
+                             "nh": len(hol), "rh": hol["r_wk"].mean() if len(hol) else np.nan})
+    return ["## Follow the weekly: after the middle-band touch, does price go the weekly trend's way?", "",
+            "The trader's reading after seeing the weekly splits above (a new hypothesis, tested here once). The claim is the "
+            "weekly's direction, whatever the touch candle's close. Fair test; 90% interval and p (share of month-bootstrap "
+            "resamples at or below 50%).", "",
+            _table(pd.DataFrame(rows), [("w", "weekly trend by", str), ("tf", "timeframe", str), ("lab", "case", str),
+                                        ("n", "cases 2020-25", str), ("right", "right", f1), ("lo", "90% low", f1),
+                                        ("hi", "90% high", f1), ("p", "chance not above 50%", lambda v: "" if v != v else f"{v:.3f}"),
+                                        ("nh", "holdout cases", str), ("rh", "holdout right", f1)]), ""]
+
+
 def run_bb_pause_weekly(cfg: Config, out_dir: Path) -> Path:
     E = pd.read_pickle(ROOT / "results" / "bb_pause_coins.pkl")
     W = {}
@@ -107,13 +153,12 @@ def run_bb_pause_weekly(cfg: Config, out_dir: Path) -> Path:
     for tf in ("1D", "4h"):
         for kind, hm in (("hold -> pump again", True), ("fail -> dump", False)):
             g = E[(E["tf"] == tf) & (E["held"] == hm)].copy()
-            g["tf"] = g["tf_c"]
             res, hol = g[g["res"]].sort_values("time"), g[g["hold"]]
             for w in ("W1", "W2", "W3", "W4", "W5", "W6"):
                 a_, a0 = res[res[w] == True], res[res[w] == False]  # noqa: E712
                 if len(a_) < 15 or len(a0) < 15:
                     continue
-                d, pv = strat_test(res, w)
+                d, pv = strat_boot(res, w)
                 rows.append({"tf": tf, "kind": kind, "w": names[w], "fair": a_["right"].mean() - a0["right"].mean(),
                              "raw": a_["far"].mean() - a0["far"].mean(), "d": d, "pv": pv,
                              "dh": strat_test(hol, w, n_perm=0, min_n=20, min_mixed=20)[0]})
@@ -122,8 +167,13 @@ def run_bb_pause_weekly(cfg: Config, out_dir: Path) -> Path:
           "Six tests per row group; the weekly readings overlap (they mostly agree), so they are not independent tests.", "",
           _table(pd.DataFrame(rows), [("tf", "timeframe", str), ("kind", "event", str), ("w", "weekly reading", str),
                                       ("fair", "fair test: difference", f2), ("raw", "far: raw difference", f2),
-                                      ("d", "far: same distances", f2), ("pv", "noise", lambda v: "" if v != v else f"{v:.3f}"),
+                                      ("d", "far: same distances", f2),
+                                      ("pv", "noise (month bootstrap)", lambda v: "not tested (too few mixed rows)" if v != v else f"{v:.3f}"),
                                       ("dh", "holdout, same distances", f2)]), ""]
+    L += follow_weekly(E, W)
+    L += ["The weekly-room readings (W4 - W6) were proposed by the trader after the first weekly split (W1 - W3) was seen, "
+          "so they are a new hypothesis to watch on new data, not a confirmed one.", "",
+          "Audit: round 16 (see docs/concepts/bollinger_middle_band_hold.md)."]
     path = out_dir / "bb_pause_weekly.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

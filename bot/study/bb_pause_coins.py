@@ -44,6 +44,30 @@ def month_boot(g: pd.DataFrame, col: str, n: int = 2000, seed: int = 1):
     return g[col].mean(), np.quantile(means, 0.05), np.quantile(means, 0.95), float((means <= 0.5).mean())
 
 
+def strat_boot(res: pd.DataFrame, cn: str, n: int = 400, min_mixed: int = 60, seed: int = 4):
+    """Far-target difference (condition present minus absent) at the same distances: groups of timeframe x distance to
+    the target (quintile) x distance to the failure level (quintile), pooled across coins (distances are in ATR), weighted
+    by group size, needing >= min_mixed rows in groups that contain both cases. Two-sided p from a bootstrap of whole
+    calendar months (coins move together, so a month's cases stay together)."""
+    obs, _ = strat_test(res, cn, n_perm=0, min_mixed=min_mixed)
+    if obs != obs:
+        return np.nan, np.nan
+    mon = res["time"].dt.to_period("M")
+    groups = [x for _, x in res.groupby(mon)]
+    rng = np.random.default_rng(seed)
+    ds = []
+    for _ in range(n):
+        smp = pd.concat([groups[i] for i in rng.integers(0, len(groups), len(groups))], ignore_index=True)
+        d, _ = strat_test(smp, cn, n_perm=0, min_mixed=min_mixed)
+        if d == d:
+            ds.append(d)
+    ds = np.array(ds)
+    if len(ds) < n // 2:
+        return obs, np.nan
+    p = 2 * min((ds <= 0).mean(), (ds >= 0).mean())
+    return obs, min(1.0, max(p, 1 / len(ds)))
+
+
 def run_bb_pause_coins(cfg: Config, out_dir: Path) -> Path:
     rows = []
     empty_m = pd.DataFrame({"create_time": pd.Series(dtype="datetime64[ns]"), "sum_open_interest": pd.Series(dtype=float),
@@ -66,8 +90,9 @@ def run_bb_pause_coins(cfg: Config, out_dir: Path) -> Path:
     L = ["# The middle-band hold after a pump, on six coins (4h and daily)", "",
          "Same events and outcomes as `reports/bb_pause_why.md`. **right** = the fair test (1.5 ATR either way; a coin flip = "
          "50%). **far** = the trader's definition (hold: a new high above everything so far; fail: the sideways low; before a "
-         "close 0.5 ATR beyond the middle band). 90% intervals and **p** from a bootstrap of whole calendar months (coins move "
-         "together). Research 2020 - Oct 2025, holdout Nov 2025 on.", ""]
+         "close 0.5 ATR beyond the middle band; its rate mostly reflects how far the target and the failure level are, so it is not "
+         "an edge). 90% intervals and **p** from a bootstrap of whole calendar months (coins move together). Research 2020 - Oct "
+         "2025, holdout Nov 2025 on.", ""]
     rows = []
     for tf in ("1D", "4h"):
         for kind, hm in (("hold -> pump again", True), ("fail -> dump", False)):
@@ -88,28 +113,44 @@ def run_bb_pause_coins(cfg: Config, out_dir: Path) -> Path:
         ("p", "chance it is not above 50%", lambda v: "" if v != v else f"{v:.3f}"), ("far", "far target reached", f1),
         ("nh", "holdout cases", str), ("rh", "holdout right", f1)]), ""]
     conds = [c for c in E.columns if ":" in c and not c.startswith("liquidity")]
+    n_tests, pvals = [0], []
+    cond_lines = []
     for tf in ("1D", "4h"):
         for kind, hm in (("hold -> pump again", True), ("fail -> dump", False)):
             g = E[(E["tf"] == tf) & (E["held"] == hm)].copy()
-            g["tf"] = g["tf_c"]
             res, hol = g[g["res"]].sort_values("time"), g[g["hold"]]
             tab = []
             for cn in conds:
                 a_, a0 = res[res[cn] == True], res[res[cn] == False]  # noqa: E712
                 if len(a_) < 20 or len(a0) < 20:
                     continue
-                d, pv = strat_test(res, cn)
+                d, pv = strat_boot(res, cn)
+                n_tests[0] += 1
+                pvals.append(pv)
                 dh = strat_test(hol, cn, n_perm=0, min_n=20, min_mixed=20)[0]
                 tab.append({"c": cn, "n": len(a_), "raw": a_["far"].mean() - a0["far"].mean(), "d": d, "pv": pv, "dh": dh,
                             "fair": a_["right"].mean() - a0["right"].mean()})
             if tab:
                 D = pd.DataFrame(tab).sort_values("d")
                 f2 = lambda v: "" if v != v else f"{v * 100:+.0f} pts"  # noqa: E731
-                L += [f"## {tf} · {kind}: conditions, all coins ({len(res)} cases; strata coin x distances)", "",
-                      "About 20 conditions per table: one p < 0.05 is expected by chance.", "",
+                cond_lines += [f"## {tf} · {kind}: conditions, all coins ({len(res)} cases)", "",
                       _table(D, [("c", "condition", str), ("n", "cases with it", str), ("fair", "fair test: difference", f2),
                                  ("raw", "far: raw difference", f2), ("d", "far: same distances", f2),
-                                 ("pv", "noise", lambda v: "" if v != v else f"{v:.3f}"), ("dh", "holdout, same distances", f2)]), ""]
+                                 ("pv", "noise (month bootstrap)", lambda v: "not tested (too few mixed rows)" if v != v else f"{v:.3f}"),
+                                 ("dh", "holdout, same distances", f2)]), ""]
+    pv = np.array([x for x in pvals if x == x])
+    m = len(pv)
+    bh = 0
+    if m:
+        srt = np.sort(pv)
+        ok = srt <= 0.05 * np.arange(1, m + 1) / m
+        bh = int(np.nonzero(ok)[0].max() + 1) if ok.any() else 0
+    L += [f"## Conditions at the same distances (all coins pooled; groups of timeframe x distance quintiles; p by a bootstrap of "
+          f"calendar months)", "",
+          f"**{m} conditions were tested across these tables; {int((pv < 0.05).sum())} have p < 0.05 (about {0.05 * m:.0f} expected "
+          f"by chance); {bh} survive a false-discovery correction (Benjamini-Hochberg, 5%).** These conditions were first searched on "
+          f"ETH, which is part of the pool, so this is not an independent replication.", ""] + cond_lines
+    L += ["Audit: rounds 15 - 16 (see docs/concepts/bollinger_middle_band_hold.md)."]
     path = out_dir / "bb_pause_coins.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path

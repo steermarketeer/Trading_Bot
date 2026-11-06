@@ -57,28 +57,58 @@ Each weekly reading is seen in the pump's direction; "yes" = the reading is true
 
 Six tests per row group; the weekly readings overlap (they mostly agree), so they are not independent tests.
 
-| timeframe | event | weekly reading | fair test: difference | far: raw difference | far: same distances | noise | holdout, same distances |
+| timeframe | event | weekly reading | fair test: difference | far: raw difference | far: same distances | noise (month bootstrap) | holdout, same distances |
 |---|---|---|---|---|---|---|---|
-| 1D | hold -> pump again | weekly above its rising middle band | -18 pts | -6 pts | -5 pts | 0.613 |  |
-| 1D | hold -> pump again | weekly above its EMA 50 | -15 pts | -6 pts | +10 pts | 0.479 |  |
-| 1D | hold -> pump again | weekly structure HH + HL | -14 pts | -9 pts | -4 pts | 0.783 |  |
-| 1D | hold -> pump again | weekly has NOT reached its upper band | +11 pts | +6 pts | +11 pts | 0.277 |  |
-| 1D | hold -> pump again | an older weekly high (5-52 weeks back) still above price | +18 pts | +14 pts | +12 pts | 0.327 |  |
-| 1D | hold -> pump again | weekly RSI below 70 | +18 pts | +15 pts | +20 pts | 0.112 |  |
-| 1D | fail -> dump | weekly above its rising middle band | -12 pts | -17 pts | +0 pts | 1.000 |  |
-| 1D | fail -> dump | weekly above its EMA 50 | -4 pts | -5 pts | +33 pts | 1.000 |  |
-| 1D | fail -> dump | weekly structure HH + HL | +3 pts | -12 pts | +0 pts | 1.000 |  |
-| 1D | fail -> dump | weekly has NOT reached its upper band | +11 pts | +18 pts | +33 pts | 1.000 |  |
-| 4h | hold -> pump again | weekly above its rising middle band | -4 pts | +3 pts | +0 pts | 0.930 | -13 pts |
-| 4h | hold -> pump again | weekly above its EMA 50 | -1 pts | +8 pts | +6 pts | 0.077 | -14 pts |
-| 4h | hold -> pump again | weekly structure HH + HL | -3 pts | -3 pts | -3 pts | 0.449 | -13 pts |
-| 4h | hold -> pump again | weekly has NOT reached its upper band | +1 pts | -2 pts | -1 pts | 0.865 | +11 pts |
-| 4h | hold -> pump again | an older weekly high (5-52 weeks back) still above price | +3 pts | -4 pts | -0 pts | 0.973 | +29 pts |
-| 4h | hold -> pump again | weekly RSI below 70 | +7 pts | -1 pts | +5 pts | 0.329 |  |
-| 4h | fail -> dump | weekly above its rising middle band | -1 pts | -6 pts | +4 pts | 0.459 |  |
-| 4h | fail -> dump | weekly above its EMA 50 | +3 pts | -1 pts | +3 pts | 0.444 |  |
-| 4h | fail -> dump | weekly structure HH + HL | +6 pts | +7 pts | +7 pts | 0.197 |  |
-| 4h | fail -> dump | weekly has NOT reached its upper band | +2 pts | +11 pts | +4 pts | 0.653 |  |
-| 4h | fail -> dump | an older weekly high (5-52 weeks back) still above price | +4 pts | +13 pts | +3 pts | 0.748 |  |
-| 4h | fail -> dump | weekly RSI below 70 | +6 pts | +15 pts | +1 pts | 0.988 |  |
+| 1D | hold -> pump again | weekly above its rising middle band | -18 pts | -6 pts | -7 pts | 0.510 | +1 pts |
+| 1D | hold -> pump again | weekly above its EMA 50 | -15 pts | -6 pts | -4 pts | 0.500 | +17 pts |
+| 1D | hold -> pump again | weekly structure HH + HL | -14 pts | -9 pts | +4 pts | 0.555 | +23 pts |
+| 1D | hold -> pump again | weekly has NOT reached its upper band | +11 pts | +6 pts | +1 pts | 0.680 | -32 pts |
+| 1D | hold -> pump again | an older weekly high (5-52 weeks back) still above price | +18 pts | +14 pts | +14 pts | 0.125 |  |
+| 1D | hold -> pump again | weekly RSI below 70 | +18 pts | +15 pts | +15 pts | 0.065 |  |
+| 1D | fail -> dump | weekly above its rising middle band | -12 pts | -17 pts |  | not tested (too few mixed rows) |  |
+| 1D | fail -> dump | weekly above its EMA 50 | -4 pts | -5 pts |  | not tested (too few mixed rows) |  |
+| 1D | fail -> dump | weekly structure HH + HL | +3 pts | -12 pts |  | not tested (too few mixed rows) |  |
+| 1D | fail -> dump | weekly has NOT reached its upper band | +11 pts | +18 pts |  | not tested (too few mixed rows) |  |
+| 4h | hold -> pump again | weekly above its rising middle band | -4 pts | +3 pts | -0 pts | 0.940 | -7 pts |
+| 4h | hold -> pump again | weekly above its EMA 50 | -1 pts | +8 pts | +5 pts | 0.195 | +1 pts |
+| 4h | hold -> pump again | weekly structure HH + HL | -3 pts | -3 pts | -4 pts | 0.210 | -2 pts |
+| 4h | hold -> pump again | weekly has NOT reached its upper band | +1 pts | -2 pts | +0 pts | 0.950 | +13 pts |
+| 4h | hold -> pump again | an older weekly high (5-52 weeks back) still above price | +3 pts | -4 pts | +0 pts | 0.950 | +27 pts |
+| 4h | hold -> pump again | weekly RSI below 70 | +7 pts | -1 pts | +3 pts | 0.370 | +40 pts |
+| 4h | fail -> dump | weekly above its rising middle band | -1 pts | -6 pts | -1 pts | 0.800 | +2 pts |
+| 4h | fail -> dump | weekly above its EMA 50 | +3 pts | -1 pts | +5 pts | 0.155 | +7 pts |
+| 4h | fail -> dump | weekly structure HH + HL | +6 pts | +7 pts | +7 pts | 0.115 | +7 pts |
+| 4h | fail -> dump | weekly has NOT reached its upper band | +2 pts | +11 pts | +1 pts | 0.735 | -1 pts |
+| 4h | fail -> dump | an older weekly high (5-52 weeks back) still above price | +4 pts | +13 pts | -2 pts | 0.900 |  |
+| 4h | fail -> dump | weekly RSI below 70 | +6 pts | +15 pts | -2 pts | 0.920 |  |
 
+## Follow the weekly: after the middle-band touch, does price go the weekly trend's way?
+
+The trader's reading after seeing the weekly splits above (a new hypothesis, tested here once). The claim is the weekly's direction, whatever the touch candle's close. Fair test; 90% interval and p (share of month-bootstrap resamples at or below 50%).
+
+| weekly trend by | timeframe | case | cases 2020-25 | right | 90% low | 90% high | chance not above 50% | holdout cases | holdout right |
+|---|---|---|---|---|---|---|---|---|---|
+| weekly middle band rising / falling | 1D | daily move UP, weekly BEARISH: claim down | 19 | 42% | 15% | 71% | 0.679 | 12 | 58% |
+| weekly middle band rising / falling | 1D | daily move DOWN, weekly BULLISH: claim up | 43 | 37% | 24% | 52% | 0.934 | 0 |  |
+| weekly middle band rising / falling | 1D | move UP, weekly BULLISH: claim up | 91 | 42% | 31% | 53% | 0.905 | 6 | 50% |
+| weekly middle band rising / falling | 1D | move DOWN, weekly BEARISH: claim down | 69 | 51% | 35% | 65% | 0.505 | 21 | 71% |
+| weekly middle band rising / falling | 1D | all: follow the weekly | 222 | 44% | 36% | 51% | 0.911 | 39 | 64% |
+| weekly middle band rising / falling | 4h | daily move UP, weekly BEARISH: claim down | 250 | 52% | 46% | 59% | 0.264 | 115 | 55% |
+| weekly middle band rising / falling | 4h | daily move DOWN, weekly BULLISH: claim up | 424 | 47% | 42% | 53% | 0.773 | 28 | 36% |
+| weekly middle band rising / falling | 4h | move UP, weekly BULLISH: claim up | 462 | 47% | 42% | 51% | 0.875 | 17 | 59% |
+| weekly middle band rising / falling | 4h | move DOWN, weekly BEARISH: claim down | 249 | 49% | 42% | 56% | 0.583 | 140 | 54% |
+| weekly middle band rising / falling | 4h | all: follow the weekly | 1385 | 48% | 46% | 51% | 0.831 | 300 | 53% |
+| weekly EMA 50 | 1D | daily move UP, weekly BEARISH: claim down | 29 | 48% | 27% | 69% | 0.554 | 17 | 59% |
+| weekly EMA 50 | 1D | daily move DOWN, weekly BULLISH: claim up | 63 | 44% | 31% | 60% | 0.734 | 3 | 33% |
+| weekly EMA 50 | 1D | move UP, weekly BULLISH: claim up | 100 | 39% | 29% | 49% | 0.969 | 7 | 43% |
+| weekly EMA 50 | 1D | move DOWN, weekly BEARISH: claim down | 89 | 52% | 40% | 62% | 0.440 | 24 | 75% |
+| weekly EMA 50 | 1D | all: follow the weekly | 281 | 45% | 39% | 51% | 0.915 | 51 | 63% |
+| weekly EMA 50 | 4h | daily move UP, weekly BEARISH: claim down | 296 | 52% | 47% | 58% | 0.255 | 140 | 54% |
+| weekly EMA 50 | 4h | daily move DOWN, weekly BULLISH: claim up | 476 | 48% | 42% | 54% | 0.701 | 32 | 31% |
+| weekly EMA 50 | 4h | move UP, weekly BULLISH: claim up | 524 | 47% | 43% | 52% | 0.867 | 26 | 58% |
+| weekly EMA 50 | 4h | move DOWN, weekly BEARISH: claim down | 344 | 51% | 45% | 56% | 0.386 | 174 | 56% |
+| weekly EMA 50 | 4h | all: follow the weekly | 1640 | 49% | 47% | 52% | 0.681 | 372 | 53% |
+
+The weekly-room readings (W4 - W6) were proposed by the trader after the first weekly split (W1 - W3) was seen, so they are a new hypothesis to watch on new data, not a confirmed one.
+
+Audit: round 16 (see docs/concepts/bollinger_middle_band_hold.md).

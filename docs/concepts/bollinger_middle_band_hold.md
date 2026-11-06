@@ -94,7 +94,10 @@ In about 6 of 10 cases the hold failed within 30 days. Big when it works, not al
 
 **Six coins** (BTC, ETH, BNB, SOL, XRP, DOGE; `reports/bb_pause_coins.md`): the daily hold is right **52%** (236 cases, 90%
 range 46 – 58%) and the 4h hold 50% (1,500 cases); failures 53% / 52%. ETH's daily 61% was the best of the six (BTC 48%,
-XRP 46%). No condition passes p < 0.01 in about 80 tests (four reach p < 0.05, which chance alone gives).
+XRP 46%). Conditions (compared at the same distances, groups pooled across coins, p by a bootstrap of calendar
+months because coins move together): 52 tested, 7 reach p < 0.05 (about 3 expected by chance), **none survives a
+false-discovery correction**. Leads on the 4h only, not proven: equal highs left at the top of the sideways (holds +15 pts,
+holdout +25), a wick rejection at the touch (+11, holdout +20).
 
 **The weekly chart** (`reports/bb_pause_weekly.md`). The trader's explanation: the daily pause is followed by a new pump
 when *the weekly has not yet reached its highest value*. Tested before looking, three ways, on the six coins' daily holds:
@@ -112,8 +115,15 @@ calendar-month bootstrap gives +3 to +30 points), and it points the way the trad
 weekly still has room, and fails when the weekly is already stretched (at its band, overbought, or above its old highs).
 It matches the earlier finding that holds with everything aligned bullish (weekly x3 and the higher timeframe) did worse:
 those are mostly weeks that are already stretched. **But it is not proven:** at the same distances the far-target
-difference (+15 points) has p 0.19, and the holdout points the other way (42% vs 69%, on 26 and 16 cases). On the 4h the
-weekly makes no difference.
+difference is +9 points (p 0.29), and the holdout points the other way (42% vs 69%, on 26 and 16 cases). On the 4h the
+weekly makes no difference. It was also proposed after the first weekly split had been seen, so it is a new hypothesis
+to watch on new data, not a confirmed one.
+
+**Follow the weekly.** The trader's next reading: after the touch, price follows the weekly trend whatever the touch
+candle does (a bearish weekly turns a daily pump down at the middle band; a bullish weekly turns a daily dump up). On the
+six coins, following the weekly after the touch was right **44 – 45% on the daily** (222 – 281 cases, 2020 - Oct 2025) and
+48 – 49% on the 4h; the holdout, mostly a falling market, was 63 – 64% on the daily and 53% on the 4h. The two periods
+disagree, so this is not a rule either (`reports/bb_pause_weekly.md`).
 
 ## 5. Next steps
 
