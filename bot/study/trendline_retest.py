@@ -63,7 +63,10 @@ def breaks(t: TF, side: int, y: np.ndarray, coin: str, tf: str) -> list[dict]:
         for k in range(j + 1, j + 1 + WIN):
             touch = h[k] >= line(k) - 0.25 * a[k]
             if away and touch:
-                rt_far = k; break                                       # a retest AFTER price first moved >= 1 ATR away
+                rt_far = k                                              # a retest AFTER price first moved >= 1 ATR away
+                if rt is None:
+                    rt, run_bt = k, max(run, (line(k) - l[k]) / a[j])   # it is also the first retest
+                break
             run = max(run, (line(k) - l[k]) / a[j])
             if rt is None and touch:
                 rt, run_bt = k, run                                     # the first retest and the run before it
