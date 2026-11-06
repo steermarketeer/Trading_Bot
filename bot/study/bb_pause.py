@@ -86,6 +86,45 @@ def run_bb_pause(cfg: Config, out_dir: Path) -> Path:
         L += [f"## {tf}", "", _table(pd.DataFrame(rows), [
             ("ev", "event", str), ("n", "cases 2020-25", str), ("p", "right", _pct), ("pv", "chance it is noise", lambda v: f"{v:.3f}"),
             ("yrs", "years above 50%", str), ("nh", "holdout cases", str), ("ph", "holdout right", _pct)]), ""]
+        # how big is the move after the touch holds? (the trader: "if it holds on the middle, the pump is huge")
+        srows = []
+        for name, k, conf in (("touch holds after a pump and sideways", 0, 0),
+                              ("... and the next 2 closes stay above the middle band (measured from the 2nd)", 0, 2),
+                              ("touch-and-hold without the sequence", 2, 0),
+                              ("... without the sequence, next 2 closes above the middle band", 2, 2)):
+            out = []
+            for side in (1, -1):
+                c_, h_, l_ = (t.c, t.h, t.l) if side > 0 else (-t.c, -t.l, -t.h)
+                mid_ = t.mid if side > 0 else -t.mid
+                for jt in np.nonzero(M[side][k])[0]:
+                    if jt + conf + 1 >= t.n or not np.all(c_[jt + 1:jt + conf + 1] > mid_[jt + 1:jt + conf + 1]):
+                        continue
+                    j = jt + conf                                       # decision at the confirming close
+                    if late[j]:
+                        continue
+                    top = h_[max(0, jt - 20):jt].max()                   # the pump's top (highest high of the 20 before the touch)
+                    end = min(t.n, j + 31)
+                    fail = next((q for q in range(j + 1, end) if c_[q] < l_[jt]), end)   # a close below the touch low
+                    seg = h_[j + 1:fail] if fail > j + 1 else np.array([c_[j]])
+                    run = seg.max() - c_[j]
+                    out.append({"hold": bool(hold[j]), "yr": int(years[j]), "new_top": bool(seg.max() > top),
+                                "run_atr": run / t.a[j], "run_pct": run / abs(c_[j]), "failed": fail < end})
+            O_ = pd.DataFrame(out)
+            for per, pm in (("2020 - Oct 2025", ~O_["hold"] & (O_["yr"] >= 2020)), ("holdout", O_["hold"])):
+                g = O_[pm]
+                if g.empty:
+                    continue
+                srows.append({"ev": name, "per": per, "n": len(g), "top": g["new_top"].mean(), "fail": g["failed"].mean(),
+                              "med": g["run_atr"].median(), "q25": g["run_atr"].quantile(0.25), "q75": g["run_atr"].quantile(0.75),
+                              "pct": g["run_pct"].median(), "big": (g["run_atr"] >= 3).mean()})
+        L += [f"### {tf}: how big is the move after the touch?", "",
+              "From the touch close, over the next 30 candles, until a close below the touch candle's low (that close = the hold "
+              "failed). **new top** = price trades above the pump's top first. Run = the furthest price got, in ATR of the touch candle.", "",
+              _table(pd.DataFrame(srows), [("ev", "event", str), ("per", "period", str), ("n", "cases", str),
+                                           ("top", "new top before failing", _pct), ("fail", "hold failed within 30", _pct),
+                                           ("q25", "run: lower quarter (ATR)", lambda v: f"{v:.1f}"), ("med", "run: median (ATR)", lambda v: f"{v:.1f}"),
+                                           ("q75", "run: upper quarter (ATR)", lambda v: f"{v:.1f}"), ("pct", "median run %", lambda v: f"{v:.1%}"),
+                                           ("big", "runs >= 3 ATR", _pct)]), ""]
         if tf == "1D":
             hu = np.nonzero(M[1][0])[0]
             L += ["Daily up-version events (touch holds after a pump and sideways): " +
