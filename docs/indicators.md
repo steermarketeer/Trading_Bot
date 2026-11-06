@@ -12,8 +12,8 @@ A coin flip is 50%. **Real or noise:** each result is compared with 400 copies o
 
 The main rules (structure, levels, liquidity, closes) come first; indicators only support them.
 
-Audit: seven independent rounds (code and every number in this document); all result-impacting findings fixed. The
-Ichimoku part is audited in round 8.
+Audit: independent rounds 1 - 8 (code and every number in this document); all result-impacting findings fixed; the
+Ichimoku part and the fixes ranking passed round 8 with no result-impacting issue.
 
 ## The short answer
 
@@ -27,7 +27,7 @@ Ichimoku part is audited in round 8.
 | **Trendlines** | **mixed, no rule** | steep rejections fail on 4h (40%, holdout 35%) but do better on 1h (51% vs 47%, holdout +5): opposite on the two timeframes, so no usable rule. Rejections overall are 47 – 48% on 1h / 4h (52% on the daily) | "3 touches = strong" (not proven; the tendency is the opposite) |
 | **Market structure** | price action is the main rule | no BOS / CHoCH condition passes (on 1h with ~900 cases each; on 4h / daily the samples are smaller) | |
 | **Fibonacci** | only at confluence | none proven in this test | a level by itself |
-| **Ichimoku** | **promising on the daily, not proven** | on 1h a Kijun bounce works with RSI > 60 (57% vs 47%, holdout 57%) or expanding bands (53% vs 46%) and fails above a thick cloud (44% vs 54%, holdout 45%); entering the cloud from below does worse with the Chikou free (46% vs 52%) | daily cloud breakout 62% (p 0.007) and the full Hosoda breakout (Chikou free, bullish future cloud) 69% (36 cases, p 0.010), 4h kumo twist 57% (p 0.002): all strong in 2020 - 25 but **against in the holdout** (42%, 40%, 44% on 12, 5, 55 cases); TK crosses 51 – 54%; Kijun bounces 47 – 49% on 1h / 4h |
+| **Ichimoku** | **promising on the daily, not proven** | on 1h a Kijun bounce works with RSI > 60 (57% vs 47%, holdout 57%) or expanding bands (53% vs 46%) and fails above a thick cloud (44% vs 54%, holdout 45%); entering the cloud from below does worse with the Chikou free (46% vs 52%; weak: holdout only -1 pt) | daily cloud breakout 62% (p 0.007) and the full Hosoda breakout (Chikou free, bullish future cloud) 69% (36 cases, p 0.010), 4h kumo twist 57% (p 0.002): all strong in 2020 - 25 but **against in the holdout** (42%, 40%, 44% on 12, 5, 55 cases); TK crosses 51 – 54%; Kijun bounces 47 – 49% on 1h / 4h |
 | **MACD** | **drop** | nothing on 4h / daily. On 1h a cross is right 52% (real but too small to use); it does better with expanding bands, volume or liquidity ahead (+5 – 6 pts), which is the context, not MACD | every MACD signal on its own; it repeats the EMAs (0.94) and RSI (0.87) |
 | **ATR** | use for distances | | direction |
 
@@ -88,7 +88,7 @@ midpoint, both drawn 26 candles ahead) and the Chikou (the close drawn 26 back).
 uptrend; a TK cross is strong above the cloud, neutral inside, weak below; a cloud breakout needs the Chikou clear of the
 old candles and a bullish cloud ahead; the Kijun is the equilibrium price that pullbacks return to; a price inside the
 cloud tends to travel to the other edge. **On ETH:** the lines repeat the averages (price vs Kijun correlates 0.93 with
-price vs EMA 20, price vs the cloud 0.95 with price vs EMA 50, 4h). The daily cloud breakout, the full Hosoda breakout
+price vs EMA 20, price vs the cloud 0.94 with price vs EMA 50, 4h). The daily cloud breakout, the full Hosoda breakout
 and the 4h kumo twist were strong in 2020 - 25 (57 – 69%) but went the other way in the holdout on few cases, so they are
 promising, not proven. Proven only on the 1h: the Kijun bounce needs momentum (RSI > 60) or expanding bands and fails above a thick
 cloud.
