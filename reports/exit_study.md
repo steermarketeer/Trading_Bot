@@ -76,6 +76,7 @@ Chosen on 2022-25 (t-score): **half at +2R, rest to break-even and run**; most p
 - 1D bounces (5 : 1): **break-even after +2R** is the only exit that improves both the profit and the t-score on 2022-25 (+1.19R vs +1.09R, 2.86x vs 2.59x, drop -14% vs -16%) without hurting the holdout (+2.07R vs +2.08R). It changes 5 research trades (losers that had run 2R and came back to the stop, now ~0R) and 1 holdout trade. Five trades is a logical, small edge, not a proof.
 - Every early exit on a 4h signal against the trade (first 4h close against, Chandelier, swing trail) wins more often but earns less per trade: the trades it saves are smaller than the winners it cuts.
 - No target + trailing stop loses in both periods (fewer, bigger winners do not pay for the many trail stops).
+- Exiting after a sweep of the trade's running high (the 22 Nov 2024 reading; daily or 4h, with or without waiting for +1R) earns +0.48 .. +0.62R vs +0.88R: the sweep of a high continues up about 3 times in 4 (reports/sideways_test.md), so it is not an exit.
 - Skipping the 'all three liquidity reasons' trades raises the average R but lowers the account (fewer trades) and deepens the drawdown; it is a post-hoc hypothesis and stays out.
 
-Audit: round 28, independent re-implementation of the replay for all 162 trades x 11 exits, the booking, every table line and the SKIP3 flags; zero result-impacting issues.
+Audit: rounds 28 and 29a, independent re-implementation of the replay for all 162 trades x 14 exits, the booking, every table line and the SKIP3 flags; zero result-impacting issues.
