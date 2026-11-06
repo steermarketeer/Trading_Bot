@@ -1,6 +1,6 @@
 """
-What the indicator / Bollinger studies taught, applied to the current best version (v3.1 + journal filters + bounce stop
-below the 0.786 + strong breaking candle). Rules were written from the general studies (docs/indicators.md) BEFORE
+What the indicator / Bollinger studies taught, applied to the research-chosen version (v3.1 + journal filters + bounce stop
+below the 0.786; the strong-breaking-candle filter is NOT included: it did not help on 2022 - Oct 2025, reports/fixes.md). Rules were written from the general studies (docs/indicators.md) BEFORE
 looking at these trades; nothing is tuned on them. Everything at the entry uses candles closed at the entry.
 
 Entry filters (skip the trade):
@@ -54,7 +54,7 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
     rank = pd.Series(bw).rolling(120, min_periods=60).apply(lambda x: (x[:-1] < x[-1]).mean(), raw=True).to_numpy()
     de50, de200 = (ema(pd.Series(d1.c), k).to_numpy(float) for k in (50, 200))
     T, _ = pd.read_pickle(ROOT / "results" / "manager_states.pkl")
-    T = T[(T["src"] == "v31") & T["filtered"] & (T["variant"] == "S786") & T["BQ"]].copy()
+    T = T[(T["src"] == "v31") & T["filtered"] & (T["variant"] == "S786")].copy()
     rows = []
     for r in T.itertuples():
         et = pd.Timestamp(r.decision_time); d = int(r.d)
@@ -130,7 +130,7 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
                          "w": (kp["net"] > 0).mean(), "a": kp["net"].mean()})
     f2 = lambda v: "" if v != v else f"{v:+.2f}"  # noqa: E731
     base = []
-    for nm, col, msk in (("current best version", "net", None), ("+ R1 + R2 + R3 + R4 (all learned filters)", "net", ["R1", "R2", "R3", "R4"]),
+    for nm, col, msk in (("research-chosen version (0.786 bounce stop)", "net", None), ("+ R1 + R2 + R3 + R4 (all learned filters)", "net", ["R1", "R2", "R3", "R4"]),
                          ("+ R6 + R7 + R8 (deep-study filters)", "net", ["R6", "R7", "R8"]),
                          ("+ exit X (bounce touches the 4h middle band)", "net_x", None)):
         for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
@@ -141,7 +141,7 @@ def run_learned(cfg: Config, out_dir: Path) -> Path:
             gg = g.assign(setup=g["setup"]).reset_index(drop=True)
             eq, dd = account(gg, col, "exit_x" if col == "net_x" else "exit_time", RISK)
             base.append({"v": nm, "per": per, **s_, "eq": eq, "dd": dd})
-    L = ["# What the indicator studies taught, applied to the current best version", "",
+    L = ["# What the indicator studies taught, applied to the research-chosen version (v3.1 + journal filters + 0.786 bounce stop)", "",
          "Rules written from the general studies (docs/indicators.md) before looking at these trades. "
          "**win % = profit after costs.** 2022 - Oct 2025 and the holdout (Nov 2025 on).", "",
          _table(pd.DataFrame(base), [("v", "version", str), ("per", "period", str), ("n", "trades", str), ("win", "win %", _pct),

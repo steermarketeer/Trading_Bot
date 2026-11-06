@@ -18,7 +18,7 @@ The main rules (structure, levels, liquidity, closes) come first; indicators onl
 |---|---|---|---|
 | **RSI (14)** | **use, as momentum** | 4h RSI crossing above 70 = **up** (59%, all 6 years, holdout 57%); the **first** push above 70 in 50 candles: **69%** (holdout 65%) | selling "overbought" / buying "oversold" (41%, lost every year); selling RSI leaving 70 inside a Bollinger bulge (4h 38%, 1h 41%) |
 | **Volume** | **use, for breakouts** | a 4h 20-candle breakout on **>= 2x volume: 58%** vs 46% without (holdout 53%); closing **> 1 ATR** beyond: 62% (holdout 58%) | "1 - 2x volume fails" (a tendency, not proven) |
-| **Bollinger (20, 2)** | **use, for move strength** | at the upper band, price goes further: 4h with a **bulge (62%)**, **RSI > 75 (64%)**, **the daily also at its band (58%)**; 1h with a bulge (58%), RSI > 75 (61%), a close outside, a walk, expanding bands, or the 4h at its band (+3.6 to +4.9 pts). It fails back more often on 1h with an upper wick or the opposite band turning (-3.5 / -3.8 pts). The 4h close outside (52% vs 47%), the 1h opposite band and the 1h '4h at its band' pass the rule only by a nearly flat holdout (within 0.4 pts): weak | the band by itself (about a coin flip on 1h / 4h, 49 – 52%; on the daily band reaches go further 58%, not proven); squeeze breakouts (not proven) |
+| **Bollinger (20, 2)** | **use, for move strength** | at the upper band, price goes further: 4h with a **bulge (62%)**, **RSI > 75 (64%)**, **the daily also at its band (58%)**; 1h with a bulge (58%), RSI > 75 (61%), a close outside, a walk, expanding bands, or the 4h at its band (+3.6 to +4.9 pts). It fails back more often on 1h with an upper wick or the opposite band turning (-3.5 / -3.8 pts). The 4h close outside (52% vs 47%), the 1h opposite band and the 1h '4h at its band' pass the rule only by a nearly flat holdout (within 0.4 pts): weak | the band by itself (a coin flip on 1h / 4h: band reaches go further 50% / 49%; on the daily band reaches go further 58%, not proven); squeeze breakouts (not proven) |
 | **EMA 20 / 50 / 200** | **context only** | none on 4h / daily. On 1h: an EMA 50 pullback with RSI 40 - 50 (Cardwell range) holds better (51% vs 43%, holdout 56%); the 1h golden / death cross 55% (holdout 51%) | the 4h golden cross (56% but 34% in the holdout), pullbacks to the EMA 20 (4h 45%), the EMA 200 retest (not proven) |
 | **Candlesticks** | **only with context** | a 4h strong full-body candle **with the daily trend: 60%** vs 43% against (holdout 52%); in oversold (RSI < 40) the **1h engulfing (45%)** and the **4h hammer (40%)** fail | any pattern by itself: 40 – 55% on 1h / 4h; a few daily patterns look better (three white soldiers 61%, morning star 61%) on small samples, not proven |
 | **Trendlines** | **mixed, no rule** | steep rejections fail on 4h (40%, holdout 35%) but do better on 1h (51% vs 47%, holdout +5): opposite on the two timeframes, so no usable rule. Rejections overall are 47 – 48% on 1h / 4h (52% on the daily) | "3 touches = strong" (not proven; the tendency is the opposite) |
@@ -87,20 +87,28 @@ Not proven as a signal in this test. In the strategy it is used only for the 1D-
 helped in the strategy test (`reports/fixes.md`); a Fib level alone is never used.
 
 ## The 5 Dec 2023 trade read with these rules
-At the 4 Dec 08:00 4h top (2,277): bulge, RSI 81 after 85, the daily at its upper band, daily trend up: all three proven
-"keep going" signs. So no big short; the pullback goes to the middle band (2,186 vs 2,177) and the long is where the
+At the 4 Dec 08:00 4h top (2,277): bulge, RSI 81 after 85, the daily at its upper band (the three proven "keep going"
+signs), in a daily uptrend. So no big short; the pullback goes to the middle band (2,186 vs 2,177) and the long is where the
 middle band holds on the close (2,200). That matches the trader's read.
 
 ## What this means for the bot (tested on the trades, `reports/learned.md`)
-Every lesson was turned into a filter before looking at the trades and run on the current best version (100 trades
-2022 - Oct 2025, 27 holdout). **None improved it in a meaningful way.** The weak-band-touch rule skips a single losing
-trade; two rules never fire (fading momentum never occurs on these trades; thin volume is already excluded by the
-strong-breaking-candle rule, which needs >= 1.2x); every other rule skips a set of trades whose total R is **positive** in
-both periods, so skipping them loses money. That includes the proven 2x-volume level: requiring it (R6) skips trades worth
-+1.84R and +1.94R. The best version keeps what worked in the strategy tests: the strong breaking candle (>= 1.2x volume,
-body >= 60%, range >= 1.5 ATR) and the 0.786 bounce stop (`reports/fixes.md`). The 4h-close lesson is a strong marker
-(trades whose first 4h close goes back against the entry win 29% vs 59%, `reports/selfreview.md`), but it is only known
-after the entry. The retest entry built on it earned more per trade in 2022 - 25 (+0.82R vs +0.71R) but took only 44
-trades instead of 129, too few for the selection rule (>= 60), and earned less in the holdout (+0.52R vs +0.68R), so it
-was not adopted (`reports/fixes.md`). The losses left are about **liquidity**: targets beyond big
-liquidity (4,099 on 22 Nov 2024) and stops just inside it (5 Dec 2023, 22 Nov 2024).
+The version the selection rule picks on 2022 - Oct 2025 is **v3.1 + the journal filters + the 1D-bounce stop below the
+0.786** (129 trades, 59% win, +0.79R; holdout 33 trades, 64%, +1.02R; `reports/fixes.md`). The strong-breaking-candle
+filter is **not** part of it: on 2022 - 25 it changes avg R only from +0.71 to +0.72 (t-score 4.96 -> 4.34) and helps
+only in the holdout, which cannot be used to choose it.
+
+Every lesson above was turned into a filter before looking at the trades and run on that version. **None improved it in a
+meaningful way.** By the 2022 - 25 t-score the base scores 5.53; the best filter, the weak band touch, scores 5.62 by
+skipping a single losing trade (noise, not a rule); all of the first four together 5.56. Two filters never fire (fading
+momentum never occurs on these trades; thin volume < 1x never occurs either). The others skip sets of trades whose total R
+is positive in 2022 - 25 (the 2x-volume rule R6 skips +4.36R; in the holdout its 3 skipped trades were -0.50R), so they
+cost more than they save. The 4h-close lesson is a strong marker (trades whose first 4h close goes back against the entry
+win 29% vs 59%, `reports/selfreview.md`), but it is only known after the entry. The retest entry built on it earned more
+per trade in 2022 - 25 (+0.82R vs +0.71R) but took only 44 trades instead of 129, too few for the selection rule
+(>= 60), and earned less in the holdout (+0.52R vs +0.68R), so it was not adopted (`reports/fixes.md`).
+
+Where the remaining losses come from: a **resistance or untaken 4h high between the entry and the target** is a proven
+loser marker (win 43% vs 68% without, holdout 48% vs 100%, `reports/selfreview.md`), and the journal shows it on 22 Nov
+2024 (the 3R target beyond the 4,099 top). The journal's two stops just inside the liquidity (5 Dec 2023, 22 Nov 2024)
+are single examples: systematically, untaken liquidity just beyond the stop does **not** mark losers (41% of losers vs 39%
+of winners, holdout 44% vs 46%, `reports/selfreview.md`).
