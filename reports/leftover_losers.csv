@@ -1,0 +1,21 @@
+entry_time,setup,tf,dir,entry,R,acct%,signal close back inside (3 candles),15m double top,hunted,hold,any,1h failure at
+2026-07-11 16:00,A+ breakout,4h,long,1814.11,-1.22,-4.9,False,True,True,True,True,07-11 22:00
+2023-03-18 00:00,A+ breakout,4h,long,1789.21,-1.11,-4.4,False,True,True,False,True,03-18 15:00
+2023-05-05 16:00,A+ breakout,4h,long,1952.84,-1.08,-4.3,False,True,False,False,True,05-05 18:00
+2023-07-13 18:00,A+ breakout,2h,long,1988.76,-1.07,-4.3,True,True,False,False,True,07-14 07:00
+2024-01-11 00:00,A+ breakout,1D,long,2585.81,-1.07,-4.3,True,True,False,False,True,01-11 06:00
+2025-01-13 12:00,A+ breakout,4h,short,3056.81,-1.04,-4.1,True,False,True,False,True,01-13 20:00
+2024-11-22 00:00,1D bounce,1D,long,3358.69,-1.2,-2.4,True,True,False,False,True,11-22 10:00
+2026-01-02 18:00,breakout,2h,long,3121.94,-1.13,-2.3,False,True,True,True,True,01-03 04:00
+2025-12-17 18:00,breakout,2h,short,2846.38,-1.11,-2.2,False,True,False,True,True,12-17 22:00
+2024-09-13 16:00,breakout,2h,long,2406.83,-1.09,-2.2,False,True,True,False,True,09-13 23:00
+2023-04-11 00:00,1D bounce,1D,long,1908.91,-1.08,-2.2,True,True,False,False,True,04-11 05:00
+2025-10-27 00:00,breakout,4h,long,4156.36,-1.08,-2.2,False,True,False,False,True,10-27 07:00
+2024-05-22 00:00,1D bounce,1D,long,3792.33,-1.07,-2.1,True,True,False,False,True,05-22 11:00
+2025-03-19 12:00,breakout,2h,long,2026.98,-1.05,-2.1,True,True,False,False,True,03-19 17:00
+2023-10-13 00:00,1D bounce,1D,short,1538.82,-1.04,-2.1,True,True,False,False,True,10-13 07:00
+2023-04-14 00:00,1D bounce,1D,long,2011.8,-1.04,-2.1,False,True,False,False,True,04-14 12:00
+2025-06-10 00:00,1D bounce,1D,long,2679.13,-1.03,-2.1,True,True,False,False,True,06-10 02:00
+2026-06-25 00:00,1D bounce,1D,short,1621.55,-1.01,-2.0,False,True,False,True,True,06-25 04:00
+2024-07-05 00:00,1D bounce,1D,short,3059.3,-1.0,-2.0,True,True,False,False,True,07-05 10:00
+2026-06-04 00:00,1D bounce,1D,short,1812.45,-0.31,-0.6,False,True,False,True,True,06-05 09:00
