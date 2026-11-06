@@ -7,7 +7,8 @@ Line      through the last two confirmed swing lows with the second higher (risi
 Break     the first close beyond the line by >= 0.25 ATR (the close before was not), everything from closed candles
 Retest    a later candle that comes back to the line: high >= line - 0.25 ATR (for a broken rising line), within 5 / 10 / 20
           candles; before it, how far price ran away from the line (in ATR). Stricter: a retest only after price first
-          moved >= 1 ATR away from the line (so a next-candle wiggle does not count)
+          moved >= 1 ATR away from the line, the break candle included (a next-candle touch counts only if the break
+          candle itself ran 1 ATR away; requiring the touch on the 2nd candle or later changes the rate by <= 1.3 points)
 At the retest (the first one):
   rejected  the retest candle closes back below the line (the old support acts as resistance)
   reclaimed the retest candle closes above the line + 0.25 ATR (the break failed)
