@@ -41,6 +41,7 @@ from .mtf import resample
 from .sr2_run import _pct, _table
 
 HOLDOUT = pd.Timestamp("2025-11-01")
+START = pd.Timestamp("2022-01-01")                                      # research period start (the data begins 2019/20)
 K, A, S, N, TOL = 6, 2.0, 3, 40, 0.25
 
 
@@ -150,7 +151,7 @@ def summarize(W: pd.DataFrame, label: str) -> list[str]:
     L = [f"## {label}", ""]
     tab = []
     for (tf, side), g in W.groupby(["tf", "side"]):
-        for per, m in (("2022 - Oct 2025", ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
+        for per, m in (("2022 - Oct 2025", (g["time"] >= START) & ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
             e = g[m & g["impulse"]]
             sw = e[e["sideways"]]
             tst = sw[sw["tested"] != ""]
@@ -179,7 +180,7 @@ def summarize(W: pd.DataFrame, label: str) -> list[str]:
     # what the test says about the resolution
     tab = []
     for (tf, side), g in W.groupby(["tf", "side"]):
-        for per, m in (("2022 - Oct 2025", ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
+        for per, m in (("2022 - Oct 2025", (g["time"] >= START) & ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
             sw = g[m & g["impulse"] & g["sideways"]]
             for kind in ("sweep", "touch", "break", "no pullback", ""):
                 x = sw[sw["tested"] == kind]
@@ -191,7 +192,7 @@ def summarize(W: pd.DataFrame, label: str) -> list[str]:
     # retest of the price
     tab2 = []
     for (tf, side), g in W.groupby(["tf", "side"]):
-        for per, m in (("2022 - Oct 2025", ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
+        for per, m in (("2022 - Oct 2025", (g["time"] >= START) & ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
             sw = g[m & g["impulse"] & g["sideways"]]
             if len(sw) < 10:
                 continue
@@ -227,7 +228,7 @@ def summarize(W: pd.DataFrame, label: str) -> list[str]:
                                      ("rsi_lower_at_break", "continuations with RSI lower at the break than at the impulse", _pct)]), ""]
     tab3 = []
     for (tf, side), g in W.groupby(["tf", "side"]):
-        for per, m in (("2022 - Oct 2025", ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
+        for per, m in (("2022 - Oct 2025", (g["time"] >= START) & ~g["hold"] & (g["test_end"].fillna(g["time"]) < HOLDOUT)), ("holdout", g["hold"])):
             sw = g[m & g["impulse"] & g["sideways"]]
             for at in (True, False):
                 x = sw[sw["at_level"] == at]
@@ -267,7 +268,7 @@ def run_sideways_test(cfg: Config, out_dir: Path, rebuild: bool = True) -> Path:
     # geometry control at the same close position
     tab = []
     bins = [0, 0.25, 0.5, 1.0, 2.0, np.inf]
-    R = W[~W["hold"] & W["sideways"]].copy()
+    R = W[(W["time"] >= START) & ~W["hold"] & (W["test_end"] < HOLDOUT) & W["sideways"]].copy()
     R["pos"] = pd.cut(R["pos_atr"], bins, right=False)
     for (tf, pos), g in R.groupby(["tf", "pos"], observed=True):
         i_, c_ = g[g["impulse"]], g[g["leg_atr"] < 1.5]
@@ -278,7 +279,30 @@ def run_sideways_test(cfg: Config, out_dir: Path, rebuild: bool = True) -> Path:
           "If the test rate is the same at the same distance from the high, the concept is proximity, not the pump.", "",
           _table(pd.DataFrame(tab), [("tf", "tf", str), ("pos", "close below the extreme (ATR)", str), ("ni", "impulses", str), ("ti", "tested", _pct),
                                      ("nc", "small legs", str), ("tc", "tested", _pct), ("ui", "impulse resolved up", _pct), ("uc", "small leg resolved up", _pct)]), "",
-          "Audit: pending."]
+          "## Reading", "",
+          "- **The extreme is tested first, mostly: yes.** After a pump of >= 2 ATR that goes sideways, the high is revisited "
+          "(after a pullback of at least 1 ATR) before the range resolves in 75% of daily cases and 77% of 4h cases (90% "
+          "intervals 69 - 80%), dumps 72 - 74%; the holdout agrees (68 - 86%). Small legs at the same distance test "
+          "56 - 74%, so part of it is proximity and part is the pump.",
+          "- **The test of the high is not the exit.** After a sweep (wick above the high, close back below) the range still "
+          "resolves UP 70 - 74% of the time (daily pumps 74%, 4h 72%; holdout 65 - 73%); a touch 69 - 70%. At a strong S/R "
+          "level it is the same (daily pumps 74%, 4h 69%). The 16 Dec 2024 sweep of 4,099 was the 1-in-5 case, not the rule. "
+          "The exit study confirms it: exiting after a sweep of the trade's high earns +0.62R vs +0.88R.",
+          "- **The retest of the price is the key: supported.** The price comes back to the pump's close (after first trading "
+          "0.5 ATR above it) in about half the sideways cases. When that retest HOLDS (close no more than 0.25 ATR below) "
+          "the range resolves up 72% (daily pumps) and 71% (4h); when it closes below, 55 - 56%; with no retest at all, 54 - 55%. "
+          "Dumps mirror it (63 - 70% vs 42 - 48%). The holdout agrees (daily pumps 87% vs 30%, 4h 66% vs 46%). A held retest of "
+          "the pump's close is the best continuation marker in this study.",
+          "- **RSI cooling at the retest does not help.** A retest with RSI at least 5 points below the impulse RSI continues "
+          "54 - 56%, one with RSI still warm 70 - 71%: the slow, cooled retest is the weaker one. In continuations the RSI at "
+          "the break is lower than at the impulse only 25 - 30% of the time. So 'RSI 70 at 3,358, then RSI 60 with the price "
+          "well above' is the minority picture; most continuations break with a higher RSI.",
+          "- **What it means for the bot:** hold through the sideways; do not exit on the test of the high; a held retest of "
+          "the pump's close is the signal to stay (or to add); a failed retest (close below) is a coin flip. The 'pulled back, "
+          "never tested -> reversed' row is true by construction (the only other way out of the range is down) and is not a finding.", "",
+          "Audit: round 29b, independent re-implementation of all 14,597 windows (six coins, 4h + 1D, both sides) with zero "
+          "mismatches; one result-impacting issue found and fixed (the research rows included 2019 - 2021 data under a "
+          "'2022 - Oct 2025' label; now filtered, shares moved by up to 4 points); tables reproduced after the fix."]
     path = out_dir / "sideways_test.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path
