@@ -10,8 +10,9 @@ candle within 20 whose high comes back within 0.25 ATR of the line).
   BREAK trade   the comparison: enter at the next open after the break candle; stop 0.1% beyond the line + 0.25 ATR at the
                 break candle (where a retest that fails would go)
   strict        only retests after price first moved >= 1 ATR away (the real retests)
-Targets: 2R, 3R, and the break's low before the retest (the extreme price reached between the break and the retest, i.e.
-the liquidity it left) if it is >= 1.2R away, else 2R. Exits on 5m candles, stop first; 60 candles max; costs: market in,
+Targets: 2R, 3R, and a liquidity target if it is >= 1.2R away, else 2R: for the RETEST trade the break's low before the
+retest (the extreme between the break and the retest: the liquidity it left, known at the retest entry); for the BREAK
+trade only the break candle's own extreme (known at its entry). Exits on 5m candles, stop first; 60 candles max; costs: market in,
 limit target / market stop and time exit, funding for ETH only (other coins: no funding data). **win % = profit after costs.**
 Research 2020 - Oct 2025, holdout Nov 2025 on.
 """
@@ -110,7 +111,8 @@ def run_trendline_trade(cfg: Config, out_dir: Path) -> Path:
                     # the break trade
                     i0 = int(np.searchsorted(t5, t.ct[j]))
                     stop_o = lj + 0.25 * t.a[j]                          # oriented: above the line for a short
-                    plans.append(("break", i0, stop_o, ext if k is not None else np.nan, False))
+                    bc_ext = t.l[j] if side > 0 else -t.h[j]                 # known at the break entry (no lookahead)
+                    plans.append(("break", i0, stop_o, bc_ext, False))
                     if k is not None and cc_o[k] < lk:                   # rejected retest
                         plans.append(("retest", int(np.searchsorted(t5, t.ct[k])), hh_o[k], ext, strict))
                     for kind, i0, stop_o, ext_o, st in plans:
@@ -164,7 +166,7 @@ def run_trendline_trade(cfg: Config, out_dir: Path) -> Path:
                                     ("pf", "profit factor", lambda v: "" if v != v else f"{v:.2f}"),
                                     ("stop", "median stop", lambda v: "" if v != v else f"{v:.2%}"),
                                     ("rr", "median reward:risk", lambda v: "" if v != v else f"{v:.1f}")]), "",
-         "Audit: pending."]
+         "Audit: round 20 (the break trade's liquidity target used information from after its entry; fixed).", ""]
     path = out_dir / "trendline_trade.md"
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
     return path
