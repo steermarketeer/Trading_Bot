@@ -43,7 +43,7 @@ entry = O_{j+1} (next open after the close);  stop S = L_j (long) / H_j (short) 
 target T = entry + d * 2 * |entry - S|
 ```
 
-**1D bounce** (3 : 1), PROVEN (strategy rule):
+**1D bounce** (5 : 1 since reports/ratio_sweep.md; the user's choice, the sweep's t-score pick was 2.5 : 1), PROVEN (strategy rule):
 
 ```
 strong daily zone Z (3+ swings or a weekly swing) tested >= 4 times; touch candle t with bounce volume >= 0.8 x touch

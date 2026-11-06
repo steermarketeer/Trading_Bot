@@ -8,7 +8,7 @@ Reasons known at the entry (actionable):
   daily against  the daily close on the wrong side of its EMA 200
   weekly no room the weekly is stretched in the trade's direction (at its band, RSI >= 70, or above its older highs)
   vol shock      the signal candle's range >= 2.5 x the ATR before it
-  liq at stop    untaken liquidity within 0.5R beyond the stop (defs_review)
+  liq at stop    an untaken 15m / 1h swing within 0.5R beyond the trade's OWN stop (0.786 stop for bounces; recomputed here)
   stretched      1h RSI > 70 and close beyond the 1h band in the trade's direction at entry (defs_review)
   vertical day   the daily candle moved > 2 ATR in the trade's direction (defs_review)
   pause against  a daily pump the other way in the last 20 days with every close since on that side of the middle band
@@ -65,6 +65,7 @@ def build(cfg: Config) -> pd.DataFrame:
     rw = rsi(pd.Series(w1.c)).to_numpy(float)
     table = _level_table(df5u)
     sw4 = Swings(df5u, "4h")
+    sw_liq = {k: Swings(df5u, k) for k in ("15min", "1h")}
     pools = {"1D": Swings(df5u, "1D"), "1W": Swings(df5u, "1W")}
     topf = {s: np.array([t4.ct[e.j] for e in detect(t4, pools, s, {"1D": 400, "1W": 104})], dtype="datetime64[ns]") for s in (1, -1)}
     tfail = {s: np.array([h1.ct[j] for j, _, _, k in tf_setups(h1, s) if k == "last push"], dtype="datetime64[ns]") for s in (1, -1)}
@@ -99,6 +100,9 @@ def build(cfg: Config) -> pd.DataFrame:
         pumps = [k for k in range(max(0, jd - 20), jd + 1) if np.isfinite(band_o[k]) and cc[k] > band_o[k]]
         pause = bool(pumps) and pumps[-1] < jd and bool(np.all(cc[pumps[-1] + 1:jd + 1] > mid_o[pumps[-1] + 1:jd + 1]))
         et64 = np.datetime64(et)
+        liq = np.r_[sw_liq["15min"].untaken(et, "L" if d > 0 else "H", 150), sw_liq["1h"].untaken(et, "L" if d > 0 else "H", 150)]
+        beyond = (s_ - liq) * d                                         # distance of resting stops beyond OUR stop
+        liq_at_stop = bool(((beyond > 0) & (beyond <= 0.5 * risk)).any())
         tf_ag = topf[1] if d > 0 else topf[-1]                           # top failures (side +1) are against longs
         f3 = tfail[1] if d > 0 else tfail[-1]
         weak = bool(r.setup != "1D bounce" and not r.BQ)                 # the audited strong-breaking-candle flag
@@ -111,7 +115,7 @@ def build(cfg: Config) -> pd.DataFrame:
                      "ceiling": ceiling, "trendline": bool(trendline_in_way(h1, et, e, tg, d) or trendline_in_way(t4, et, e, tg, d)),
                      "daily against": bool(np.isfinite(d200[jd]) and o(d1.c[jd] - d200[jd]) < 0),
                      "weekly no room": bool(no_room), "vol shock": bool((ts.h[js] - ts.l[js]) >= 2.5 * ts.a[js - 1]),
-                     "liq at stop": bool(x["liq_under_stop"]), "stretched": bool(x["stretched"]),
+                     "liq at stop": liq_at_stop, "stretched": bool(x["stretched"]),
                      "vertical day": bool(x["vertical_day"]), "pause against": pause,
                      "top failure against": bool(np.any((tf_ag <= et64) & (tf_ag > et64 - np.timedelta64(48, "h")))),
                      "3 failures against": bool(np.any((f3 <= et64) & (f3 > et64 - np.timedelta64(6, "h")))),

@@ -40,7 +40,7 @@ Daily automation: point Task Scheduler at `scripts/run_shadow.ps1` (Windows), or
 Rules frozen from research (see `reports/strategy_v2.md`, `reports/failure_liquidity.md`):
 2:1 breakouts on 2h / 4h / 1D with certainty >= 7, BTC 4h + 6h MACD agreement, a clean risk zone (no swing
 liquidity or equal-high/low pool between entry and stop), A+ when breaking into a low-volume zone; plus 1D bounces
-at zones tested 4+ times (3:1). Risk: A+ 4%, others 2%, leverage cap 5x. **No exchange orders.**
+at zones tested 4+ times (5:1 since the ratio sweep; the research-chosen 0.786 stop and journal filters are not yet wired live). Risk: A+ 4%, others 2%, leverage cap 5x. **No exchange orders.**
 
 | What | Command |
 |---|---|

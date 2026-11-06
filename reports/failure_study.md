@@ -16,8 +16,8 @@
 | weekly no room | holdout | 8% | 0% | 1 | 0% | -1.02 | 66% | +1.22 | -1.02 |  |  |
 | vol shock | 2022 - Oct 2025 | 34% | 49% | 55 | 65% | +0.84 | 50% | +0.91 | +46.01 | 0.974 |  |
 | vol shock | holdout | 50% | 43% | 15 | 60% | +0.74 | 67% | +1.50 | +11.08 |  |  |
-| liq at stop | 2022 - Oct 2025 | 52% | 45% | 62 | 53% | +0.75 | 60% | +1.00 | +46.35 | 0.287 |  |
-| liq at stop | holdout | 58% | 48% | 17 | 59% | +1.12 | 69% | +1.19 | +19.05 |  |  |
+| liq at stop | 2022 - Oct 2025 | 62% | 56% | 76 | 54% | +0.97 | 60% | +0.75 | +73.50 | 0.294 |  |
+| liq at stop | holdout | 58% | 52% | 18 | 61% | +1.33 | 67% | +0.94 | +23.94 |  |  |
 | stretched | 2022 - Oct 2025 | 41% | 56% | 64 | 64% | +0.86 | 49% | +0.90 | +55.03 | 0.970 |  |
 | stretched | holdout | 58% | 62% | 20 | 65% | +0.78 | 62% | +1.74 | +15.52 |  |  |
 | vertical day | 2022 - Oct 2025 | 2% | 3% | 3 | 67% | +0.90 | 56% | +0.88 | +2.71 | 0.822 |  |
@@ -42,7 +42,7 @@
 | entry | setup | side | R | exit | reasons at entry | after entry |
 |---|---|---|---|---|---|---|
 | 2023-12-05 00:00 | 1D bounce | long | -1.29 | stop | ceiling, weekly no room, liq at stop | 4h against, gave back |
-| 2024-11-22 00:00 | 1D bounce | long | -1.29 | stop | ceiling, weekly no room | gave back |
+| 2024-11-22 00:00 | 1D bounce | long | -1.29 | stop | ceiling, weekly no room, liq at stop | gave back |
 | 2023-03-27 16:00 | breakout | short | -1.24 | stop | ceiling, daily against, vol shock, stretched, pause against, weak break | - |
 | 2026-07-11 16:00 | A+ breakout | long | -1.22 | stop | ceiling, trendline, daily against, liq at stop, weak break | gave back |
 | 2026-05-07 16:00 | breakout | short | -1.21 | stop | ceiling, stretched, 3 failures against, weak break | 4h against, gave back |
@@ -51,9 +51,9 @@
 | 2024-03-25 16:00 | breakout | long | -1.16 | stop | ceiling, weekly no room, stretched, pause against | gave back |
 | 2022-04-25 02:00 | A+ breakout | short | -1.16 | stop | ceiling, vol shock, stretched | 4h against, gave back |
 | 2022-04-25 08:00 | A+ breakout | short | -1.14 | stop | ceiling | 4h against |
-| 2023-04-05 00:00 | 1D bounce | long | -1.13 | stop | ceiling, trendline | gave back |
+| 2023-04-05 00:00 | 1D bounce | long | -1.13 | stop | ceiling, trendline, liq at stop | gave back |
 | 2026-01-02 18:00 | breakout | long | -1.13 | stop | ceiling, daily against, vol shock, stretched, weak break | - |
-| 2023-04-11 00:00 | 1D bounce | long | -1.12 | stop | ceiling | gave back |
+| 2023-04-11 00:00 | 1D bounce | long | -1.12 | stop | ceiling, liq at stop | gave back |
 | 2024-11-03 04:00 | breakout | short | -1.12 | stop | ceiling, trendline, liq at stop, weak break | 4h against, gave back |
 | 2026-01-05 02:00 | A+ breakout | long | -1.11 | stop | ceiling, trendline, daily against, vol shock, liq at stop, stretched | 4h against |
 | 2022-08-25 08:00 | breakout | long | -1.11 | stop | ceiling, trendline, daily against, weak break | - |
@@ -69,7 +69,7 @@
 | 2024-09-23 04:00 | breakout | long | -1.09 | stop | ceiling, trendline, daily against, stretched | 4h against |
 | 2024-05-22 00:00 | 1D bounce | long | -1.09 | stop | ceiling, liq at stop | - |
 | 2025-01-27 08:00 | A+ breakout | short | -1.08 | stop | daily against, vol shock, stretched, weak break | - |
-| 2022-03-17 00:00 | 1D bounce | long | -1.08 | stop | ceiling, daily against | 4h against, gave back |
+| 2022-03-17 00:00 | 1D bounce | long | -1.08 | stop | ceiling, daily against, liq at stop | 4h against, gave back |
 | 2023-05-05 16:00 | A+ breakout | long | -1.08 | stop | ceiling, vol shock, liq at stop, stretched, weak break | gave back |
 | 2026-03-13 14:00 | A+ breakout | long | -1.08 | stop | ceiling, daily against, vol shock, liq at stop, stretched | 4h against |
 | 2025-10-27 00:00 | breakout | long | -1.08 | stop | ceiling, liq at stop | - |
@@ -86,13 +86,13 @@
 | 2025-01-16 00:00 | 1D bounce | long | -1.05 | stop | ceiling, liq at stop | 4h against |
 | 2025-03-19 12:00 | breakout | long | -1.05 | stop | ceiling, daily against, vol shock, liq at stop, stretched, pause against | - |
 | 2025-01-13 12:00 | A+ breakout | short | -1.04 | stop | ceiling, daily against, vol shock, stretched | gave back |
-| 2024-07-20 00:00 | 1D bounce | long | -1.04 | stop | ceiling, trendline | 4h against |
+| 2024-07-20 00:00 | 1D bounce | long | -1.04 | stop | ceiling, trendline, liq at stop | 4h against |
 | 2025-10-11 00:00 | A+ breakout | short | -1.04 | stop | ceiling, daily against, vol shock, vertical day, weak break | - |
 | 2024-09-24 00:00 | 1D bounce | long | -1.03 | stop | ceiling, trendline, daily against, liq at stop | 4h against |
 | 2023-10-02 00:00 | 1D bounce | long | -1.03 | stop | ceiling, trendline, vol shock, liq at stop, stretched | 4h against |
 | 2025-06-10 00:00 | 1D bounce | long | -1.03 | stop | ceiling, trendline, liq at stop, stretched | - |
 | 2023-09-22 00:00 | 1D bounce | short | -1.03 | stop | ceiling, trendline, weekly no room, liq at stop | 4h against |
-| 2025-01-20 00:00 | 1D bounce | short | -1.03 | stop | ceiling, daily against | 4h against |
+| 2025-01-20 00:00 | 1D bounce | short | -1.03 | stop | ceiling, daily against, liq at stop | 4h against |
 | 2023-10-10 00:00 | 1D bounce | short | -1.02 | stop | ceiling, trendline, liq at stop | 4h against, gave back |
 | 2025-01-14 00:00 | 1D bounce | short | -1.02 | stop | ceiling, daily against, vol shock, liq at stop | 4h against |
 | 2023-10-13 00:00 | 1D bounce | short | -1.02 | stop | ceiling, trendline, liq at stop | - |

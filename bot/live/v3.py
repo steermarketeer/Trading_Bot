@@ -9,8 +9,15 @@ Rules (frozen from the research period, see reports/strategy_v2.md + failure_liq
                   - clean risk zone: no confirmed swing (1h + own TF) between entry and stop, no equal-high/low
                     pool within 0.5 ATR of the stop
                   - A+ = low-volume path to the target (volume-profile LVN share above the research median)
-  BOUNCE (5:1)    1D strong zone tested >= 4 times, bounce confirmed by the next daily candle; stop below the Fib 0.786
-                  (reports/fixes.md); target 5 : 1 (reports/ratio_sweep.md: chosen on 2022 - Oct 2025, holdout agrees)
+  BOUNCE (5:1)    1D strong zone tested >= 4 times, bounce confirmed by the next daily candle; stop = v3.1 zone stop
+                  (lowest of the tests - 0.25 ATR, bot/study/level_tests.py); target 5 : 1 (the user's choice after
+                  reports/ratio_sweep.md: bounces improve with the ratio up to 5 : 1 in both periods; the sweep's own
+                  t-score pick on 2022 - Oct 2025 was 2.5 : 1)
+  NOT YET LIVE    the research-chosen version (reports/fixes.md) adds the journal filters (skip an untaken double /
+                  triple top ahead; skip 3+ rejections at the resistance ahead), one position per move, and the bounce
+                  stop below the 1h-leg Fib 0.786. These live only in bot/study/fixes.py so far; the live bounce stop
+                  differs from the studied one (median 0.89x), and on the live stop the 5 : 1 holdout does not improve
+                  on 3 : 1 (+0.58R vs +0.65R). Wire them here before paper trading (docs/architecture.md, build order).
 Risk: A+ 4%, breakout 2%, bounce 2% of equity per trade, leverage capped at 5x. Entry = open of the candle after
 the signal; stop / target as defined; max holding 60 candles of the trade's timeframe. Fills simulated on 5m data.
 """

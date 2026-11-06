@@ -82,9 +82,9 @@ def run_ratio_sweep(cfg: Config, out_dir: Path) -> Path:
                           ("eq", "account 2022-25", lambda v: f"{v:.2f}x"), ("dd", "worst drop", lambda v: f"-{v:.0%}"),
                           ("wh", "holdout win %", _pct), ("ah", "holdout avg R", f2),
                           ("eqh", "holdout account", lambda v: "" if v != v else f"{v:.2f}x")]), ""]
-    # combined account for the chosen pair vs the current 2 : 1 / 3 : 1
+    # combined account for the chosen pair vs the previous 2 : 1 / 3 : 1
     comb = []
-    for lab, kb, kk in (("current (breakouts 2 : 1, bounces 3 : 1)", 2.0, 3.0), (f"chosen ({fr(best['breakout'])} / {fr(best['1D bounce'])})", best["breakout"], best["1D bounce"])):
+    for lab, kb, kk in (("previous (breakouts 2 : 1, bounces 3 : 1)", 2.0, 3.0), (f"chosen ({fr(best['breakout'])} / {fr(best['1D bounce'])})", best["breakout"], best["1D bounce"])):
         m = ((D["fam"] == "breakout") & (D["ratio"].isna() if kb is None else (D["ratio"] == kb))) | \
             ((D["fam"] == "1D bounce") & (D["ratio"].isna() if kk is None else (D["ratio"] == kk)))
         for per, pm in (("2022 - Oct 2025", res), ("holdout", D["hold"])):
